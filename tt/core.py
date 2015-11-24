@@ -3,7 +3,6 @@ import os
 
 from argparse import ArgumentParser, ArgumentError
 from argparse import RawDescriptionHelpFormatter
-from argparse import REMAINDER
 
 __all__ = ['main']
 __version__ = 0.1
