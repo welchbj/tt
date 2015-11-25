@@ -18,6 +18,7 @@ def main(argv=None):
     else:
         sys.argv.extend(argv)
 
+    # program information
     program_source_control_url = "www.github.com/welchbj/tt"
     program_name = os.path.basename(sys.argv[0])
     program_version = "v{version}".format(version=str(__version__))
@@ -42,21 +43,25 @@ def main(argv=None):
                                 formatter_class=RawTextHelpFormatter)
         parser.add_argument("--kmap", 
                             action="store_true", 
-                            help="generate kmap of specified boolean equation.")
+                            help="Generate kmap of specified boolean equation.")
         parser.add_argument("--intermediates", 
                             action="store_true", 
-                            help="indicates that intermediate boolean expressions should be displayed with their own column in the truth table.\n"
-                                  "Not valid with the --kmap option.")
+                            help="Indicates that intermediate boolean expressions should be\n"
+                                 "displayed with their own column in the truth table.\n"
+                                 "Not valid with the --kmap option.")
         parser.add_argument("--version",
                             action="version",
                             version=program_version_message,
-                            help="program version and latest build date")
+                            help="Program version and latest build date")
         parser.add_argument(dest="equation", 
                             help="Boolean equation to be analyzed, surrounded with double quotes.\n"
-                                 "Boolean operations are specified with:\n\n"
-                                 "AND -> &\n"
-                                 "OR -> |\n\n"
-                                 "These are the operations currently supported\n"
+                                 "Boolean operations are specified using plain Englsh in lowercase\n"
+                                 "For example, you would enter:\n"
+                                 "F=A+B as \"F = A or B\"\n"
+                                 "F=AB as \"F = A and B\"\n"
+                                 "Currently the only operations supported are:\n"
+                                 "(1) and\n"
+                                 "(2) or\n"
                                  "The equation should be the last argument specified") 
 
         # Process arguments
@@ -67,11 +72,19 @@ def main(argv=None):
         
         if kmap and intermediates:
             parser.error("--intermediates option is not compatible with kmap generation")
+        elif kmap:
+            # TODO
+            pass
+        elif intermediates:
+            # TODO
+            pass
+        else:
+            # TODO
+            pass
         
         print("equation: {eq}".format(eq=equation))
             
     except KeyboardInterrupt:
-        ### handle keyboard interrupt ###
         return 0
     except Exception as e:
         indent = len(program_name) * " "
