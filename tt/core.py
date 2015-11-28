@@ -1,5 +1,6 @@
 import sys
 import os
+import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
@@ -36,11 +37,19 @@ def main(argv=None):
     License: {license}""".format(version=program_version,
                                  author=program_author,
                                  license=program_license)
+    LOGGING_FORMAT = "%(levelname)s: %(message)s"
 
     try:
         # Setup argument parser
         parser = ArgumentParser(description=program_desc, 
                                 formatter_class=RawTextHelpFormatter)
+        parser.add_argument("--version",
+                            action="version",
+                            version=program_version_message,
+                            help="Program version and latest build date")
+        parser.add_argument("--verbose", "-v",
+                            action="store_true",
+                            help="Specify verbose output, useful for debugging.")
         parser.add_argument("--kmap", 
                             action="store_true", 
                             help="Generate kmap of specified boolean equation.")
@@ -49,10 +58,6 @@ def main(argv=None):
                             help="Indicates that intermediate boolean expressions should be\n"
                                  "displayed with their own column in the truth table.\n"
                                  "Not valid with the --kmap option.")
-        parser.add_argument("--version",
-                            action="version",
-                            version=program_version_message,
-                            help="Program version and latest build date")
         parser.add_argument(dest="equation", 
                             help="Boolean equation to be analyzed, surrounded with double quotes.\n"
                                  "Boolean operations are specified using plain Englsh in lowercase\n"
@@ -66,9 +71,16 @@ def main(argv=None):
 
         # Process arguments
         args = parser.parse_args()
+        verbose = args.verbose
         kmap = args.kmap
         intermediates = args.intermediates
         equation = args.equation
+        
+        if verbose:
+            log.basicConfig(format=LOGGING_FORMAT, level=log.DEBUG)
+            log.info("Starting verbose output.")
+        else:
+            log.basicConfig(format=LOGGING_FORMAT)
         
         if kmap and intermediates:
             parser.error("--intermediates option is not compatible with kmap generation")
@@ -86,6 +98,8 @@ def main(argv=None):
             
     except KeyboardInterrupt:
         return 0
+    except RuntimeError as e:
+        return 1
     except Exception as e:
         indent = len(program_name) * " "
         sys.stderr.write("An unexpected error occurred.")

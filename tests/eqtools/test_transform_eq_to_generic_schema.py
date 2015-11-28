@@ -7,18 +7,18 @@ class TestTransformEqToGenericSchema(unittest.TestCase):
         logically_equivalent_eqs = ["F = NOT A",
                                     "F = not A",
                                     "F = ~A",
-                                    "F = ~ A",
-                                    "F = !A",
-                                    "F = ! A"]
+                                    "F = !A"]
         tt_schema_eq = "F=~A"
         for eq in logically_equivalent_eqs:
             transformed_eq = transform_eq_to_generic_schema(eq)
             self.assertEqual(transformed_eq, tt_schema_eq)
     
-    def test_single_symbol_not_whitespace(self):
+    def test_single_symbol_not_with_whitespace(self):
         logically_equivalent_eqs = ["F    =   NOT  A",
+                                    "F=NOT     A",
                                     "F=   not  A  ",
                                     "F  =    ~   A",
+                                    "F =          not A",
                                     "F=~A",
                                     "F = !    A   ",
                                     "F =      !A"]
@@ -27,8 +27,16 @@ class TestTransformEqToGenericSchema(unittest.TestCase):
             transformed_eq = transform_eq_to_generic_schema(eq)
             self.assertEqual(transformed_eq, tt_schema_eq)
     
-    def dtest_two_symbol_and(self):
-        pass
+    def test_two_symbol_and(self):
+        logically_equivalent_eqs = ["F = A and B",
+                                    "F = A AND B",
+                                    "F = A & B",
+                                    "F = A && B",
+                                    "F = A /\\ B"]
+        tt_schema_eq = "F=A&B"
+        for eq in logically_equivalent_eqs:
+            transformed_eq = transform_eq_to_generic_schema(eq)
+            self.assertEqual(transformed_eq, tt_schema_eq)
     
     def dtest_two_symbol_and_parens(self):
         pass

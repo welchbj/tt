@@ -26,15 +26,10 @@ class GenericFormatter(object):
         # TODO
         pass
     
-    def extract_symbols(self):
-        """Returns a list of the symbols in the passed Boolean equation.
-        All symbols are assumed to be uppercase and one character. 
-        All other characters are discarded in the processing of the equation.
-        The first symbols in the list is the result of the equation.
-        """
-        # TODO: more advanced logic in determining valid symbols
-        return [sym for sym in self.equation if sym.isalnum() and sym.isupper()]
-    
+    def display(self):
+        # TODO
+        pass    
+
     @abstractmethod
     def make_table(self):
         pass
