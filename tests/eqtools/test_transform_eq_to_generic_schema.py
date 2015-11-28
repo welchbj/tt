@@ -38,13 +38,55 @@ class TestTransformEqToGenericSchema(unittest.TestCase):
             transformed_eq = transform_eq_to_generic_schema(eq)
             self.assertEqual(transformed_eq, tt_schema_eq)
     
-    def dtest_two_symbol_and_parens(self):
+    def test_two_symbol_and_with_whitespaces(self):
+        logically_equivalent_eqs = ["F=A and         B",
+                                    "F =A         AND       B",
+                                    "F =            A&B",
+                                    "F=A&&            B",
+                                    "F=A/\\B"]
+        tt_schema_eq = "F=A&B"
+        for eq in logically_equivalent_eqs:
+            transformed_eq = transform_eq_to_generic_schema(eq)
+            self.assertEqual(transformed_eq, tt_schema_eq)
+    
+    def test_two_symbol_or(self):
+        logically_equivalent_eqs = ["F = A or B",
+                                    "F = A OR B",
+                                    "F = A | B",
+                                    "F = A || B",
+                                    "F = A \\/ B"]
+        tt_schema_eq = "F=A|B"
+        for eq in logically_equivalent_eqs:
+            transformed_eq = transform_eq_to_generic_schema(eq)
+            self.assertEqual(transformed_eq, tt_schema_eq)
+    
+    def test_two_symbol_or_with_whitespaces(self):
+        logically_equivalent_eqs = ["F= A     or              B",
+                                    "F =    A OR    B",
+                                    "F =               A|B",
+                                    "F =A ||               B",
+                                    "F =     A \\/       B"]
+        tt_schema_eq = "F=A|B"
+        for eq in logically_equivalent_eqs:
+            transformed_eq = transform_eq_to_generic_schema(eq)
+            self.assertEqual(transformed_eq, tt_schema_eq)
+    
+    def dtest_three_symbol_eq(self):
         pass
     
-    def dtest_two_symbol_or(self):
+    def dtest_three_symbol_eq_with_parens(self):
         pass
     
-    def dtest_two_symbol_or_parens(self):
+    def dtest_three_symbol_eq_with_whitespaces(self):
+        pass
+    
+    def dtest_four_symbol_eq(self):
+        pass
+    
+    def dtest_four_symbol_eq_with_parens(self):
+        pass
+    
+    def dtest_four_symbol_eq_with_whitespaces(self):
         pass
     
 if __name__ == "__main__":
