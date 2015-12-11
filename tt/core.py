@@ -24,9 +24,7 @@ def main(argv=None):
     program_name = os.path.basename(sys.argv[0])
     program_version = "v{version}".format(version=str(__version__))
     program_build_date = str(__updated__)
-    program_version_message = \
-        "{version}, {build}".format(version=program_version, 
-                                    build=program_build_date)
+    program_version_message = "{version}, {build}".format(version=program_version, build=program_build_date)
     program_license = "MIT"
     program_author = "Brian Welch"
     program_desc = """
@@ -98,7 +96,7 @@ def main(argv=None):
             
     except KeyboardInterrupt:
         return 0
-    except RuntimeError as e:
+    except RuntimeError:
         return 1
     except Exception as e:
         indent = len(program_name) * " "
