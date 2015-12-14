@@ -122,19 +122,6 @@ def extract_eq_symbols(eq):
             stored_syms.append(sym)
     return stored_syms
 
-def construct_sym_to_input_map(input_syms):
-    sym_to_input_map = {}
-
-    for sym in input_syms:
-        sym_to_input_map[sym] = []
-
-    input_array = list(itertools.product([0, 1], repeat=len(input_syms)))
-    for bool_tuple in input_array:
-        for i, sym in enumerate(input_syms):
-            sym_to_input_map[sym].append(bool_tuple[i])
-
-    return sym_to_input_map
-
 def replace_inputs(postfix_expr, inputs, input_vals):
     replaced_expr = postfix_expr
     for i, sym in enumerate(inputs):
