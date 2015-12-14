@@ -40,22 +40,22 @@ def bool_not(a, b):
     return not a
 
 def bool_and(a, b):
-    return a and b
+    return int(a and b)
 
 def bool_nand(a, b):
-    return not (a and b)
+    return int(a == b)
 
 def bool_xor(a, b):
-    return ((not a) and b) or (a and (not b))
+    return int(a != b)
 
-def bool_xnor(a,b):
-    return a == b
+def bool_xnor(a, b):
+    return int(a == b)
 
 def bool_or(a, b):
-    return a or b
+    return int(a or b)
 
 def bool_nor(a, b):
-    return not (a or b)
+    return int(not (a or b))
 
 # TODO: possibly allow users to make their own precedence maps in the future
 schema = {
@@ -67,3 +67,5 @@ schema = {
     "|" : BooleanOperator(Precedence.ZERO, bool_or, "or", "OR", "|", "||", "\\/"),
     "%" : BooleanOperator(Precedence.ZERO, bool_nor, "nor", "NOR")
 }
+
+schema_search_ordered_list = ["@", "+", "%", "$", "&", "|", "~"]
