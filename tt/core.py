@@ -3,6 +3,7 @@ import os
 import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
+from eqtools import print_truth_table
 
 __all__ = ['main']
 __version__ = 0.1
@@ -15,14 +16,14 @@ def main(argv=None):
         from the user input.    
     """
     if argv is None:
-        argv = sys.argv
+        argv = ["tt", '"F = A or B or C"']
     else:
         sys.argv.extend(argv)
 
     # program information
     program_source_control_url = "www.github.com/welchbj/tt"
     program_name = os.path.basename(sys.argv[0])
-    program_version = "v{version}".format(version=str(__version__))
+    program_version = "v{0}".format(str(__version__))
     program_build_date = str(__updated__)
     program_version_message = "{version}, {build}".format(version=program_version, build=program_build_date)
     program_license = "MIT"
@@ -39,7 +40,7 @@ def main(argv=None):
 
     try:
         # Setup argument parser
-        parser = ArgumentParser(description=program_desc, 
+        parser = ArgumentParser(description=program_desc,
                                 formatter_class=RawTextHelpFormatter)
         parser.add_argument("--version",
                             action="version",
@@ -91,17 +92,18 @@ def main(argv=None):
         else:
             # TODO
             pass
-        
-        print("equation: {eq}".format(eq=equation))
-            
+
+        print_truth_table(equation)
+
     except KeyboardInterrupt:
         return 0
     except RuntimeError:
         return 1
-    except Exception as e:
-        indent = len(program_name) * " "
-        sys.stderr.write("An unexpected error occurred.")
-        sys.stderr.write("Please notify the project maintainer at {url}".formart(url=program_source_control_url))
-        sys.stderr.write(program_name + ": " + repr(e) + "\n")
-        sys.stderr.write(indent + "  for help use --help")
-        return 2
+    #except Exception as e:
+    #    indent = len(program_name) * " "
+    #    print("An unexpected error occurred.\n",
+    #          "Please notify the project maintainer at" + program_source_control_url + "\n",
+    #          "Error info:\n",
+    #          program_name + ": " + repr(e) + "\n",
+    #          "for help use --help", sep="")
+    #    return 2
