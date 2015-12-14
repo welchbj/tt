@@ -1,5 +1,3 @@
-from enum import Enum
-
 class BooleanOperator(object):
 
 
@@ -30,12 +28,6 @@ class BooleanOperator(object):
     def __ne__(self, other):
         return self.precedence.__ne__(other.precedence)
 
-class Precedence(Enum):
-    ZERO = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
 def bool_not(a, b):
     return not a
 
@@ -57,15 +49,32 @@ def bool_or(a, b):
 def bool_nor(a, b):
     return int(not (a or b))
 
-# TODO: possibly allow users to make their own precedence maps in the future
-schema = {
-    "~" : BooleanOperator(Precedence.HIGH, bool_not, "not", "NOT", "~", "!"),
-    "+" : BooleanOperator(Precedence.MEDIUM, bool_xor, "xor", "XOR"),
-    "@" : BooleanOperator(Precedence.MEDIUM, bool_xnor, "xnor", "XNOR", "nxor", "NXOR"),
-    "&" : BooleanOperator(Precedence.LOW, bool_and, "and", "AND", "&", "&&", "/\\"),
-    "$" : BooleanOperator(Precedence.LOW, bool_nand, "nand", "NAND"),
-    "|" : BooleanOperator(Precedence.ZERO, bool_or, "or", "OR", "|", "||", "\\/"),
-    "%" : BooleanOperator(Precedence.ZERO, bool_nor, "nor", "NOR")
+# Define schema information
+
+precedence = {
+    "ZERO" : 0,
+    "LOW" : 1,
+    "MEDIUM" : 2,
+    "HIGH" : 3
 }
 
-schema_search_ordered_list = ["@", "+", "%", "$", "&", "|", "~"]
+SYM_NOT = "~"
+SYM_XOR = "+"
+SYM_XNOR = "@"
+SYM_AND = "&"
+SYM_NAND = "$"
+SYM_OR = "|"
+SYM_NOR = "%"
+
+# TODO: possibly allow users to make their own precedence maps in the future
+schema = {
+    SYM_NOT : BooleanOperator(precedence["HIGH"], bool_not, "not", "NOT", "~", "!"),
+    SYM_XOR : BooleanOperator(precedence["MEDIUM"], bool_xor, "xor", "XOR"),
+    SYM_XNOR : BooleanOperator(precedence["MEDIUM"], bool_xnor, "xnor", "XNOR", "nxor", "NXOR"),
+    SYM_AND : BooleanOperator(precedence["LOW"], bool_and, "and", "AND", "&", "&&", "/\\"),
+    SYM_NAND : BooleanOperator(precedence["LOW"], bool_nand, "nand", "NAND"),
+    SYM_OR : BooleanOperator(precedence["ZERO"], bool_or, "or", "OR", "|", "||", "\\/"),
+    SYM_NOR : BooleanOperator(precedence["ZERO"], bool_nor, "nor", "NOR")
+}
+
+schema_search_ordered_list = [SYM_XNOR, SYM_XOR, SYM_NOR, SYM_NAND, SYM_AND, SYM_OR, SYM_NOT]
