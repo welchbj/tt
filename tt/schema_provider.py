@@ -43,7 +43,7 @@ def bool_and(a, b):
     return int(a and b)
 
 def bool_nand(a, b):
-    return int(a == b)
+    return int(not (a and b))
 
 def bool_xor(a, b):
     return int(a != b)
