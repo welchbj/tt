@@ -1,6 +1,6 @@
+import logging as log
+
 class BooleanOperator(object):
-
-
     def __init__(self, precedence_in, bool_func_in, *args):
         self.precedence = precedence_in
         self.bool_func = bool_func_in
@@ -29,7 +29,12 @@ class BooleanOperator(object):
         return self.precedence.__ne__(other.precedence)
 
 def bool_not(a, b):
-    return not a
+    # this should never be called;
+    # not is implemented as xor w/ 1
+    log.fatal("Boolean not function was explicitly called.\n"
+              "This should not happen; not is implemented as xor with 1.\n"
+              "Cannot continue program execution.\n")
+    raise RuntimeError
 
 def bool_and(a, b):
     return int(a and b)

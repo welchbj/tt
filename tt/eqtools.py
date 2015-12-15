@@ -5,7 +5,7 @@ import logging as log
 import itertools
 
 from utils import without_spaces
-from schema_provider import schema, schema_search_ordered_list
+from schema_provider import schema, schema_search_ordered_list, SYM_NOT, SYM_XOR
 
 class EvaluationResultWrapper(object):
     def __init__(self, input_syms_in, output_sym_in):
@@ -36,7 +36,8 @@ def transform_eq_to_generic_schema(raw_eq):
     for tt_schema_sym in schema_search_ordered_list: # TODO: need to update to use new schema
         for sym in schema[tt_schema_sym].equivalent_symbols:
             if sym in transformed_eq:
-                transformed_eq = transformed_eq.replace(sym, tt_schema_sym)
+                replacement_sym = ("1"+SYM_XOR) if (tt_schema_sym == SYM_NOT) else tt_schema_sym
+                transformed_eq = transformed_eq.replace(sym, replacement_sym)
     return without_spaces(transformed_eq)
 
 def extract_output_sym_and_expr(eq):
@@ -82,18 +83,16 @@ def infix_to_postfix(infix):
                 postfix += stack.pop()
             stack.pop()
 
-    # TODO: check for remaining parens
     for c in reversed(stack):
         postfix += c
 
     return "".join(postfix)
 
 def is_valid_variable_symbol(sym):
-    # TODO: support for lowercase and checking of numeric symbols
     return len(sym) == 1 and sym.isalpha() and sym.isupper()
 
 def is_valid_eq_input(sym):
-    return len(sym) == 1 and sym.isalnum() and sym.isupper()
+    return is_valid_variable_symbol(sym) or str(sym) in ["0", "1"]
 
 def extract_eq_symbols(eq):
     '''Returns a list of the symbols in the passed Boolean equation.
