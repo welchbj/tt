@@ -8,8 +8,9 @@ class TestInfixToPostfix (unittest.TestCase):
             self.assertRaises(RuntimeError, infix_to_postfix, infix_expr)
         else:
             result_postfix = infix_to_postfix(infix_expr)
-            self.assertEqual(result_postfix, expected_postfix)
+            self.assertEqual(expected_postfix, result_postfix)
 
+    # === No-throw tests ===============================================================================================
     def test_simple_two_syms(self):
         self.infix_to_postfix_test_helper(
             infix_expr="A&B",
@@ -34,15 +35,16 @@ class TestInfixToPostfix (unittest.TestCase):
             expected_postfix="ABC&&"
         )
 
+    def test_simple_three_operands(self):
+        self.infix_to_postfix_test_helper(
+            infix_expr="A|B|C",
+            expected_postfix="ABC||"
+        )
+
+    # === Expect-throws tests ==========================================================================================
     def DISABLED_test_simple_uneven_parens(self):
         self.infix_to_postfix_test_helper(
             infix_expr="((A&B)",
             expected_postfix="AB&",
             expect_throws=True
-        )
-
-    def test_simple_three_operands(self):
-        self.infix_to_postfix_test_helper(
-            infix_expr="A|B|C",
-            expected_postfix="AB|C|"
         )
