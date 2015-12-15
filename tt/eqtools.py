@@ -23,9 +23,8 @@ def get_evaluation_result(raw_eq):
     postfix_expr = infix_to_postfix(expr)
 
     eval_result_wrapper = EvaluationResultWrapper(input_syms, output_sym)
-    num_evals = eval_result_wrapper.get_num_evaluations()
 
-    for input_row in input_combination_iter(num_evals):
+    for input_row in get_sym_input_array(input_syms):
         expr_to_eval = replace_inputs(postfix_expr, input_syms, input_row)
         result = eval_postfix_expr(expr_to_eval)
         eval_result_wrapper.result_list.append(str(result))
@@ -126,8 +125,8 @@ def eval_postfix_expr(expr_to_eval):
             stack.append(schema[c].bool_func(stack.pop(), stack.pop()))
     return stack[0]
 
-def input_combination_iter(num_inputs):
-    return itertools.product(["0", "1"], repeat=num_inputs)
+def get_sym_input_array(sym_list):
+    return itertools.product(["0", "1"], repeat=len(sym_list))
 
 def extract_eq_intermediates(eq):
     pass
