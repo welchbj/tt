@@ -3,7 +3,9 @@ import os
 import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
-from eqtools import print_truth_table
+
+from eqtools import get_evaluation_result
+from fmttools import TruthTablePrinter
 
 __all__ = ['main']
 __version__ = 0.1
@@ -89,11 +91,10 @@ def main(argv=None):
         elif intermediates:
             # TODO
             pass
-        else:
-            # TODO
-            pass
-
-        print_truth_table(equation)
+        else: # default to truth table generation
+            eval_result = get_evaluation_result(equation)
+            tt_printer = TruthTablePrinter(eval_result)
+            tt_printer.print_tt()
 
     except KeyboardInterrupt:
         return 0
