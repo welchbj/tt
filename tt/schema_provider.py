@@ -9,25 +9,6 @@ class BooleanOperator(object):
     def result(self, a, b):
         return self.bool_func(a, b)
 
-    # define rich-comparison operators
-    def __gt__(self, other):
-        return self.precedence.__gt__(other.precedence)
-    
-    def __ge__(self, other):
-        return self.precedence.__ge__(other.precedence)
-    
-    def __lt__(self, other):
-        return self.precedence.__lt__(other.precedence)
-    
-    def __le__(self, other):
-        return self.precedence.__le__(other.precedence)
-    
-    def __eq__(self, other):
-        return self.precedence.__eq__(other.precedence)
-    
-    def __ne__(self, other):
-        return self.precedence.__ne__(other.precedence)
-
 def bool_not(a, b):
     # this should never be called;
     # not is implemented as xor w/ 1

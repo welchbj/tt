@@ -75,7 +75,7 @@ def infix_to_postfix(infix):
             if not stack:
                 stack += c
             else:
-                while stack and stack[-1] != "(" and schema[stack[-1]] > schema[c]:
+                while stack and stack[-1] != "(" and schema[stack[-1]].precedence > schema[c].precedence:
                     postfix += stack.pop()
                 stack += c
         elif c == ")":
