@@ -7,45 +7,32 @@ import itertools
 from utils import without_spaces
 from schema_provider import schema, schema_search_ordered_list
 
-def print_truth_table(raw_eq):
+class EvaluationResultWrapper(object):
+    def __init__(self, input_syms_in, output_sym_in):
+        self.input_syms = input_syms_in
+        self.output_sym = output_sym_in
+        self.result_list = []
+
+    def get_num_evaluations(self):
+        return 2**len(self.input_syms)
+
+def get_evaluation_result(raw_eq):
     generic_schema_eq = transform_eq_to_generic_schema(raw_eq)
     output_sym, expr = extract_output_sym_and_expr(generic_schema_eq)
+    input_syms = sorted(extract_eq_symbols(expr))
     postfix_expr = infix_to_postfix(expr)
 
-    input_syms = sorted(extract_eq_symbols(expr))
-    num_inputs = len(input_syms)
+    eval_result_wrapper = EvaluationResultWrapper(input_syms, output_sym)
+    num_evals = eval_result_wrapper.get_num_evaluations()
 
-    input_val_list = list(itertools.product(["0", "1"], repeat=num_inputs))
-    result_list = []
-
-    for input_row in input_val_list:
+    for input_row in input_combination_iter(num_evals):
         expr_to_eval = replace_inputs(postfix_expr, input_syms, input_row)
         result = eval_postfix_expr(expr_to_eval)
-        result_list.append(str(result))
+        eval_result_wrapper.result_list.append(str(result))
 
-    title_row = table_rowify(itertools.chain(input_syms, output_sym))
-    fancy_row_separator = "+" + "+".join(itertools.repeat("---", len(input_syms) + 1)) + "+"
-    row_separator = "\n" + "-" * len(title_row) + "\n"
-
-    table_content = ""
-    for i, input_val_row in enumerate(input_val_list):
-        table_content += table_rowify(itertools.chain(input_val_row, result_list[i]))
-        table_content += "\n"
-
-    the_table = ""
-    the_table += fancy_row_separator + "\n"
-    the_table += title_row + "\n"
-    the_table += fancy_row_separator + "\n"
-    the_table += table_content
-    the_table += fancy_row_separator  + "\n"
-
-    print(the_table)
+    return eval_result_wrapper
 
 def transform_eq_to_generic_schema(raw_eq):
-    '''Receives a user-specified Boolean equation and attempts to transform it
-    to the generic Python boolean schema, using keywords and, or, not.
-    '''
-
     transformed_eq = raw_eq
     for tt_schema_sym in schema_search_ordered_list: # TODO: need to update to use new schema
         for sym in schema[tt_schema_sym].equivalent_symbols:
@@ -139,8 +126,8 @@ def eval_postfix_expr(expr_to_eval):
             stack.append(schema[c].bool_func(stack.pop(), stack.pop()))
     return stack[0]
 
-def table_rowify(syms):
-    return "| " + " | ".join(syms) + " |"
+def input_combination_iter(num_inputs):
+    return itertools.product(["0", "1"], repeat=num_inputs)
 
 def extract_eq_intermediates(eq):
     pass
