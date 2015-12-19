@@ -12,6 +12,7 @@ __all__ = ["BooleanOperator",
            "SYM_XNOR",
            "SYM_XOR"]
 
+
 class BooleanOperator(object):
     def __init__(self, precedence_in, bool_func_in, *args):
         self.precedence = precedence_in
@@ -30,10 +31,11 @@ tt_nor = lambda a, b: int(not tt_or(a, b))
 tt_xor = lambda a, b: int((not a and b) or (a and not b))
 tt_xnor = lambda a, b: int(not tt_xor(a, b))
 
-def tt_not_uncallable(a, b):
-    log.fatal("Boolean not function was explicitly called.\n" \
-              "This should not happen; not is implemented as xor with 1.\n" \
-              "Cannot continue program execution.\n")
+
+def uncallable(a, b):
+    log.fatal("Boolean not function was explicitly called. "
+              "This should not happen; not is implemented as xor with 1. "
+              "Cannot continue program execution.")
     raise RuntimeError
 
 # Define schema information
@@ -55,12 +57,12 @@ SYM_NOR = "%"
 
 # TODO: possibly allow users to make their own precedence maps in the future
 schema = {
-    SYM_NOT : BooleanOperator(precedence["HIGH"], tt_not_uncallable, "not", "NOT", "~", "!"),
+    SYM_NOT : BooleanOperator(precedence["HIGH"], uncallable, "not", "NOT", "~", "!"),
     SYM_XOR : BooleanOperator(precedence["MEDIUM"], tt_xor, "xor", "XOR"),
     SYM_XNOR : BooleanOperator(precedence["MEDIUM"], tt_xnor, "xnor", "XNOR", "nxor", "NXOR"),
-    SYM_AND : BooleanOperator(precedence["LOW"], tt_and, "and", "AND", "&", "&&", "/\\"),
+    SYM_AND : BooleanOperator(precedence["LOW"], tt_and, "and", "AND", "&&", "&", "/\\"),
     SYM_NAND : BooleanOperator(precedence["LOW"], tt_nand, "nand", "NAND"),
-    SYM_OR : BooleanOperator(precedence["ZERO"], tt_or, "or", "OR", "|", "||", "\\/"),
+    SYM_OR : BooleanOperator(precedence["ZERO"], tt_or, "or", "OR", "||", "|", "\\/"),
     SYM_NOR : BooleanOperator(precedence["ZERO"], tt_nor, "nor", "NOR")
 }
 

@@ -18,7 +18,7 @@ def main(argv=None):
         from the user input.    
     """
     if argv is None:
-        argv = ["tt", '"F = A or B or C"']
+        argv = ["tt", '"F = A and B"']
     else:
         sys.argv.extend(argv)
 
