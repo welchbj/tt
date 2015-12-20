@@ -6,17 +6,17 @@ import logging as log
 import itertools
 
 from utils import without_spaces
-from schema_provider import schema, schema_search_ordered_list, SYM_NOT, SYM_XOR
+from schema_provider import schema, schema_search_ordered_list
 
 
 class EvaluationResultWrapper(object):
-    def __init__(self, input_syms_in, output_sym_in):
-        self.input_syms = input_syms_in
-        self.output_sym = output_sym_in
+    def __init__(self, input_symbols, output_symbol):
+        self.input_symbols = input_symbols
+        self.output_symbols = output_symbol
         self.result_list = []
 
     def get_num_evaluations(self):
-        return 2**len(self.input_syms)
+        return 2**len(self.input_symbols)
 
 
 class BooleanExpressionWrapper(object):
@@ -74,41 +74,51 @@ class BooleanExpressionWrapper(object):
             elif c == ")":
                 right_paren_positions.append(curr_idx)
             else:
-                # decide if the character we are at is part of a variable or an operation
-                # TODO: need to account for Boolean not transformation
+                # TODO: need to do Boolean not transformation
                 is_operation = False
                 for tt_operation_symbol in schema_search_ordered_list:
-                    equivalent_symbols = schema[tt_operation_symbol].equivalent_symbols
-                    operator_lens = [len(equivalent_symbol) for equivalent_symbol in equivalent_symbols]
-                    for operator_idx, operator_len in enumerate(operator_lens):
-                        test_idx = curr_idx + operator_len
-                        if test_idx <= len(raw_infix_expr) and raw_infix_expr[curr_idx:test_idx] == equivalent_symbols[operator_idx]:
-                            is_operation = True
-                            raw_infix_expr = raw_infix_expr[:curr_idx] + tt_operation_symbol + raw_infix_expr[test_idx:]
+                    equivalent_symbols = schema[tt_operation_symbol].equivalent_symbols # assume this list is pre-ordered by length in the schema
+                    operation_symbol_lens = [len(equivalent_symbol) for equivalent_symbol in equivalent_symbols]
+                    test_idxs = [curr_idx+operation_symbol_len for operation_symbol_len in operation_symbol_lens]
+                    possible_matches = [raw_infix_expr[curr_idx:test_idx] for test_idx in test_idxs if test_idx <= len(raw_infix_expr)]
+                    matches = [possible_match for operation_symbol, possible_match in zip(equivalent_symbols, possible_matches) if operation_symbol == possible_match]
+
+                    if matches:
+                        match = matches[0]
+                        matched_idx = possible_matches.index(match)
+                        replacement_idx = test_idxs[matched_idx]
+
+                        if replacement_idx == len(raw_infix_expr):
+                            log.error("Boolean equation ended with an operation. Its last scope must end with an operand.")
+                            raise GrammarException
+
+                        if match[-1].isalpha() and raw_infix_expr[replacement_idx] not in [" ", "("]:
+                            # this is just an operand that begins with one of the tt schema symbols;
+                            # we can break out of this because no operation symbols for different operation
+                            # start with another symbol
                             break
-                    if is_operation:
+
+                        raw_infix_expr = raw_infix_expr[:curr_idx] + tt_operation_symbol + raw_infix_expr[replacement_idx:]
+                        is_operation = True
                         break
                 if not is_operation:
-                    # if it is not an operator, look for operand (either variable name or binary input
                     if c.isalpha(): # operand names must start with letter
                         # parse the variable name
                         test_idx = curr_idx + 1
-                        while test_idx < len(raw_infix_expr) and is_valid_operand_name_non_leading_char(raw_infix_expr[test_idx]):
+                        while test_idx < len(raw_infix_expr) and is_valid_operand_char_non_leading(raw_infix_expr[test_idx]):
                             test_idx += 1
+
                         var_name = raw_infix_expr[curr_idx:test_idx]
-                        # TODO: check if var name contains Boolean operator value?
-                        # TODO: check for symbols already in the map
                         unique_symbol = self.get_unique_symbol(var_name)
                         raw_infix_expr = raw_infix_expr[:curr_idx] + unique_symbol + raw_infix_expr[test_idx:]
                     elif c in ["0", "1"]:
                         pass
                     else:
-                        # error: invalid symbol
                         log.error("TEMP ERROR MSG: Invalid symbol")
-                    prev_char_is_operand = True
             curr_idx += 1
 
         # TODO: Check parentheses
+        # Syntax checking is done in a post-processing of the condensed expression
 
         return without_spaces(raw_infix_expr)
 
@@ -255,8 +265,11 @@ def get_sym_input_array(sym_list):
 
 
 # === Grammar-related rules ============================================================================================
-def is_valid_operand_name_non_leading_char(c):
+def is_valid_operand_char_non_leading(c):
     return c == "_" or c.isalnum()
+
+def is_non_item_changing_char(c):
+    pass
 
 
 # === Custom exception types ===========================================================================================
@@ -268,5 +281,5 @@ class EmptyScopeException(Exception):
     pass
 
 
-class MalformedOperationException(Exception):
+class GrammarException(Exception):
     pass
