@@ -4,7 +4,7 @@ design patterns.
 """
 
 import itertools
-from eqtools import get_sym_input_array
+from eqtools import get_symbol_input_array
 
 __all__ = []
 
@@ -43,7 +43,7 @@ class TruthTablePrinter(object):
         print(fancy_row_sep)
 
         results = self.eval_result_wrapper.result_list
-        for i, input_row in enumerate(get_sym_input_array(input_syms)):
+        for i, input_row in enumerate(get_symbol_input_array(input_syms)):
             print(self.table_rowify(itertools.chain(input_row, results[i])))
 
         print(fancy_row_sep)

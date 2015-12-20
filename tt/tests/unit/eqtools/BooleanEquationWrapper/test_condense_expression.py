@@ -1,6 +1,9 @@
 import unittest
 
-from eqtools import BooleanExpressionWrapper
+from eqtools import BooleanEquationWrapper, \
+                    UnbalancedParenException, \
+                    EmptyScopeException, \
+                    GrammarException
 
 
 class TestCondenseExpression(unittest.TestCase):
@@ -11,24 +14,17 @@ class TestCondenseExpression(unittest.TestCase):
 
     # === Helper methods ===============================================================================================
     def helper_no_throw_test_condense_expression(self, raw_expr="", expected_expr="", expected_symbol_mapping={}):
-        bool_expr_wrapper = BooleanExpressionWrapper(raw_expr)
+        bool_expr_wrapper = BooleanEquationWrapper("F = " + raw_expr)
         condensed_expr = bool_expr_wrapper.condensed_infix_expr
         symbol_mapping = bool_expr_wrapper.unique_symbol_to_var_name_dict
 
         self.assertEqual(expected_expr, condensed_expr)
         self.assertDictEqual(expected_symbol_mapping, symbol_mapping)
 
+    def helper_does_throw_test_condense_expression(self, exception_class=None, bad_expr=""):
+        self.assertRaises(exception_class, BooleanEquationWrapper, "F = " + bad_expr)
+
     # === No-throw tests ===============================================================================================
-    # No-throw test template:
-    #
-    # def test_(self):
-    #     self.helper_no_throw_test_condense_expression(
-    #         raw_expr="",
-    #         expected_expr="",
-    #         expected_symbol_mapping={
-    #
-    #         }
-    #     )
     def test_simple_and(self):
         self.helper_no_throw_test_condense_expression(
             raw_expr="operand1 and operand2",
@@ -179,7 +175,7 @@ class TestCondenseExpression(unittest.TestCase):
 
     def test_operations_with_similar_symbols_or(self):
         self.helper_no_throw_test_condense_expression(
-            raw_expr="AN and ND nand NAN and a_and or ANDAND",
+            raw_expr="AN and ND nand NAN and a_and and ANDAND",
             expected_expr="A&B$C&D&E",
             expected_symbol_mapping={
                 "A": "AN",
@@ -230,8 +226,55 @@ class TestCondenseExpression(unittest.TestCase):
             }
         )
 
+    def test_not_one_operand(self):
+        self.helper_no_throw_test_condense_expression(
+            raw_expr="not operand",
+            expected_expr="1+A",
+            expected_symbol_mapping={
+                "A": "operand"
+            }
+        )
+
     # === Expect-throws tests ==========================================================================================
 
+    def test_only_two_operands(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="operand1 operand2"
+        )
 
+    def test_only_one_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="or"
+        )
 
-    # TEST: "F = 11"
+    def test_only_two_operations(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="or and"
+        )
+
+    def test_only_three_operations(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="and or and"
+        )
+
+    def test_operation_with_only_leading_operand(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="operand or"
+        )
+
+    def test_operation_with_only_trailing_operand(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="or operand"
+        )
+
+    def test_chained_unbalanced_operations(self):
+        self.helper_does_throw_test_condense_expression(
+            exception_class=GrammarException,
+            bad_expr="op1 and op2 and op3 and op4 and"
+        )
