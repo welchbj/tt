@@ -25,12 +25,11 @@ class BooleanEquationWrapper(object):
     def __init__(self, raw_bool_eq):
         self.unique_symbols_left = list(reversed("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
         self.unique_symbol_to_var_name_dict = {}
-
-        self.output_symbol, self.infix_expr = extract_output_sym_and_expr(raw_bool_eq)
         self.pos_to_condensed_magnitude_map = {}
 
+        self.output_symbol, self.infix_expr = extract_output_sym_and_expr(raw_bool_eq)
         self.condensed_infix_expr = self.condense_expression(self.infix_expr)
-        self.postfix_expr = self.infix_to_postfix(self.condensed_infix_expr)
+        self.postfix_expr = infix_to_postfix(self.condensed_infix_expr, self.get_unique_symbol_list())
 
     def get_input_symbol_list(self):
         """
@@ -170,8 +169,7 @@ class BooleanEquationWrapper(object):
         if left_paren_pos_stack:
             raise UnbalancedParenError(self.infix_expr, self.get_expanded_position(left_paren_pos_stack[0]), "Unbalanced left parentheses.")
 
-        while SYM_NOT in condensed_expr:
-            condensed_expr = condensed_expr.replace(SYM_NOT, "1" + SYM_XOR)
+        condensed_expr = condensed_expr.replace(SYM_NOT, "1" + SYM_XOR)
 
         return without_spaces(condensed_expr)
 
@@ -179,39 +177,51 @@ class BooleanEquationWrapper(object):
         offset = sum([mag for pos, mag in self.pos_to_condensed_magnitude_map.items() if pos < at_pos])
         return offset + at_pos
 
-    def infix_to_postfix(self, infix_expr):
-        stack = []
-        postfix = []
-        operators = schema.keys()
 
-        for c in infix_expr:
-            if c in self.get_unique_symbol_list() or c in ["0", "1"]:
-                postfix += c
-            elif c == "(":
-                stack += c
-            elif c in operators:
-                if not stack:
-                    stack += c
-                else:
-                    while stack and stack[-1] != "(" and schema[stack[-1]].precedence > schema[c].precedence:
-                        postfix += stack.pop()
-                    stack += c
-            elif c == ")":
-                while stack and stack[-1] != "(":
-                    postfix += stack.pop()
-                stack.pop()
+def infix_to_postfix(infix_expr, symbol_list):
+    """
+    Convert the passed infix expression into its postfix form, for easier evaluation later on in the program flow.
+    Uses the Shunting-yard Algorithm.
 
-        for c in reversed(stack):
+    Args:
+        infix_expr: A string infix expression, containing any operations in the schema except for Boolean not. It is
+                    assumed that infix_expr is the result of a call to condense_expr.
+        symbol_list: The list of single-character string symbols existing in infix_expr.
+
+    Returns:
+        The equivalent postfix expression to infix_expr, as a string.
+    """
+    stack = []
+    postfix = []
+    operators = schema.keys()
+
+    for c in infix_expr:
+        if c in symbol_list or c in ["0", "1"]:
             postfix += c
+        elif c == "(":
+            stack += c
+        elif c in operators:
+            if not stack:
+                stack += c
+            else:
+                while stack and stack[-1] != "(" and schema[stack[-1]].precedence > schema[c].precedence:
+                    postfix += stack.pop()
+                stack += c
+        elif c == ")":
+            while stack and stack[-1] != "(":
+                postfix += stack.pop()
+            stack.pop()
 
-        return "".join(postfix)
+    for c in reversed(stack):
+        postfix += c
+
+    return "".join(postfix)
 
 
 def extract_output_sym_and_expr(eq):
     """
-    Split the passed boolean equation on its equals sign into the output symbol and its equivalent boolean expression.
+    Split the passed Boolean equation on its equals sign into the output symbol and its equivalent boolean expression.
     Look for errors involving the absence of or multiple equals signs.
-    Warn about an improperly formatted output symbol.
 
     Args:
         eq: The boolean expression to split.
@@ -238,7 +248,7 @@ def extract_output_sym_and_expr(eq):
 
 def replace_inputs(postfix_expr, inputs, input_vals):
     """
-    Replace the inputs in a postfix expression string to be evaluated.
+    Replace the inputs in a postfix expression string to later be evaluated.
 
     Args:
         postfix_expr: The postfix expression to be evaluated, as a string.
@@ -248,7 +258,6 @@ def replace_inputs(postfix_expr, inputs, input_vals):
     Returns:
         A string postfix expression with the symbols in inputs replaced with the values in input_vals.
         For example:
-
         >>> replace_inputs("AB&", ["A", "B"], ["0", "1"])
         >>> '01&'
     """
@@ -259,6 +268,16 @@ def replace_inputs(postfix_expr, inputs, input_vals):
 
 
 def eval_postfix_expr(expr_to_eval):
+    """
+    Evaluate the passed postfix expression.
+
+    Args:
+        expr_to_eval: A string postfix expression, containing only 0s, 1s, and single character operations. Assumed to
+                      be well-formed.
+
+    Returns:
+        The result of the evaluation, as int 0 or 1.
+    """
     stack = []
     for c in expr_to_eval:
         if c in ["0", "1"]:
