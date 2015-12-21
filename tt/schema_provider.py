@@ -33,7 +33,7 @@ tt_xnor = lambda a, b: int(not tt_xor(a, b))
 
 
 def uncallable(a, b):
-    log.fatal("Boolean not function was explicitly called. "
+    log.critical("Boolean not function was explicitly called. "
               "This should not happen; not is implemented as xor with 1. "
               "Cannot continue program execution.")
     raise RuntimeError
