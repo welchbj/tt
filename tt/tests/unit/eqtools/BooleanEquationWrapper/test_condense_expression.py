@@ -1,28 +1,32 @@
 import unittest
 
 from eqtools import BooleanEquationWrapper, \
-                    UnbalancedParenException, \
-                    EmptyScopeException, \
-                    GrammarException
+                    ExpressionOrderError, \
+                    BadParenPositionError, \
+                    UnbalancedParenError, \
+                    BadSymbolError
 
 
 class TestCondenseExpression(unittest.TestCase):
-    """
-    Areas that still need increased test coverage:
-        .
-    """
 
     # === Helper methods ===============================================================================================
     def helper_no_throw_test_condense_expression(self, raw_expr="", expected_expr="", expected_symbol_mapping={}):
-        bool_expr_wrapper = BooleanEquationWrapper("F = " + raw_expr)
-        condensed_expr = bool_expr_wrapper.condensed_infix_expr
-        symbol_mapping = bool_expr_wrapper.unique_symbol_to_var_name_dict
+        bool_equation_wrapper = BooleanEquationWrapper("F = " + raw_expr)
+        condensed_expr = bool_equation_wrapper.condensed_infix_expr
+        symbol_mapping = bool_equation_wrapper.unique_symbol_to_var_name_dict
 
         self.assertEqual(expected_expr, condensed_expr)
         self.assertDictEqual(expected_symbol_mapping, symbol_mapping)
 
-    def helper_does_throw_test_condense_expression(self, exception_class=None, bad_expr=""):
-        self.assertRaises(exception_class, BooleanEquationWrapper, "F = " + bad_expr)
+    def helper_does_throw_test_condense_expression(self, bad_expr="", exception_class=None, expected_error_pos=0):
+        try:
+            bool_expr_wrapper = BooleanEquationWrapper("F = " + bad_expr)
+        except exception_class as e:
+            self.assertEqual(expected_error_pos, e.error_pos)
+        except:
+            self.fail("Wrong type of exception raised.")
+        else:
+            self.fail("No exception raised.")
 
     # === No-throw tests ===============================================================================================
     def test_simple_and(self):
@@ -236,45 +240,205 @@ class TestCondenseExpression(unittest.TestCase):
         )
 
     # === Expect-throws tests ==========================================================================================
-
-    def test_only_two_operands(self):
+    def test_one_operation_plain_english(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="operand1 operand2"
+            bad_expr="nand",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=0
         )
 
-    def test_only_one_operation(self):
+    def test_one_operation_plain_english_not(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="or"
+            bad_expr="not",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=0
+        )
+
+    def test_one_operation_symbolic(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="&",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=0
+        )
+
+    def test_one_operation_symbolic_not(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="!",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=0
         )
 
     def test_only_two_operations(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="or and"
+            bad_expr="or or",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=0
         )
 
     def test_only_three_operations(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="and or and"
+            bad_expr="or and or",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=0
         )
 
-    def test_operation_with_only_leading_operand(self):
+    def test_only_two_operands(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="operand or"
+            bad_expr="op1 operand2",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=4
         )
 
-    def test_operation_with_only_trailing_operand(self):
+    def test_only_two_operands_with_not(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="or operand"
+            bad_expr="not and",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=4
         )
 
-    def test_chained_unbalanced_operations(self):
+    def test_only_three_operands(self):
         self.helper_does_throw_test_condense_expression(
-            exception_class=GrammarException,
-            bad_expr="op1 and op2 and op3 and op4 and"
+            bad_expr="operand1 op2 operand3",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=9
+        )
+
+    def test_trailing_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="op1 and op2 or",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=12
+        )
+
+    def test_chained_nots_trailing_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="not not not not not not nor",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=24
+        )
+
+    def test_trailing_operation_not(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="op1 and op2 or not",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=15
+        )
+
+    def test_extra_leading_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="op1 op2 and op3",
+            exception_class=ExpressionOrderError,
+            expected_error_pos=4
+        )
+
+    def test_one_bad_symbol(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="*",
+            exception_class=BadSymbolError,
+            expected_error_pos=0
+        )
+
+    def test_bad_symbol_leading_underscore(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="_A and B",
+            exception_class=BadSymbolError,
+            expected_error_pos=0
+        )
+
+    def test_bad_symbol_within_operand(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="operand_*1 and operand2",
+            exception_class=BadSymbolError,
+            expected_error_pos=8
+        )
+
+    def test_bad_symbol_trailing_operand(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="operand1 and operand2%",
+            exception_class=BadSymbolError,
+            expected_error_pos=21
+        )
+
+    def test_bad_symbol_in_middle_of_expression_no_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="operand1 * operand2",
+            exception_class=BadSymbolError,
+            expected_error_pos=9
+        )
+
+    def test_bad_symbol_in_middle_of_expression_with_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="operand1 and * operand2",
+            exception_class=BadSymbolError,
+            expected_error_pos=13
+        )
+
+    def test_bad_symbol_leading_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="op1 $and op2",
+            exception_class=BadSymbolError,
+            expected_error_pos=4
+        )
+
+    def test_bad_symbol_trailing_operation(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="op1 and$ op2",
+            exception_class=BadSymbolError,
+            expected_error_pos=7
+        )
+
+    def test_unbalanced_left_paren_single_variable(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="((A)",
+            exception_class=UnbalancedParenError,
+            expected_error_pos=0
+        )
+
+    def test_unbalanced_right_paren_single_variable(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="(A))",
+            exception_class=UnbalancedParenError,
+            expected_error_pos=3
+        )
+
+    def test_unbalanced_left_paren_containing_balanced_parentheses(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="( ( (A and B) or (C and D) )",
+            exception_class=UnbalancedParenError,
+            expected_error_pos=0
+        )
+
+    def test_unbalanced_right_paren_containing_balanced_parentheses(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="( (A and B) or (C and D) ) )",
+            exception_class=UnbalancedParenError,
+            expected_error_pos=27
+        )
+
+    def test_empty_paren_scope(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="()",
+            exception_class=BadParenPositionError,
+            expected_error_pos=1
+        )
+
+    def test_concentric_empty_paren_scope(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="(())",
+            exception_class=BadParenPositionError,
+            expected_error_pos=2
+        )
+
+    def test_empty_paren_scope_in_expression(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="op1 and ()",
+            exception_class=BadParenPositionError,
+            expected_error_pos=9
+        )
+
+    def test_empty_paren_scope_in_expression_within_parens(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr="(op1 and ())",
+            exception_class=BadParenPositionError,
+            expected_error_pos=10
         )
