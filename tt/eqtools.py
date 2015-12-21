@@ -5,6 +5,8 @@ A module for extracting and manipulating information from Boolean equations.
 import logging as log
 import itertools
 
+from enum import Enum
+
 from utils import without_spaces
 from schema_provider import schema, schema_search_ordered_list, SYM_NOT, SYM_XOR
 
@@ -25,6 +27,7 @@ class BooleanEquationWrapper(object):
         self.unique_symbol_to_var_name_dict = {}
 
         self.output_symbol, self.infix_expr = extract_output_sym_and_expr(raw_bool_eq)
+        self.pos_to_condensed_magnitude_map = {}
 
         self.condensed_infix_expr = self.condense_expression(self.infix_expr)
         self.postfix_expr = self.infix_to_postfix(self.condensed_infix_expr)
@@ -58,8 +61,8 @@ class BooleanEquationWrapper(object):
     def get_evaluation_result(self):
         eval_result_wrapper = EvaluationResultWrapper(self.get_input_symbol_list(), self.output_symbol)
 
-        input_symbols = self.unique_symbol_list()
-        for input_row in get_symbol_input_array(self.input_symbols()):
+        input_symbols = self.get_unique_symbol_list()
+        for input_row in get_symbol_input_array(input_symbols):
             expr_to_eval = replace_inputs(self.postfix_expr, input_symbols, input_row)
             result = eval_postfix_expr(expr_to_eval)
             eval_result_wrapper.result_list.append(str(result))
@@ -67,24 +70,10 @@ class BooleanEquationWrapper(object):
         return eval_result_wrapper
 
     def condense_expression(self, raw_infix_expr):
-        # TODO: doc
-        """
-
-        Args:
-            raw_infix_expr:
-
-        Returns:
-
-        """
-
-        # TODO: need to check for consecutive symbols
         condensed_expr = raw_infix_expr
         curr_idx = 0
-        prev_char_is_operand = False
         left_paren_positions = []
         right_paren_positions = []
-        operand_positions = []
-        operation_positions = []
 
         while curr_idx < len(condensed_expr):
             c = condensed_expr[curr_idx].strip()
@@ -95,13 +84,12 @@ class BooleanEquationWrapper(object):
             elif c == ")":
                 right_paren_positions.append(curr_idx)
             else:
-                # TODO: need to do Boolean not transformation
                 is_operation = False
                 for tt_operation_symbol in schema_search_ordered_list:
-                    equivalent_symbols = schema[tt_operation_symbol].equivalent_symbols # assume this list is pre-ordered by length in the schema
+                    equivalent_symbols = schema[tt_operation_symbol].equivalent_symbols  # assume this list is pre-ordered by length in the schema
                     operation_symbol_lens = [len(equivalent_symbol) for equivalent_symbol in equivalent_symbols]
                     test_idxs = [curr_idx+operation_symbol_len for operation_symbol_len in operation_symbol_lens]
-                    possible_matches = [condensed_expr[curr_idx:test_idx] for test_idx in test_idxs if test_idx <= len(condensed_expr)]
+                    possible_matches = [condensed_expr[curr_idx:test_idx] if test_idx <= len(condensed_expr) else "" for test_idx in test_idxs]
                     matches = [possible_match for operation_symbol, possible_match in zip(equivalent_symbols, possible_matches) if operation_symbol == possible_match]
 
                     if matches:
@@ -113,18 +101,11 @@ class BooleanEquationWrapper(object):
                             if match[-1].isalpha() and condensed_expr[replacement_idx] not in [" ", "("]:
                                 # this is just an operand that begins with one of the tt schema symbols;
                                 # we can break out of this because no operation symbols for different operations
-                                # start with another symbol
+                                # start with the same character sequence as another symbol
                                 break
 
-                        expr_kept_leading = condensed_expr[:curr_idx]
-                        expr_kept_trailing = condensed_expr[replacement_idx:]
-                        if tt_operation_symbol == SYM_NOT:
-                            replacement_symbol = "1" + SYM_XOR
-                            curr_idx += 1
-                        else:
-                            replacement_symbol = tt_operation_symbol
-
-                        condensed_expr = expr_kept_leading + replacement_symbol + expr_kept_trailing
+                        self.pos_to_condensed_magnitude_map[curr_idx] = len(match) - len(tt_operation_symbol)
+                        condensed_expr = condensed_expr[:curr_idx] + tt_operation_symbol + condensed_expr[replacement_idx:]
                         is_operation = True
                         break
 
@@ -138,65 +119,73 @@ class BooleanEquationWrapper(object):
                         var_name = condensed_expr[curr_idx:test_idx]
                         unique_symbol = self.get_unique_symbol(var_name)
                         condensed_expr = condensed_expr[:curr_idx] + unique_symbol + condensed_expr[test_idx:]
+                        self.pos_to_condensed_magnitude_map[curr_idx] = len(var_name) - len(unique_symbol)
                     elif c in ["0", "1"]:
                         pass
                     else:
-                        log.error("TEMP ERROR MSG: Invalid symbol")
+                        raise BadSymbolError(self.infix_expr, self.get_expanded_position(curr_idx), "Invalid symbol.")
             curr_idx += 1
 
-        # Extensive syntax checking is done in a post-processing of the condensed expression
+        # Syntax checking is done in a post-processing of the condensed expression
+
+        class NextValidState(Enum):
+            OPERAND = 0
+            OPERATION = 1
+
         left_paren_pos_stack = []
-        operand_pos_list = []
-        operation_pos_list = []
+        next_state = NextValidState.OPERAND
         for pos, c in enumerate(condensed_expr):
             if not c.strip():
                 continue
             elif c == "(":
-                left_paren_pos_stack.append(pos)
-            elif c == ")":
-                if not left_paren_pos_stack:
-                    # TODO: log message
-                    raise UnbalancedParenException
+                if next_state != NextValidState.OPERAND:
+                    raise BadParenPositionError(self.infix_expr, self.get_expanded_position(pos), "Unexpected parenthesis.")
                 else:
-                    left_paren_pos_stack.pop()
+                    left_paren_pos_stack.append(pos)
+            elif c == ")":
+                if next_state != NextValidState.OPERATION:
+                    raise BadParenPositionError(self.infix_expr, self.get_expanded_position(pos), "Unexpected parenthesis.")
+                else:
+                    if not left_paren_pos_stack:
+                        raise UnbalancedParenError(self.infix_expr, self.get_expanded_position(pos), "Unbalanced right parenthesis.")
+                    else:
+                        left_paren_pos_stack.pop()
             elif c in self.get_unique_symbol_list() or c in ["0", "1"]:
-                operand_pos_list.append(pos)
+                if next_state != NextValidState.OPERAND:
+                    raise ExpressionOrderError(self.infix_expr, self.get_expanded_position(pos), "Unexpected operand.")
+                else:
+                    next_state = NextValidState.OPERATION
             else:
-                # assume we replaced correctly above and c must be an operation symbol
-                operation_pos_list.append(pos)
+                if pos == len(condensed_expr) - 1:
+                    raise ExpressionOrderError(self.infix_expr, self.get_expanded_position(pos), "Unexpected operation.")
+                elif c == SYM_NOT:
+                    if next_state != NextValidState.OPERAND:
+                        raise ExpressionOrderError(self.infix_expr, self.get_expanded_position(pos), "Unexpected operation.")
+                else:
+                    if next_state != NextValidState.OPERATION:
+                        raise ExpressionOrderError(self.infix_expr, self.get_expanded_position(pos), "Unexpected operation.")
+                    else:
+                        next_state = NextValidState.OPERAND
 
         if left_paren_pos_stack:
-            # TODO: log message
-            raise UnbalancedParenException
+            raise UnbalancedParenError(self.infix_expr, self.get_expanded_position(left_paren_pos_stack[0]), "Unbalanced left parentheses.")
 
-        if len(operand_pos_list) - len(operation_pos_list) != 1:
-            # TODO: log message
-            raise GrammarException
-
-        for operand_pos, operation_pos in itertools.zip_longest(operand_pos_list, operation_pos_list, fillvalue=float("inf")):
-            if operand_pos > operation_pos:
-                # TODO: log message
-                raise GrammarException
+        while SYM_NOT in condensed_expr:
+            condensed_expr = condensed_expr.replace(SYM_NOT, "1" + SYM_XOR)
 
         return without_spaces(condensed_expr)
 
+    def get_expanded_position(self, at_pos):
+        offset = sum([mag for pos, mag in self.pos_to_condensed_magnitude_map.items() if pos < at_pos])
+        return offset + at_pos
+
     def infix_to_postfix(self, infix_expr):
-        """
-        Convert the passed infix expression into its equivalent postfix form. The Shunting-Yard Algorithm is used to
-        perform this conversion.
-
-        Args:
-            infix_expr: The Boolean expression to convert in infix form, as a string.
-
-        Returns:
-            A BooleanEquationWrapper instance filled with the infix and postfix representations of the expression
-        """
         stack = []
         postfix = []
         operators = schema.keys()
 
         for c in infix_expr:
-            if c in self.get_unique_symbol_list():
+            if c in self.get_unique_symbol_list() or c in ["0", "1"]:
                 postfix += c
             elif c == "(":
                 stack += c
@@ -243,7 +232,7 @@ def extract_output_sym_and_expr(eq):
         log.error("More than one equals sign (\"=\") found in your equation. Cannot continue program execution.")
         raise RuntimeError
 
-    output_sym, expr = output_and_expr[0], output_and_expr[1]
+    output_sym, expr = output_and_expr[0].strip(), output_and_expr[1].strip()
     return output_sym, expr
 
 
@@ -289,13 +278,30 @@ def is_valid_operand_char_non_leading(c):
 
 
 # === Custom exception types ===========================================================================================
-class UnbalancedParenException(Exception):
+class GrammarError(Exception):
+    def __init__(self, expr_or_equation, error_pos, message, *args):
+        self.expr_or_equation = expr_or_equation
+        self.error_pos = error_pos
+        self.message = message
+        super(GrammarError, self).__init__(self.message, *args)
+
+    def log(self):
+        log.error(self.message)
+        log.error(self.expr_or_equation)
+        log.error(" " * self.error_pos + "^")
+
+
+class BadSymbolError(GrammarError):
     pass
 
 
-class EmptyScopeException(Exception):
+class ExpressionOrderError(GrammarError):
     pass
 
 
-class GrammarException(Exception):
+class BadParenPositionError(GrammarError):
+    pass
+
+
+class UnbalancedParenError(GrammarError):
     pass
