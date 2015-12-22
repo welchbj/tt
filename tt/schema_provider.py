@@ -1,3 +1,8 @@
+"""
+A module containing information about the symbols used in intermediate
+transformations of Boolean equations in the scheme used by tt.
+"""
+
 import logging as log
 
 __all__ = ["BooleanOperator",
@@ -13,7 +18,7 @@ __all__ = ["BooleanOperator",
            "SYM_XOR"]
 
 
-# === Wrapper Classes ==================================================================================================
+# === Wrapper Classes =========================================================
 class BooleanOperator(object):
     def __init__(self, precedence_in, bool_func_in, *args):
         self.precedence = precedence_in
@@ -24,7 +29,7 @@ class BooleanOperator(object):
         return self.bool_func(a, b)
 
 
-# === Boolean Functions ================================================================================================
+# === Boolean Functions =======================================================
 def tt_and(a, b):
     return int(a and b)
 
@@ -56,12 +61,12 @@ def tt_uncallable(a, b):
     raise RuntimeError
 
 
-# === Schema Information ===============================================================================================
+# === Schema Information ======================================================
 precedence = {
-    "ZERO" : 0,
-    "LOW" : 1,
-    "MEDIUM" : 2,
-    "HIGH" : 3
+    "ZERO": 0,
+    "LOW": 1,
+    "MEDIUM": 2,
+    "HIGH": 3
 }
 
 SYM_NOT = "~"
@@ -73,13 +78,33 @@ SYM_OR = "|"
 SYM_NOR = "%"
 
 schema = {
-    SYM_NOT : BooleanOperator(precedence["HIGH"], tt_uncallable, "not", "NOT", "~", "!"),
-    SYM_XOR : BooleanOperator(precedence["MEDIUM"], tt_xor, "xor", "XOR"),
-    SYM_XNOR : BooleanOperator(precedence["MEDIUM"], tt_xnor, "xnor", "XNOR", "nxor", "NXOR"),
-    SYM_AND : BooleanOperator(precedence["LOW"], tt_and, "and", "AND", "&&", "&", "/\\"),
-    SYM_NAND : BooleanOperator(precedence["LOW"], tt_nand, "nand", "NAND"),
-    SYM_OR : BooleanOperator(precedence["ZERO"], tt_or, "or", "OR", "||", "|", "\\/"),
-    SYM_NOR : BooleanOperator(precedence["ZERO"], tt_nor, "nor", "NOR")
+    SYM_NOT: BooleanOperator(precedence["HIGH"],
+                             tt_uncallable,
+                             "not", "NOT", "~", "!"),
+    SYM_XOR: BooleanOperator(precedence["MEDIUM"],
+                             tt_xor,
+                             "xor", "XOR"),
+    SYM_XNOR: BooleanOperator(precedence["MEDIUM"],
+                              tt_xnor,
+                              "xnor", "XNOR", "nxor", "NXOR"),
+    SYM_AND: BooleanOperator(precedence["LOW"],
+                             tt_and,
+                             "and", "AND", "&&", "&", "/\\"),
+    SYM_NAND: BooleanOperator(precedence["LOW"],
+                              tt_nand,
+                              "nand", "NAND"),
+    SYM_OR: BooleanOperator(precedence["ZERO"],
+                            tt_or,
+                            "or", "OR", "||", "|", "\\/"),
+    SYM_NOR: BooleanOperator(precedence["ZERO"],
+                             tt_nor,
+                             "nor", "NOR")
 }
 
-schema_search_ordered_list = [SYM_XNOR, SYM_XOR, SYM_NOR, SYM_NAND, SYM_AND, SYM_OR, SYM_NOT]
+schema_search_ordered_list = [SYM_XNOR,
+                              SYM_XOR,
+                              SYM_NOR,
+                              SYM_NAND,
+                              SYM_AND,
+                              SYM_OR,
+                              SYM_NOT]

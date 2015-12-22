@@ -5,11 +5,13 @@ from eqtools import infix_to_postfix
 
 class TestInfixToPostfix(unittest.TestCase):
 
-    # === Helper methods ===============================================================================================
-    def helper_infix_to_postfix(self, infix_expr="", symbol_list=[], expected_postfix_expr=""):
-        self.assertEqual(expected_postfix_expr, infix_to_postfix(infix_expr, symbol_list))
+    # === Helper methods ======================================================
+    def helper_infix_to_postfix(self, infix_expr="", symbol_list=[],
+                                expected_postfix_expr=""):
+        self.assertEqual(expected_postfix_expr,
+                         infix_to_postfix(infix_expr, symbol_list))
 
-    # === Tests ========================================================================================================
+    # === Tests ===============================================================
     def test_one_operand_symbolic(self):
         self.helper_infix_to_postfix(
             infix_expr="A",
@@ -59,28 +61,28 @@ class TestInfixToPostfix(unittest.TestCase):
             expected_postfix_expr="AB&"
         )
 
-    def test_three_operands_first_precedence_higher(self):
+    def test_leading_higher_precedence(self):
         self.helper_infix_to_postfix(
             infix_expr="A&B|C",
             symbol_list=["A", "B", "C"],
             expected_postfix_expr="AB&C|"
         )
 
-    def test_three_operands_second_precedence_higher(self):
+    def test_trailing_higher_precedence(self):
         self.helper_infix_to_postfix(
             infix_expr="A|B&C",
             symbol_list=["A", "B", "C"],
             expected_postfix_expr="ABC&|"
         )
 
-    def test_three_operands_override_higher_first_precedence_with_parens(self):
+    def test_paren_override_leading_higher_precedence(self):
         self.helper_infix_to_postfix(
             infix_expr="A&(B|C)",
             symbol_list=["A", "B", "C"],
             expected_postfix_expr="ABC|&"
         )
 
-    def test_three_operands_override_higher_second_precedence_with_parens(self):
+    def test_paren_override_trailing_higher_precedence(self):
         self.helper_infix_to_postfix(
             infix_expr="(A|B)&C",
             symbol_list=["A", "B", "C"],
@@ -108,28 +110,28 @@ class TestInfixToPostfix(unittest.TestCase):
             expected_postfix_expr="AB+C&D|"
         )
 
-    def test_four_operands_two_clauses_joined_by_lower_precedence(self):
+    def test_two_clauses_joined_by_lower_precedence(self):
         self.helper_infix_to_postfix(
             infix_expr="A&B|C&D",
             symbol_list=["A", "B", "C", "D"],
             expected_postfix_expr="AB&CD&|"
         )
 
-    def test_four_operands_two_clauses_joined_by_higher_precedence(self):
+    def test_two_clauses_joined_by_higher_precedence(self):
         self.helper_infix_to_postfix(
             infix_expr="A&B+C&D",
             symbol_list=["A", "B", "C", "D"],
             expected_postfix_expr="ABC+D&&"
         )
 
-    def test_four_operands_two_clauses_joined_by_higher_precedence_overidden_by_parens(self):
+    def test_two_clauses_joined_by_higher_precedence_overidden_by_parens(self):
         self.helper_infix_to_postfix(
             infix_expr="(A|B)&(C|D)",
             symbol_list=["A", "B", "C", "D"],
             expected_postfix_expr="AB|CD|&"
         )
 
-    def test_four_operands_two_clauses_joined_by_lower_precedence_overidden_by_parens(self):
+    def test_two_clauses_joined_by_lower_precedence_overidden_by_parens(self):
         self.helper_infix_to_postfix(
             infix_expr="A&(B|C)&D",
             symbol_list=["A", "B", "C", "D"],

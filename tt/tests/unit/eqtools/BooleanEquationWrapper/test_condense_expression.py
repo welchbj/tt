@@ -1,16 +1,15 @@
 import unittest
 
-from eqtools import BooleanEquationWrapper, \
-                    ExpressionOrderError, \
-                    BadParenPositionError, \
-                    UnbalancedParenError, \
-                    BadSymbolError
+from eqtools import BooleanEquationWrapper, ExpressionOrderError
+from eqtools import BadParenPositionError, UnbalancedParenError, BadSymbolError
 
 
 class TestCondenseExpression(unittest.TestCase):
 
-    # === Helper methods ===============================================================================================
-    def helper_no_throw_test_condense_expression(self, raw_expr="", expected_expr="", expected_symbol_mapping={}):
+    # === Helper methods ======================================================
+    def helper_no_throw_test_condense_expression(self, raw_expr="",
+                                                 expected_expr="",
+                                                 expected_symbol_mapping={}):
         bool_equation_wrapper = BooleanEquationWrapper("F = " + raw_expr)
         condensed_expr = bool_equation_wrapper.condensed_infix_expr
         symbol_mapping = bool_equation_wrapper.unique_symbol_to_var_name_dict
@@ -18,9 +17,11 @@ class TestCondenseExpression(unittest.TestCase):
         self.assertEqual(expected_expr, condensed_expr)
         self.assertDictEqual(expected_symbol_mapping, symbol_mapping)
 
-    def helper_does_throw_test_condense_expression(self, bad_expr="", exception_class=None, expected_error_pos=0):
+    def helper_does_throw_test_condense_expression(self, bad_expr="",
+                                                   exception_class=None,
+                                                   expected_error_pos=0):
         try:
-            bool_expr_wrapper = BooleanEquationWrapper("F = " + bad_expr)
+            BooleanEquationWrapper("F = " + bad_expr)
         except exception_class as e:
             self.assertEqual(expected_error_pos, e.error_pos)
         except:
@@ -28,7 +29,7 @@ class TestCondenseExpression(unittest.TestCase):
         else:
             self.fail("No exception raised.")
 
-    # === No-throw tests ===============================================================================================
+    # === No-throw tests ======================================================
     def test_simple_and(self):
         self.helper_no_throw_test_condense_expression(
             raw_expr="operand1 and operand2",
@@ -41,7 +42,8 @@ class TestCondenseExpression(unittest.TestCase):
 
     def test_repeated_operands(self):
         self.helper_no_throw_test_condense_expression(
-            raw_expr="operand1 and operand2 or operand1 and operand3 xor operand2",
+            raw_expr="operand1 and operand2 or operand1 and operand3 xor "
+                     "operand2",
             expected_expr="A&B|A&C+B",
             expected_symbol_mapping={
                 "A": "operand1",
@@ -133,7 +135,7 @@ class TestCondenseExpression(unittest.TestCase):
             }
         )
 
-    def test_no_white_space_plain_english_operations_enclosed_expressions(self):
+    def test_chained_enclosed_expressions_minimized_whitespace(self):
         self.helper_no_throw_test_condense_expression(
             raw_expr="(op1 and op2)or(op3 and op4)or(op5 and op6)",
             expected_expr="(A&B)|(C&D)|(E&F)",
@@ -147,7 +149,7 @@ class TestCondenseExpression(unittest.TestCase):
             }
         )
 
-    def test_no_white_space_symbolic_operations_enclosed_expressions(self):
+    def test_chained_enclosed_expressions_symbolic_no_whitespace(self):
         self.helper_no_throw_test_condense_expression(
             raw_expr="(op1&&op2)||(op3&&op4)||(op5&&op6)",
             expected_expr="(A&B)|(C&D)|(E&F)",
@@ -239,7 +241,7 @@ class TestCondenseExpression(unittest.TestCase):
             }
         )
 
-    # === Expect-throws tests ==========================================================================================
+    # === Expect-throws tests =================================================
     def test_one_operation_plain_english(self):
         self.helper_does_throw_test_condense_expression(
             bad_expr="nand",
