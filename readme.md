@@ -9,7 +9,7 @@ tt was written in pure Python, so it only requires a Python installation to run.
 
 Right now, the only way to get tt is straight from the source on Github. To do so, use:
 
-    $ git clone https://github.com/welchbj/tt/master
+    $ git clone https://github.com/welchbj/tt.git
     $ cd tt
 
 ## Use
