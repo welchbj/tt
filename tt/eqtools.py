@@ -1,5 +1,4 @@
-"""
-A module for extracting and manipulating information from Boolean equations.
+"""A module for extracting and manipulating information from Boolean equations.
 """
 
 import logging as log
@@ -14,16 +13,58 @@ from schema_provider import SYM_NOT, SYM_XOR
 
 # === Wrapper Classes =========================================================
 class EvaluationResultWrapper(object):
+    """A simple wrapper around the evaluation results of a Boolean equation.
+
+    Attributes:
+        input_symbols (List[str]): The equation's input symbols, NOT the
+            single character mappings used in``BooleanEquationWrapper``.
+        output_symbol (str): The equation's output symbol.
+        result_list (List[str]): The list of results of evaluations to be
+            filled with "0" and "1".
+
+    """
     def __init__(self, input_symbols, output_symbol):
         self.input_symbols = input_symbols
         self.output_symbol = output_symbol
         self.result_list = []
 
     def get_num_evaluations(self):
+        """Determine the number of evaluations that will fill this instance.
+
+        Returns:
+            int: The number of possible input combinations. This is simply
+                2 raised to the power of the number of inputs.
+
+        """
         return 2**len(self.input_symbols)
 
 
 class BooleanEquationWrapper(object):
+    """A wrapper of a Boolean equation, with parsing/evaluation functionality.
+
+    Args:
+        raw_bool_eq (str): The Boolean equation to act on. Assumed to be user
+            input, meaning any malformed equations are possible values.
+
+    Attributes:
+        unique_symbols_left (List[str]): The remaining single character
+            symbols that variable words can be mapped to.
+        unique_symbol_to_var_name_dict (dict{str:str}): The mapping of
+            individual characters to equivalent variable words from
+            ``raw_bool_eq``.
+        pos_to_condensed_magnitude_map (dict{int:int}): The mapping of position
+            in ``condensed_infix_expr`` to the number of characters that were
+            condensed at that position.
+        output_symbol (str): The symbol/word to the left of the equals sign in
+            ``raw_bool_eq``.
+        infix_expr (str): The Boolean expression to the right of the equals
+            sign in ``raw_bool_eq``
+        condensed_infix_expr (str): A transformation of ``infix_expr``, with
+            all variable words mapped to single characters and tracked in
+            ``unique_symbol_to_var_name_dict``.
+        postfix_expr (str): A transformation of ``infix_expr`` to postfix form.
+
+    """
     def __init__(self, raw_bool_eq):
         self.unique_symbols_left = list(reversed("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
         self.unique_symbol_to_var_name_dict = {}
@@ -36,27 +77,43 @@ class BooleanEquationWrapper(object):
             self.condensed_infix_expr, self.get_unique_symbol_list())
 
     def get_input_symbol_list(self):
-        """
-        Get the list of input symbols contained within this equation.
+        """Get the list of input symbols contained within this equation.
 
         Returns:
-            The list of input symbols of the equation as strings, sorted by
-            their order of appearance in the equation.
+            List[str]: The input symbols sorted by their appearance in the
+                ``raw_bool_eq`` arg passed to ``__init__``.
         """
         return [self.unique_symbol_to_var_name_dict[key]
                 for key in self.get_unique_symbol_list()]
 
     def get_unique_symbol_list(self):
+        """Get unique symbols to which the variable words are mapped
+
+        Returns:
+            List[str]: Sorted list of the unique, single-character values to
+                which the variable words in ``infix_expr`` are mapped.
+
+        """
         return sorted(self.unique_symbol_to_var_name_dict.keys())
 
     def get_unique_symbol(self, var_name):
+        """Get a unique symbol mapped to ``var_name``.
+
+        If ``var_name`` has not yet been mapped to, then a new unique
+        character will be popped off of ``unique_symbols_left``. Otherwise,
+        the already-mapped character will be retrieved from
+        ``unique_symbol_to_var_name_dict``.
+
+        Args:
+            var_name (str): The variable name to which to map.
+
+        Returns:
+            str: The unique symbol to which ``var_name`` is mapped.
+
+        """
         if not self.unique_symbols_left:
-            log.error("Exhausted all variable symbols in Boolean equation. "
-                      "This means you tried to evaluate an equation of more "
-                      "than 26 variables, which is not supported. "
-                      "Cannot continue program execution.")
-            # TODO: need to change below exception type
-            raise RuntimeError
+            raise TooManySymbolsError("Cannot process equation of more than "
+                                      "26 symbols.")
         elif var_name in self.unique_symbol_to_var_name_dict.values():
             # all values should be unique, so we should be safe to assume this
             # list comprehension will yield one element
@@ -69,6 +126,14 @@ class BooleanEquationWrapper(object):
             return unique_symbol
 
     def get_evaluation_result(self):
+        """Get the evaluation of this Boolean equation.
+
+        Returns:
+            ``EvaluationResultWrapper``: An instance containing the result of
+                the evaluation of this Boolean equation at each combination of
+                its inputs, as defined by the contents of ``input_symbols``.
+
+        """
         eval_result_wrapper = EvaluationResultWrapper(
             self.get_input_symbol_list(), self.output_symbol)
 
@@ -82,6 +147,40 @@ class BooleanEquationWrapper(object):
         return eval_result_wrapper
 
     def condense_expression(self, raw_infix_expr):
+        """The core functionality of ``BooleanExpressionWrapper``.
+
+        This function replaces all variable words in ``raw_infix_expr`` with
+        single-character mappings as well as all operation words/symbols with
+        the single-character equivalent defined in the tt schema.
+
+        After this initial condensing phase, syntax checking is performed on
+        the condensed expression, raising a number of possible exceptions
+        descending from ``GrammarError``.
+
+        Notes:
+            This function changes the state of
+            ``unique_symbol_to_var_name_dict`` and
+            ``pos_to_condensed_magnitude_map``.
+
+        Args:
+            raw_infix_expr: The expression which will be condensed, in both its
+                variable words and operation symbols.
+
+        Returns:
+            str: The condensed form of ``raw_infix_expr``.
+
+        Raises:
+            BadSymbolError: Raise if an invalid symbol is detected, i.e. an *
+                found within a variable word.
+            BadParenPositionError: Raise if a parenthesis is found somewhere
+                unexpected, i.e. a left parenthesis following an operand.
+            UnbalancedParenError: Raise if unbalanced parentheses are detected
+                in the syntax checking phase.
+            ExpressionOrderError: Raise if leading or trailing operation,
+                consecutive operands, or consecutive non-NOT operations are
+                detected in the syntax checking phase.
+
+        """
         condensed_expr = raw_infix_expr
         curr_idx = 0
         left_paren_positions = []
@@ -237,6 +336,23 @@ class BooleanEquationWrapper(object):
         return without_spaces(condensed_expr)
 
     def get_expanded_position(self, at_pos):
+        """Get the position of ``at_pos`` in the non-condensed expression.
+
+        The infix expression is condensed in ``condense_expr``, but nice error
+        messages need to display the position of the error to the user in their
+        originally entered expression. To do this, the "condense history"
+        before at_pos is considered the offset of at_pos from its equivalent
+        position in ``raw_infix_expr``. This function returns the "uncondensed"
+        position.
+
+        Args:
+            at_pos (int): The position at which to determine the expanded
+                position.
+
+        Returns:
+            int: The expanded position of ``at_pos`` in ``raw_infix_expr``.
+
+        """
         offset = sum(
             [mag for pos, mag in self.pos_to_condensed_magnitude_map.items()
              if pos < at_pos])
@@ -245,20 +361,22 @@ class BooleanEquationWrapper(object):
 
 # === Equation Manipulation Free Functions ====================================
 def infix_to_postfix(infix_expr, symbol_list):
-    """
-    Convert the passed infix expression into its postfix form, for simpler
-    evaluation later on in the program flow.
+    """Convert the passed infix expression into its postfix form.
+
+    This conversion allows for simpler evaluation later on in the program flow.
     Uses the Shunting-yard Algorithm.
 
     Args:
-        infix_expr: A string infix expression, containing any operations in the
-                    schema except for Boolean not. It is assumed that
-                    infix_expr is the result of a call to condense_expr.
-        symbol_list: The list of single-character string symbols existing in
-                     infix_expr.
+        infix_expr (str): An infix expression that has been run through
+            ``condense_expr``. It is assumed to contain any operations except
+            for Boolean NOT, which should have been replaced with 1 XOR earlier
+            in the program flow.
+        symbol_list (List[str]): The list of single-character string symbols
+            existing in ``infix_expr``.
 
     Returns:
-        The equivalent postfix expression to infix_expr, as a string.
+        str: The equivalent postfix expression to ``infix_expr``.
+
     """
     stack = []
     postfix = []
@@ -289,54 +407,53 @@ def infix_to_postfix(infix_expr, symbol_list):
 
 
 def extract_output_sym_and_expr(eq):
-    """
-    Split the passed Boolean equation on its equals sign into the output symbol
-    and its equivalent boolean expression.
-    Look for errors involving the absence of or multiple equals signs.
+    """Split the passed Boolean equation on its equals sign.
+
+    Assume the left side of the equation is the output variable and the right
+    side is the equivalent expression.
 
     Args:
-        eq: The boolean expression to split.
+        eq (str): The Boolean equation to split.
 
     Returns:
-        output_sym: The output symbol, assumed to be the left side of the
-                    passed equation.
-        expr: The Boolean expression.
+        output_sym (str): The output symbol.
+        expr (str): The Boolean expression.
 
     Raises:
-        RuntimeError: Raise if no equals signs present or more than one equals
-                      sign present.
+        BadSymbolError: Raise if no equals signs present or more than one
+            equals sign present.
+
     """
     output_and_expr = eq.split("=")
 
     if len(output_and_expr) == 1:
-        log.error("Boolean equation did not contain equals sign (\"=\"). "
-                  "Cannot continue program execution.")
-        raise RuntimeError
+        raise BadSymbolError(eq, -1, "Equation did not contain equals sign.")
     elif len(output_and_expr) > 2:
-        log.error("More than one equals sign (\"=\") found in your equation. "
-                  "Cannot continue program execution.")
-        raise RuntimeError
+        error_pos = eq.index("=", eq.index("=")+1)
+        raise BadSymbolError(eq, error_pos, "Unexpected equals sign.")
 
     output_sym, expr = output_and_expr[0].strip(), output_and_expr[1].strip()
     return output_sym, expr
 
 
 def replace_inputs(postfix_expr, inputs, input_vals):
-    """
-    Replace the inputs in a postfix expression string to later be evaluated.
+    """Replace the inputs in a postfix expression string to later be evaluated.
 
     Args:
-        postfix_expr: The postfix expression to be evaluated, as a string.
-        inputs: A list of the symbols as strings in postfix_expr to replaced.
-        input_vals: A list of the values as strings with which to replace the
-                    symbols in inputs in postfix_expr.
+        postfix_expr (str): The postfix expression in which to replace the
+            symbols specified in ``inputs``.
+        inputs (List[str]): The symbols in ``postfix_expr`` to be replaced.
+        input_vals (List[str]): The values with which to replace the symbols in
+            ``inputs`` in ``postfix_expr``.
 
     Returns:
-        A string postfix expression with the symbols in inputs replaced with
-        the values in input_vals.
-        For example:
+        str: Postfix expression with the symbols in ``inputs`` replaced with
+        the values in ``input_vals``.
+
+    Examples:
         >>> replace_inputs("AB&", ["A", "B"], ["0", "1"])
         >>> '01&'
+
     """
     replaced_expr = postfix_expr
     for i, sym in enumerate(inputs):
@@ -345,15 +462,15 @@ def replace_inputs(postfix_expr, inputs, input_vals):
 
 
 def eval_postfix_expr(expr_to_eval):
-    """
-    Evaluate the passed postfix expression.
+    """Evaluate the passed postfix expression.
 
     Args:
-        expr_to_eval: A string postfix expression, containing only 0s, 1s, and
-                      single character operations. Assumed to be well-formed.
+        expr_to_eval (str): A string postfix expression, containing only "0"s,
+            "1"s, and single character operations. Assume to be well-formed.
 
     Returns:
-        The result of the evaluation, as int 0 or 1.
+        int: The result of the evaluation, as 0 or 1.
+
     """
     stack = []
     for c in expr_to_eval:
@@ -375,6 +492,10 @@ def is_valid_operand_char_non_leading(c):
 
 
 # === Custom exception types ==================================================
+class TooManySymbolsError(Exception):
+    pass
+
+
 class GrammarError(Exception):
     def __init__(self, expr_or_equation, error_pos, message, *args):
         self.expr_or_equation = expr_or_equation
@@ -384,8 +505,9 @@ class GrammarError(Exception):
 
     def log(self):
         log.error(self.message)
-        log.error(self.expr_or_equation)
-        log.error(" " * self.error_pos + "^")
+        if self.error_pos >= 0:
+            log.error(self.expr_or_equation)
+            log.error(" " * self.error_pos + "^")
 
 
 class BadSymbolError(GrammarError):

@@ -1,6 +1,5 @@
-"""
-A module containing information about the symbols used in intermediate
-transformations of Boolean equations in the scheme used by tt.
+"""Information about the symbols used in intermediate transformations of
+Boolean equations in the scheme used by tt.
 """
 
 import logging as log

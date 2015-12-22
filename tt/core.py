@@ -1,13 +1,11 @@
-"""
-A module containing the gateway between the command line interface and tt's
-underlying functionality.
+"""The gateway between the CLI and tt's core functionality.
 """
 
 import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from eqtools import BooleanEquationWrapper, GrammarError
+from eqtools import BooleanEquationWrapper, GrammarError, TooManySymbolsError
 from fmttools import TruthTablePrinter
 
 __all__ = ["main"]
@@ -15,40 +13,42 @@ __version__ = 0.1
 __date__ = "2015-11-24"
 __updated__ = "2015-12-21"
 
+logging_format = "%(levelname)s: %(message)s"
+
+# program information
+program_source_control_url = "www.github.com/welchbj/tt"
+program_version = "v{0}".format(str(__version__))
+program_build_date = str(__updated__)
+program_version_message = "{version}, {build}".format(
+    version=program_version, build=program_build_date)
+program_license = "MIT"
+program_author = "Brian Welch"
+program_desc = """\
+tt is a command line utility for printing truth tables and Karnaugh Maps.
+Here is some pertinent information about the release you are using:
+Version: {version}
+Author: {author}
+License: {license}
+URL: {url}""".format(
+    version=program_version,
+    author=program_author,
+    license=program_license,
+    url=program_source_control_url)
+
 
 def main():
-    """
-    The main entry point to the command line application. Sets up the arg
-    parser and chooses which control flow to follow according to user's command
-    line options.
+    """The main entry point to the command line application.
+
+    Set up the arg parser and choose which control flow to follow according to
+    user's command line options.
 
     Returns:
-        The error level:
+        Error level (int):
             0: Program ran fine.
             1: Recognized error occurred.
             2: Unrecognized error occurred.
-    """
-    logging_format = "%(levelname)s: %(message)s"
 
-    # program information
-    program_source_control_url = "www.github.com/welchbj/tt"
-    program_version = "v{0}".format(str(__version__))
-    program_build_date = str(__updated__)
-    program_version_message = "{version}, {build}".format(
-        version=program_version, build=program_build_date)
-    program_license = "MIT"
-    program_author = "Brian Welch"
-    program_desc = """\
-    tt is a command line utility for printing truth tables and Karnaugh Maps.
-    Here is some pertinent information about the release you are using:
-    Version: {version}
-    Author: {author}
-    License: {license}
-    URL: {url}""".format(
-        version=program_version,
-        author=program_author,
-        license=program_license,
-        url=program_source_control_url)
+    """
 
     try:
         # Setup argument parser
@@ -128,6 +128,8 @@ def main():
     except GrammarError as e:
         e.log()
         return 1
+    except TooManySymbolsError as e:
+        log.error(str(e))
     except NotImplementedError as e:
         log.error("Tried to use a feature that is not yet implemented: " +
                   str(e))
