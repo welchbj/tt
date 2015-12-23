@@ -1,6 +1,6 @@
 import unittest
 
-from eqtools import replace_inputs
+from tt.eqtools import replace_inputs
 
 
 class TestReplaceInputs(unittest.TestCase):

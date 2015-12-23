@@ -1,7 +1,8 @@
 import unittest
 
-from eqtools import BooleanEquationWrapper, ExpressionOrderError
-from eqtools import BadParenPositionError, UnbalancedParenError, BadSymbolError
+from tt.eqtools import BooleanEquationWrapper, ExpressionOrderError
+from tt.eqtools import BadParenPositionError, UnbalancedParenError
+from tt.eqtools import BadSymbolError
 
 
 class TestCondenseExpression(unittest.TestCase):

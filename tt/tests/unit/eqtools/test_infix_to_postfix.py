@@ -1,6 +1,6 @@
 import unittest
 
-from eqtools import infix_to_postfix
+from tt.eqtools import infix_to_postfix
 
 
 class TestInfixToPostfix(unittest.TestCase):

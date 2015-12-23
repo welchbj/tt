@@ -5,7 +5,8 @@ import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from tt.eqtools import BooleanEquationWrapper, GrammarError, TooManySymbolsError
+from tt.eqtools import BooleanEquationWrapper
+from tt.eqtools import GrammarError, TooManySymbolsError
 from tt.fmttools import TruthTablePrinter
 
 __all__ = ["main"]
@@ -16,11 +17,10 @@ logging_format = "%(levelname)s: %(message)s"
 program_url = "www.github.com/welchbj/tt"
 program_version = "0.1"
 program_build_date = "12/22/2015"
-program_version_message = "{version}, {build}".format(
-    version=program_version, build=program_build_date)
 program_license = "MIT"
 program_author = "Brian Welch"
-program_desc = """\
+
+cl_desc = """\
 tt is a command line utility for printing truth tables and Karnaugh Maps.
 Here is some pertinent information about the release you are using:
 Version: {version}
@@ -31,6 +31,8 @@ URL: {url}""".format(
     author=program_author,
     license=program_license,
     url=program_url)
+cl_version_message = "{version}, {build}".format(
+    version=program_version, build=program_build_date)
 
 
 def main():
@@ -50,12 +52,12 @@ def main():
     try:
         # Setup argument parser
         parser = ArgumentParser(
-            description=program_desc,
+            description=cl_desc,
             formatter_class=RawTextHelpFormatter)
         parser.add_argument(
             "--version",
             action="version",
-            version=program_version_message,
+            version=cl_version_message,
             help="Program version and latest build date")
         parser.add_argument(
             "--verbose",

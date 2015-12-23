@@ -1,8 +1,8 @@
 import unittest
 
-from eqtools import eval_postfix_expr
-from schema_provider import SYM_XOR, SYM_XNOR, SYM_AND, SYM_NAND, SYM_NOR
-from schema_provider import SYM_OR
+from tt.eqtools import eval_postfix_expr
+from tt.schema_provider import SYM_XOR, SYM_XNOR, SYM_AND, SYM_NAND, SYM_NOR
+from tt.schema_provider import SYM_OR
 
 
 class TestEvaluatePostfixExpr(unittest.TestCase):
