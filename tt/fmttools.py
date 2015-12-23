@@ -3,7 +3,7 @@
 
 import itertools
 
-from eqtools import get_symbol_input_array
+from tt.eqtools import get_symbol_input_array
 
 __all__ = ["TruthTablePrinter"]
 
@@ -32,7 +32,7 @@ class TruthTablePrinter(object):
             Take into account cell padding but not column separators.
 
         Returns:
-            List(int): The width of each column.
+            List[int]: The width of each column.
 
         """
         cell_padding = 2*self.table_cell_padding_width

@@ -5,8 +5,8 @@ import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from eqtools import BooleanEquationWrapper, GrammarError, TooManySymbolsError
-from fmttools import TruthTablePrinter
+from tt.eqtools import BooleanEquationWrapper, GrammarError, TooManySymbolsError
+from tt.fmttools import TruthTablePrinter
 
 __all__ = ["main"]
 

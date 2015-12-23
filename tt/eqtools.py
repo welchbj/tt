@@ -6,9 +6,19 @@ import itertools
 
 from enum import Enum
 
-from utils import without_spaces
-from schema_provider import schema, schema_search_ordered_list
-from schema_provider import SYM_NOT, SYM_XOR
+from tt.utils import without_spaces
+from tt.schema_provider import schema, schema_search_ordered_list
+from tt.schema_provider import SYM_NOT, SYM_XOR
+
+__all__ = ["EvaluationResultWrapper",
+           "BooleanEquationWrapper",
+           "infix_to_postfix",
+           "eval_postfix_expr",
+           "TooManySymbolsError",
+           "GrammarError",
+           "ExpressionOrderError",
+           "BadParenPositionError",
+           "BadSymbolError"]
 
 
 # === Wrapper Classes =========================================================
@@ -16,11 +26,11 @@ class EvaluationResultWrapper(object):
     """A simple wrapper around the evaluation results of a Boolean equation.
 
     Attributes:
-        input_symbols (List[str]): The equation's input symbols, NOT the
+        input_symbols (List[str]): The equation's input symbols, *not* the
             single character mappings used in``BooleanEquationWrapper``.
         output_symbol (str): The equation's output symbol.
         result_list (List[str]): The list of results of evaluations to be
-            filled with "0" and "1".
+            filled with ``"0"`` and ``"1"``.
 
     """
     def __init__(self, input_symbols, output_symbol):
@@ -407,7 +417,7 @@ def infix_to_postfix(infix_expr, symbol_list):
 
 
 def extract_output_sym_and_expr(eq):
-    """Split the passed Boolean equation on its equals sign.
+    """Parse the passed Boolean equation about its equals sign.
 
     Assume the left side of the equation is the output variable and the right
     side is the equivalent expression.
@@ -451,8 +461,10 @@ def replace_inputs(postfix_expr, inputs, input_vals):
         the values in ``input_vals``.
 
     Examples:
-        >>> replace_inputs("AB&", ["A", "B"], ["0", "1"])
-        >>> '01&'
+        Simple example::
+
+            >>> replace_inputs("AB&", ["A", "B"], ["0", "1"])
+            '01&'
 
     """
     replaced_expr = postfix_expr
@@ -493,10 +505,21 @@ def is_valid_operand_char_non_leading(c):
 
 # === Custom exception types ==================================================
 class TooManySymbolsError(Exception):
+    """Error for when too many symbols were in the user's equation.
+
+    Because
+
+    """
     pass
 
 
 class GrammarError(Exception):
+    """Error for problems in equation parsing.
+
+    This error type adds information for indicating the expression or
+    equation that raised the error to the base Exception class.
+
+    """
     def __init__(self, expr_or_equation, error_pos, message, *args):
         self.expr_or_equation = expr_or_equation
         self.error_pos = error_pos
@@ -504,6 +527,16 @@ class GrammarError(Exception):
         super(GrammarError, self).__init__(self.message, *args)
 
     def log(self):
+        """Output an informative error message to the log.
+
+        Outputs the error message, as well as the problemed expression/equation
+        with the error position indicated, if a valid non-negative position is
+        passed.
+
+        Returns:
+            None
+
+        """
         log.error(self.message)
         if self.error_pos >= 0:
             log.error(self.expr_or_equation)
@@ -511,14 +544,40 @@ class GrammarError(Exception):
 
 
 class BadSymbolError(GrammarError):
+    """Error for an unexpected symbol in variable names or operation words.
+
+    Examples:
+        Leading with an underscore::
+
+            "F = _A or B"
+
+        Containing a forbidden symbol::
+
+            "F = opera*nd1 or operand2"
+
+    """
     pass
 
 
 class ExpressionOrderError(GrammarError):
+    """Error for bad order of operands/operations.
+
+    Examples:
+        Consecutive operations::
+
+            "F = A and and B"
+
+        Consecutive operands::
+
+            "F = A A or B"
+
+    """
     pass
 
 
 class BadParenPositionError(GrammarError):
+    """Error for b
+    """
     pass
 
 
