@@ -9,16 +9,13 @@ from eqtools import BooleanEquationWrapper, GrammarError, TooManySymbolsError
 from fmttools import TruthTablePrinter
 
 __all__ = ["main"]
-__version__ = 0.1
-__date__ = "2015-11-24"
-__updated__ = "2015-12-21"
 
 logging_format = "%(levelname)s: %(message)s"
 
 # program information
-program_source_control_url = "www.github.com/welchbj/tt"
-program_version = "v{0}".format(str(__version__))
-program_build_date = str(__updated__)
+program_url = "www.github.com/welchbj/tt"
+program_version = "0.1"
+program_build_date = "12/22/2015"
 program_version_message = "{version}, {build}".format(
     version=program_version, build=program_build_date)
 program_license = "MIT"
@@ -33,7 +30,7 @@ URL: {url}""".format(
     version=program_version,
     author=program_author,
     license=program_license,
-    url=program_source_control_url)
+    url=program_url)
 
 
 def main():
