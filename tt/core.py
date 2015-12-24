@@ -1,6 +1,7 @@
 """The gateway between the CLI and tt's core functionality.
 """
 
+import sys
 import logging as log
 
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -15,11 +16,15 @@ __version__ = 0.1
 logging_format = '%(levelname)s: %(message)s'
 
 
-def main():
+def main(args=None):
     """The main entry point to the command line application.
 
     Set up the arg parser and choose which control flow to follow according to
     user's command line options.
+
+    Args:
+        args (List[str]): The command line arguments. Allows for complete
+            testing of the program with ``main`` as the entry point.
 
     Returns:
         Error level (int):
@@ -28,6 +33,9 @@ def main():
             2: Unrecognized error occurred.
 
     """
+
+    if args is None:
+        args = sys.argv[1:]
 
     try:
         # Setup argument parser
@@ -78,7 +86,7 @@ def main():
                  '\tnor\n')
 
         # Process arguments
-        args = parser.parse_args()
+        args = parser.parse_args(args)
         verbose = args.verbose
         kmap = args.kmap
         intermediates = args.intermediates
