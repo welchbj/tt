@@ -20,29 +20,25 @@ class TestReplaceInputs(unittest.TestCase):
             postfix_expr='AB|',
             inputs=['A', 'B'],
             input_vals=['1', '0'],
-            expected_result='10|'
-        )
+            expected_result='10|')
 
     def test_two_symbols_repeated(self):
         self.helper_test_replace_inputs(
             postfix_expr='AA&',
             inputs=['A'],
             input_vals=['0'],
-            expected_result='00&'
-        )
+            expected_result='00&')
 
     def test_three_symbols(self):
         self.helper_test_replace_inputs(
             postfix_expr='ABC+&',
             inputs=['A', 'B', 'C'],
             input_vals=['0', '1', '0'],
-            expected_result='010+&'
-        )
+            expected_result='010+&')
 
     def test_three_symbols_repeated(self):
         self.helper_test_replace_inputs(
             postfix_expr='CCC+&',
             inputs=['C'],
             input_vals=['0'],
-            expected_result='000+&'
-        )
+            expected_result='000+&')
