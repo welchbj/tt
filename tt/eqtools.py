@@ -7,8 +7,8 @@ import itertools
 from enum import Enum
 
 from tt.utils import without_spaces
-from tt.schema_provider import schema, schema_search_ordered_list
-from tt.schema_provider import SYM_NOT, SYM_XOR
+from tt.schema_provider import (schema, schema_search_ordered_list, SYM_NOT,
+                                SYM_XOR)
 
 __all__ = ['EvaluationResultWrapper',
            'BooleanEquationWrapper',

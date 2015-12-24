@@ -7,7 +7,7 @@ from tt.eqtools import (BooleanEquationWrapper, ExpressionOrderError,
 
 class TestCondenseExpression(unittest.TestCase):
 
-# === Helper methods ==========================================================
+    # === Helper methods ======================================================
     def helper_no_throw_test_condense_expression(self, raw_expr='',
                                                  expected_expr='',
                                                  expected_symbol_mapping={}):
@@ -30,7 +30,7 @@ class TestCondenseExpression(unittest.TestCase):
         else:
             self.fail('No exception raised.')
 
-# === No-throw tests ==========================================================
+    # === No-throw tests ======================================================
     def test_simple_and(self):
         self.helper_no_throw_test_condense_expression(
             raw_expr='operand1 and operand2',
