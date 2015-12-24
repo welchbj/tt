@@ -5,7 +5,7 @@ import itertools
 
 from tt.eqtools import get_symbol_input_array
 
-__all__ = ["TruthTablePrinter"]
+__all__ = ['TruthTablePrinter']
 
 DEFAULT_TABLE_CELL_PADDING_WIDTH = 1
 
@@ -47,14 +47,14 @@ class TruthTablePrinter(object):
         """Get the separator for important row changes in the table.
 
         Returns:
-            str: The fancy row separator, in the style "+---+---+".
+            str: The fancy row separator, in the style '+---+---+'.
 
         """
-        return "+" + "+".join("-" * col_width
+        return '+' + '+'.join('-' * col_width
                               for col_width
-                              in self.get_column_width_list()) + "+"
+                              in self.get_column_width_list()) + '+'
 
-    def table_rowify(self, items, sep="|"):
+    def table_rowify(self, items, sep='|'):
         """Transform the contents of items into a row of the table.
 
         Args:
@@ -70,9 +70,9 @@ class TruthTablePrinter(object):
             total_pad_len = col_width - len(item)
             left_pad_len = total_pad_len // 2
             right_pad_len = left_pad_len + int(total_pad_len % 2)
-            row += left_pad_len * " "
+            row += left_pad_len * ' '
             row += item
-            row += right_pad_len * " "
+            row += right_pad_len * ' '
             row += sep
         return row
 

@@ -10,15 +10,15 @@ from tt.utils import without_spaces
 from tt.schema_provider import schema, schema_search_ordered_list
 from tt.schema_provider import SYM_NOT, SYM_XOR
 
-__all__ = ["EvaluationResultWrapper",
-           "BooleanEquationWrapper",
-           "infix_to_postfix",
-           "eval_postfix_expr",
-           "TooManySymbolsError",
-           "GrammarError",
-           "ExpressionOrderError",
-           "BadParenPositionError",
-           "BadSymbolError"]
+__all__ = ['EvaluationResultWrapper',
+           'BooleanEquationWrapper',
+           'infix_to_postfix',
+           'eval_postfix_expr',
+           'TooManySymbolsError',
+           'GrammarError',
+           'ExpressionOrderError',
+           'BadParenPositionError',
+           'BadSymbolError']
 
 
 # === Wrapper Classes =========================================================
@@ -30,7 +30,7 @@ class EvaluationResultWrapper(object):
             single character mappings used in``BooleanEquationWrapper``.
         output_symbol (str): The equation's output symbol.
         result_list (List[str]): The list of results of evaluations to be
-            filled with ``"0"`` and ``"1"``.
+            filled with ``'0'`` and ``'1'``.
 
     """
     def __init__(self, input_symbols, output_symbol):
@@ -76,7 +76,7 @@ class BooleanEquationWrapper(object):
 
     """
     def __init__(self, raw_bool_eq):
-        self.unique_symbols_left = list(reversed("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+        self.unique_symbols_left = list(reversed('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
         self.unique_symbol_to_var_name_dict = {}
         self.pos_to_condensed_magnitude_map = {}
 
@@ -122,8 +122,8 @@ class BooleanEquationWrapper(object):
 
         """
         if not self.unique_symbols_left:
-            raise TooManySymbolsError("Cannot process equation of more than "
-                                      "26 symbols.")
+            raise TooManySymbolsError('Cannot process equation of more than '
+                                      '26 symbols.')
         elif var_name in self.unique_symbol_to_var_name_dict.values():
             # all values should be unique, so we should be safe to assume this
             # list comprehension will yield one element
@@ -200,9 +200,9 @@ class BooleanEquationWrapper(object):
             c = condensed_expr[curr_idx].strip()
             if not c:
                 pass
-            elif c == "(":
+            elif c == '(':
                 left_paren_positions.append(curr_idx)
-            elif c == ")":
+            elif c == ')':
                 right_paren_positions.append(curr_idx)
             else:
                 is_operation = False
@@ -222,7 +222,7 @@ class BooleanEquationWrapper(object):
 
                     possible_matches = [condensed_expr[curr_idx:test_idx]
                                         if test_idx <= len(condensed_expr)
-                                        else ""
+                                        else ''
                                         for test_idx in test_idxs]
 
                     matches = [possible_match
@@ -238,7 +238,7 @@ class BooleanEquationWrapper(object):
                         if (replacement_idx < len(condensed_expr) and
                                 match[-1].isalpha() and
                                 condensed_expr[replacement_idx] not in
-                                [" ", "("]):
+                                [' ', '(']):
                             # this is just an operand that begins with one of
                             # the tt schema symbols; we can break out of this
                             # because no operation symbols for different
@@ -270,13 +270,13 @@ class BooleanEquationWrapper(object):
                             condensed_expr[test_idx:])
                         self.pos_to_condensed_magnitude_map[curr_idx] = (
                             len(var_name) - len(unique_symbol))
-                    elif c in ["0", "1"]:
+                    elif c in ['0', '1']:
                         pass
                     else:
                         raise BadSymbolError(
                             self.infix_expr,
                             self.get_expanded_position(curr_idx),
-                            "Invalid symbol.")
+                            'Invalid symbol.')
             curr_idx += 1
 
         # Syntax checking is done in a post-processing of the condensed
@@ -291,47 +291,47 @@ class BooleanEquationWrapper(object):
         for pos, c in enumerate(condensed_expr):
             if not c.strip():
                 continue
-            elif c == "(":
+            elif c == '(':
                 if next_state != NextValidState.OPERAND:
                     raise BadParenPositionError(
                         self.infix_expr, self.get_expanded_position(pos),
-                        "Unexpected parenthesis.")
+                        'Unexpected parenthesis.')
                 else:
                     left_paren_pos_stack.append(pos)
-            elif c == ")":
+            elif c == ')':
                 if next_state != NextValidState.OPERATION:
                     raise BadParenPositionError(
                         self.infix_expr, self.get_expanded_position(pos),
-                        "Unexpected parenthesis.")
+                        'Unexpected parenthesis.')
                 else:
                     if not left_paren_pos_stack:
                         raise UnbalancedParenError(
                             self.infix_expr, self.get_expanded_position(pos),
-                            "Unbalanced right parenthesis.")
+                            'Unbalanced right parenthesis.')
                     else:
                         left_paren_pos_stack.pop()
-            elif c in self.get_unique_symbol_list() or c in ["0", "1"]:
+            elif c in self.get_unique_symbol_list() or c in ['0', '1']:
                 if next_state != NextValidState.OPERAND:
                     raise ExpressionOrderError(
                         self.infix_expr, self.get_expanded_position(pos),
-                        "Unexpected operand.")
+                        'Unexpected operand.')
                 else:
                     next_state = NextValidState.OPERATION
             else:
                 if pos == len(condensed_expr) - 1:
                     raise ExpressionOrderError(
                         self.infix_expr, self.get_expanded_position(pos),
-                        "Unexpected operation.")
+                        'Unexpected operation.')
                 elif c == SYM_NOT:
                     if next_state != NextValidState.OPERAND:
                         raise ExpressionOrderError(
                             self.infix_expr, self.get_expanded_position(pos),
-                            "Unexpected operation.")
+                            'Unexpected operation.')
                 else:
                     if next_state != NextValidState.OPERATION:
                         raise ExpressionOrderError(
                             self.infix_expr, self.get_expanded_position(pos),
-                            "Unexpected operation.")
+                            'Unexpected operation.')
                     else:
                         next_state = NextValidState.OPERAND
 
@@ -339,9 +339,9 @@ class BooleanEquationWrapper(object):
             raise UnbalancedParenError(
                 self.infix_expr,
                 self.get_expanded_position(left_paren_pos_stack[0]),
-                "Unbalanced left parentheses.")
+                'Unbalanced left parentheses.')
 
-        condensed_expr = condensed_expr.replace(SYM_NOT, "1" + SYM_XOR)
+        condensed_expr = condensed_expr.replace(SYM_NOT, '1' + SYM_XOR)
 
         return without_spaces(condensed_expr)
 
@@ -350,9 +350,9 @@ class BooleanEquationWrapper(object):
 
         The infix expression is condensed in ``condense_expr``, but nice error
         messages need to display the position of the error to the user in their
-        originally entered expression. To do this, the "condense history"
+        originally entered expression. To do this, the 'condense history'
         before at_pos is considered the offset of at_pos from its equivalent
-        position in ``raw_infix_expr``. This function returns the "uncondensed"
+        position in ``raw_infix_expr``. This function returns the 'uncondensed'
         position.
 
         Args:
@@ -393,27 +393,27 @@ def infix_to_postfix(infix_expr, symbol_list):
     operators = schema.keys()
 
     for c in infix_expr:
-        if c in symbol_list or c in ["0", "1"]:
+        if c in symbol_list or c in ['0', '1']:
             postfix += c
-        elif c == "(":
+        elif c == '(':
             stack += c
         elif c in operators:
             if not stack:
                 stack += c
             else:
-                while (stack and stack[-1] != "(" and
+                while (stack and stack[-1] != '(' and
                        schema[stack[-1]].precedence > schema[c].precedence):
                     postfix += stack.pop()
                 stack += c
-        elif c == ")":
-            while stack and stack[-1] != "(":
+        elif c == ')':
+            while stack and stack[-1] != '(':
                 postfix += stack.pop()
             stack.pop()
 
     for c in reversed(stack):
         postfix += c
 
-    return "".join(postfix)
+    return ''.join(postfix)
 
 
 def extract_output_sym_and_expr(eq):
@@ -434,13 +434,13 @@ def extract_output_sym_and_expr(eq):
             equals sign present.
 
     """
-    output_and_expr = eq.split("=")
+    output_and_expr = eq.split('=')
 
     if len(output_and_expr) == 1:
-        raise BadSymbolError(eq, -1, "Equation did not contain equals sign.")
+        raise BadSymbolError(eq, -1, 'Equation did not contain equals sign.')
     elif len(output_and_expr) > 2:
-        error_pos = eq.index("=", eq.index("=")+1)
-        raise BadSymbolError(eq, error_pos, "Unexpected equals sign.")
+        error_pos = eq.index('=', eq.index('=')+1)
+        raise BadSymbolError(eq, error_pos, 'Unexpected equals sign.')
 
     output_sym, expr = output_and_expr[0].strip(), output_and_expr[1].strip()
     return output_sym, expr
@@ -463,7 +463,7 @@ def replace_inputs(postfix_expr, inputs, input_vals):
     Examples:
         Simple example::
 
-            >>> replace_inputs("AB&", ["A", "B"], ["0", "1"])
+            >>> replace_inputs('AB&', ['A', 'B'], ['0', '1'])
             '01&'
 
     """
@@ -477,8 +477,8 @@ def eval_postfix_expr(expr_to_eval):
     """Evaluate the passed postfix expression.
 
     Args:
-        expr_to_eval (str): A string postfix expression, containing only "0"s,
-            "1"s, and single character operations. Assume to be well-formed.
+        expr_to_eval (str): A string postfix expression, containing only '0's,
+            '1's, and single character operations. Assume to be well-formed.
 
     Returns:
         int: The result of the evaluation, as 0 or 1.
@@ -486,7 +486,7 @@ def eval_postfix_expr(expr_to_eval):
     """
     stack = []
     for c in expr_to_eval:
-        if c in ["0", "1"]:
+        if c in ['0', '1']:
             stack.append(int(c))
         else:
             stack.append(schema[c].bool_func(stack.pop(), stack.pop()))
@@ -495,12 +495,12 @@ def eval_postfix_expr(expr_to_eval):
 
 # === Utility Free Functions ==================================================
 def get_symbol_input_array(sym_list):
-    return itertools.product(["0", "1"], repeat=len(sym_list))
+    return itertools.product(['0', '1'], repeat=len(sym_list))
 
 
 # === Grammar-related rules ===================================================
 def is_valid_operand_char_non_leading(c):
-    return c == "_" or c.isalnum()
+    return c == '_' or c.isalnum()
 
 
 # === Custom exception types ==================================================
@@ -540,7 +540,7 @@ class GrammarError(Exception):
         log.error(self.message)
         if self.error_pos >= 0:
             log.error(self.expr_or_equation)
-            log.error(" " * self.error_pos + "^")
+            log.error('' '' * self.error_pos + '^')
 
 
 class BadSymbolError(GrammarError):
@@ -549,11 +549,11 @@ class BadSymbolError(GrammarError):
     Examples:
         Leading with an underscore::
 
-            "F = _A or B"
+            'F = _A or B'
 
         Containing a forbidden symbol::
 
-            "F = opera*nd1 or operand2"
+            'F = opera*nd1 or operand2'
 
     """
     pass
