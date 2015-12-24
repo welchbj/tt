@@ -10,29 +10,9 @@ from tt.eqtools import GrammarError, TooManySymbolsError
 from tt.fmttools import TruthTablePrinter
 
 __all__ = ["main"]
+__version__ = 0.1
 
 logging_format = "%(levelname)s: %(message)s"
-
-# program information
-program_url = "www.github.com/welchbj/tt"
-program_version = "0.1"
-program_build_date = "12/22/2015"
-program_license = "MIT"
-program_author = "Brian Welch"
-
-cl_desc = """\
-tt is a command line utility for printing truth tables and Karnaugh Maps.
-Here is some pertinent information about the release you are using:
-Version: {version}
-Author: {author}
-License: {license}
-URL: {url}""".format(
-    version=program_version,
-    author=program_author,
-    license=program_license,
-    url=program_url)
-cl_version_message = "{version}, {build}".format(
-    version=program_version, build=program_build_date)
 
 
 def main():
@@ -52,12 +32,15 @@ def main():
     try:
         # Setup argument parser
         parser = ArgumentParser(
-            description=cl_desc,
+            description="tt is a command line utility written in Python for "
+                        "truth table and Karnaugh Map generation.\n"
+                        "tt also provides Boolean algebra syntax checking.\n"
+                        "Use tt --help for more information.",
             formatter_class=RawTextHelpFormatter)
         parser.add_argument(
             "--version",
             action="version",
-            version=cl_version_message,
+            version="v"+str(__version__),
             help="Program version and latest build date")
         parser.add_argument(
             "--verbose",
