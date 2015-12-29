@@ -1,3 +1,7 @@
-.\__pycache__
-
-.\.idea
+.idea
+*.pyc
+build
+dist
+*.egg
+ttable.egg-info
+ideas.txt
