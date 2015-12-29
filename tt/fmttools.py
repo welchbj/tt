@@ -11,6 +11,7 @@ DEFAULT_TABLE_CELL_PADDING_WIDTH = 1
 
 
 class TruthTablePrinter(object):
+
     """Printer of nice looking truth tables.
 
     Attributes:
@@ -20,6 +21,7 @@ class TruthTablePrinter(object):
             and right of each cell's contents in the table.
 
     """
+
     def __init__(self, eval_result_wrapper,
                  table_cell_padding_width=DEFAULT_TABLE_CELL_PADDING_WIDTH):
         self.eval_result_wrapper = eval_result_wrapper
@@ -35,7 +37,7 @@ class TruthTablePrinter(object):
             List[int]: The width of each column.
 
         """
-        cell_padding = 2*self.table_cell_padding_width
+        cell_padding = 2 * self.table_cell_padding_width
         input_symbol_column_widths = [
             cell_padding + len(symbol) for symbol in
             self.eval_result_wrapper.input_symbols]
@@ -47,7 +49,7 @@ class TruthTablePrinter(object):
         """Get the separator for important row changes in the table.
 
         Returns:
-            str: The fancy row separator, in the style '+---+---+'.
+            str: The fancy row separator, in the style ``+---+---+``.
 
         """
         return '+' + '+'.join('-' * col_width
