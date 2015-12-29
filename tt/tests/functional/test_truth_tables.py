@@ -4,6 +4,7 @@ from tt.tests.utils import FunctionalTestCase
 class TestTruthTableGeneration(FunctionalTestCase):
 
     # === No Error Tests ======================================================
+
     def test_simple(self):
         self.functional_test_helper(
             cl_args=[''],

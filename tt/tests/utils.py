@@ -21,7 +21,7 @@ class StreamReader():
 def redirected_stdout(new_target):
     old_stdout, sys.stdout = sys.stdout, new_target
     try:
-        yield new_target # run some code with the replaced stdout
+        yield new_target
     finally:
         sys.stdout = old_stdout
 
