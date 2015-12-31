@@ -5,7 +5,7 @@ rem # same directory.
 
 set TAG=[tt]
 set REQS=%CD%\reqs
-set DEVREQS=%REQS%\requirements-dev.txt
+set DEVREQS="%REQS%\requirements-dev.txt"
 set TT_PYPI_NAME=ttable
 
 if /I "%~1"=="" call :_help & exit /b
@@ -22,7 +22,7 @@ if /I "%~1"=="uninstall-all" call :uninstall-all & exit /b
 if /I "%~1"=="test-sdist" call :test-sdist & exit /b
 if /I "%~1"=="test-bdist-wheel" call :test-bdist-wheel & exit /b
 if /I "%~1"=="get-reqs" call :get-reqs & exit /b
-if /I "%~1"=="update-reqs" call :write-reqs & exit /b
+if /I "%~1"=="update-reqs" call :update-reqs & exit /b
 if /I "%~1"=="check-dev-env" call :check-dev-env & exit /b
 if /I "%~1"=="check-all" call :check-all & exit /b
 @echo Unknown target called. & exit /b 1
@@ -51,7 +51,14 @@ python -m unittest discover -s tt\tests\functional
 exit /b
 
 :doc
-@echo TODO
+@echo.
+@echo %TAG% Beginning generation of documentation...
+sphinx-apidoc -f -o docs\source .
+pushd docs
+make html
+popd
+@echo %TAG% OK.
+@echo.
 exit /b
 
 :flake8
@@ -66,7 +73,7 @@ exit /b
 @echo.
 @echo %TAG% Installing tt...
 pip install --upgrade --editable . >nul 2>&1
-where tt || @echo Installation of tt failed & exit /b 1
+where tt >nul 2>&1 || @echo %TAG% Installation of tt failed & exit /b 1
 @echo %TAG% OK.
 @echo.
 exit /b
@@ -82,9 +89,9 @@ exit /b
 :uninstall-tt
 @echo.
 @echo %TAG% Uninstalling tt...
-where tt >nul 2>&1 || @echo Cancelled uninstall; tt is already not installed. & exit /b 0
+where tt >nul 2>&1 || @echo %TAG% Cancelled uninstall; tt is already not installed. & exit /b 0
 pip uninstall --yes %TT_PYPI_NAME% >nul 2>&1
-where tt >nul 1 2>&1 && @echo Failed uninstall. & exit /b 1
+where tt >nul 1 2>&1 && @echo %TAG% Failed uninstall. & exit /b 1
 @echo %TAG% OK.
 @echo.
 exit /b
@@ -109,11 +116,11 @@ exit /b
 rem # An initial check to make sure that the environment is good for testing/publishing purposes.
 rem # Checks that Python 3 is being run and that a virtualenv is active.
 @echo %TAG% Asserting Python 3 is the active Python...
-python --version | findstr 3.* >nul 2>&1 || (@echo Python 3 is not active. & exit /b 1)
+python --version | findstr 3.* >nul 2>&1 || (@echo %TAG% Python 3 is not active. & exit /b 1)
 @echo %TAG% OK.
 @echo.
 @echo %TAG% Asserting a virtualenv is active...
-python -c "import sys; print(hasattr(sys, 'real_prefix'))" | findstr /I true >nul 2>&1 || (@echo Not running inside virtualenv. & exit /b 1)
+python -c "import sys; print(hasattr(sys, 'real_prefix'))" | findstr /I true >nul 2>&1 || (@echo %TAG% Not running inside virtualenv. & exit /b 1)
 @echo %TAG% OK.
 exit /b
 
