@@ -23,6 +23,7 @@ __all__ = ['EvaluationResultWrapper',
 
 # === Wrapper Classes =========================================================
 class EvaluationResultWrapper(object):
+
     """A simple wrapper around the evaluation results of a Boolean equation.
 
     Attributes:
@@ -33,6 +34,7 @@ class EvaluationResultWrapper(object):
             filled with ``'0'`` and ``'1'``.
 
     """
+
     def __init__(self, input_symbols, output_symbol):
         self.input_symbols = input_symbols
         self.output_symbol = output_symbol
@@ -50,6 +52,7 @@ class EvaluationResultWrapper(object):
 
 
 class BooleanEquationWrapper(object):
+
     """A wrapper of a Boolean equation, with parsing/evaluation functionality.
 
     Args:
@@ -75,6 +78,7 @@ class BooleanEquationWrapper(object):
         postfix_expr (str): A transformation of ``infix_expr`` to postfix form.
 
     """
+
     def __init__(self, raw_bool_eq):
         self.unique_symbols_left = list(reversed('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
         self.unique_symbol_to_var_name_dict = {}
@@ -147,17 +151,23 @@ class BooleanEquationWrapper(object):
         eval_result_wrapper = EvaluationResultWrapper(
             self.get_input_symbol_list(), self.output_symbol)
 
+        replaceable_expr = self.postfix_expr
         input_symbols = self.get_unique_symbol_list()
-        for input_row in get_symbol_input_array(input_symbols):
-            expr_to_eval = replace_inputs(
-                self.postfix_expr, input_symbols, input_row)
-            result = eval_postfix_expr(expr_to_eval)
-            eval_result_wrapper.result_list.append(str(result))
+
+        for sym in input_symbols:
+            replaceable_expr = replaceable_expr.replace(sym, '%s')
+
+        exprs_to_eval = (replaceable_expr % input_row for
+                         input_row in get_symbol_input_array(input_symbols))
+
+        for expr in exprs_to_eval:
+            result = eval_postfix_expr(expr)
+            eval_result_wrapper.result_list.append(result)
 
         return eval_result_wrapper
 
     def condense_expression(self, raw_infix_expr):
-        """The core functionality of ``BooleanExpressionWrapper``.
+        """The core functionality of `BooleanEquationWrapper``.
 
         This function replaces all variable words in ``raw_infix_expr`` with
         single-character mappings as well as all operation words/symbols with
@@ -339,7 +349,7 @@ class BooleanEquationWrapper(object):
             raise UnbalancedParenError(
                 self.infix_expr,
                 self.get_expanded_position(left_paren_pos_stack[0]),
-                'Unbalanced left parentheses.')
+                'Unbalanced left parenthesis.')
 
         condensed_expr = condensed_expr.replace(SYM_NOT, '1' + SYM_XOR)
 
@@ -446,33 +456,6 @@ def extract_output_sym_and_expr(eq):
     return output_sym, expr
 
 
-def replace_inputs(postfix_expr, inputs, input_vals):
-    """Replace the inputs in a postfix expression string to later be evaluated.
-
-    Args:
-        postfix_expr (str): The postfix expression in which to replace the
-            symbols specified in ``inputs``.
-        inputs (List[str]): The symbols in ``postfix_expr`` to be replaced.
-        input_vals (List[str]): The values with which to replace the symbols in
-            ``inputs`` in ``postfix_expr``.
-
-    Returns:
-        str: Postfix expression with the symbols in ``inputs`` replaced with
-        the values in ``input_vals``.
-
-    Examples:
-        Simple example::
-
-            >>> replace_inputs('AB&', ['A', 'B'], ['0', '1'])
-            '01&'
-
-    """
-    replaced_expr = postfix_expr
-    for i, sym in enumerate(inputs):
-        replaced_expr = replaced_expr.replace(sym, input_vals[i])
-    return replaced_expr
-
-
 def eval_postfix_expr(expr_to_eval):
     """Evaluate the passed postfix expression.
 
@@ -485,6 +468,7 @@ def eval_postfix_expr(expr_to_eval):
 
     """
     stack = []
+
     for c in expr_to_eval:
         if c in ['0', '1']:
             stack.append(int(c))
@@ -505,21 +489,35 @@ def is_valid_operand_char_non_leading(c):
 
 # === Custom exception types ==================================================
 class TooManySymbolsError(Exception):
+
     """Error for when too many symbols were in the user's equation.
 
-    Because
+    Because user-entered variable names are mapped to single characters for
+    the evaluation of Boolean equations in ``BooleanEquationWrapper``, there
+    are a finite and controlled set of valid symbols to which the mapping is
+    done. Currently, this is just the set of capital alphabetic characters
+    (i.e., A-Z). tt becomes unusably slow when 26 variables are entered in an
+    equation anyways, so there is currently no need to expand the set of
+    symbols beyond its current capacity of 26.
 
     """
+
     pass
 
 
 class GrammarError(Exception):
+
     """Error for problems in equation parsing.
 
     This error type adds information for indicating the expression or
     equation that raised the error to the base Exception class.
 
+    Notes:
+        This error type is meant to be subclassed and should not be
+        raised directly.
+
     """
+
     def __init__(self, expr_or_equation, error_pos, message, *args):
         self.expr_or_equation = expr_or_equation
         self.error_pos = error_pos
@@ -540,10 +538,11 @@ class GrammarError(Exception):
         log.error(self.message)
         if self.error_pos >= 0:
             log.error(self.expr_or_equation)
-            log.error('' '' * self.error_pos + '^')
+            log.error(' ' * self.error_pos + '^')
 
 
 class BadSymbolError(GrammarError):
+
     """Error for an unexpected symbol in variable names or operation words.
 
     Examples:
@@ -556,10 +555,12 @@ class BadSymbolError(GrammarError):
             'F = opera*nd1 or operand2'
 
     """
+
     pass
 
 
 class ExpressionOrderError(GrammarError):
+
     """Error for bad order of operands/operations.
 
     Examples:
@@ -572,14 +573,36 @@ class ExpressionOrderError(GrammarError):
             "F = A A or B"
 
     """
+
     pass
 
 
 class BadParenPositionError(GrammarError):
-    """Error for b
+
+    """Error for improper positioning of parentheses.
+
+    Examples:
+
+        TODO
+
     """
+
     pass
 
 
 class UnbalancedParenError(GrammarError):
+
+    """Error for improper balancing of parentheses.
+
+    Examples:
+        Too many left parentheses::
+
+            "F = A or ((B and C)"
+
+        Too many right parentheses::
+
+            "F = (A and B)) or C"
+
+    """
+
     pass
