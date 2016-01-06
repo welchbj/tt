@@ -10,6 +10,7 @@ from tt.core import main
 
 
 class StreamReader():
+
     def __init__(self):
         self.content = ""
 
@@ -36,6 +37,7 @@ def redirected_stderr(new_target):
 
 
 class FunctionalTestCase(unittest.TestCase):
+
     def functional_test_helper(self,
                                cl_args=[],
                                expected_stdout='',

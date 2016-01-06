@@ -6,6 +6,7 @@ from tt.schema_provider import (SYM_XOR, SYM_XNOR, SYM_AND, SYM_NAND, SYM_NOR,
 
 
 class TestEvaluatePostfixExpr(unittest.TestCase):
+
     """Testing for this function is fairly simple because we are using a proven
     algorithm and all input is assumed to be well-formed.
     """

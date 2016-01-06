@@ -19,6 +19,7 @@ __all__ = ['BooleanOperator',
 
 # === Wrapper Classes =========================================================
 class BooleanOperator(object):
+
     def __init__(self, precedence_in, bool_func_in, *args):
         self.precedence = precedence_in
         self.bool_func = bool_func_in

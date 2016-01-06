@@ -101,6 +101,7 @@ class TruthTablePrinter(object):
 
         results = self.eval_result_wrapper.result_list
         for i, input_row in enumerate(get_symbol_input_array(input_symbols)):
-            print(self.table_rowify(itertools.chain(input_row, results[i])))
+            print(self.table_rowify(
+                itertools.chain(input_row, str(results[i]))))
 
         print(fancy_row_sep)
