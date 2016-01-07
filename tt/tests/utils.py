@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from tt.core import main
 
 
+# === stdout/stderr interaction ===============================================
 class StreamReader():
 
     def __init__(self):
@@ -36,6 +37,7 @@ def redirected_stderr(new_target):
         sys.stderr = old_stderr
 
 
+# === Generalized test cases ==================================================
 class FunctionalTestCase(unittest.TestCase):
 
     def functional_test_helper(self,

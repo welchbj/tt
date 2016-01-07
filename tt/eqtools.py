@@ -6,7 +6,7 @@ import itertools
 
 from enum import Enum
 
-from tt.utils import without_spaces
+from tt.utils import without_spaces, matching_indices
 from tt.schema_provider import (schema, schema_search_ordered_list, SYM_NOT,
                                 SYM_XOR)
 
@@ -50,6 +50,24 @@ class EvaluationResultWrapper(object):
         """
         return 2**len(self.input_symbols)
 
+    def get_high_indices(self):
+        """Get the indices for which the result is high.
+
+        Returns:
+            List[int]: The list of indices where the result is high.
+
+        """
+        return matching_indices(self.result_list, 1)
+
+    def get_low_indices(self):
+        """Get the indices for which the result is low.
+
+        Returns:
+            List[int]: The list of indices where the result is low.
+
+        """
+        return matching_indices(self.result_list, 0)
+
 
 class BooleanEquationWrapper(object):
 
@@ -76,6 +94,8 @@ class BooleanEquationWrapper(object):
             all variable words mapped to single characters and tracked in
             ``unique_symbol_to_var_name_dict``.
         postfix_expr (str): A transformation of ``infix_expr`` to postfix form.
+        eval_result (EvaluationResultWrapper): The result of evaluating this
+            equation at each possible combination of its inputs.
 
     """
 
@@ -84,11 +104,16 @@ class BooleanEquationWrapper(object):
         self.unique_symbol_to_var_name_dict = {}
         self.pos_to_condensed_magnitude_map = {}
 
-        self.output_symbol, self.infix_expr = (
-            extract_output_sym_and_expr(raw_bool_eq))
+        self.output_symbol, self.infix_expr = \
+            extract_output_sym_and_expr(raw_bool_eq)
         self.condensed_infix_expr = self.condense_expression(self.infix_expr)
         self.postfix_expr = infix_to_postfix(
             self.condensed_infix_expr, self.get_unique_symbol_list())
+
+        # right now, the only time that this class is invoked is when we need
+        # the evaluation result; if this changes, the below computation should
+        # not be done in __init__
+        self.eval_result = self.get_evaluation_result()
 
     def get_input_symbol_list(self):
         """Get the list of input symbols contained within this equation.
@@ -154,10 +179,10 @@ class BooleanEquationWrapper(object):
         replaceable_expr = self.postfix_expr
         input_symbols = self.get_unique_symbol_list()
 
-        for sym in input_symbols:
-            replaceable_expr = replaceable_expr.replace(sym, '%s')
+        for i, sym in enumerate(input_symbols):
+            replaceable_expr = replaceable_expr.replace(sym, '{'+str(i)+'}')
 
-        exprs_to_eval = (replaceable_expr % input_row for
+        exprs_to_eval = (replaceable_expr.format(*input_row) for
                          input_row in get_symbol_input_array(input_symbols))
 
         for expr in exprs_to_eval:
@@ -274,7 +299,15 @@ class BooleanEquationWrapper(object):
                             test_idx += 1
 
                         var_name = condensed_expr[curr_idx:test_idx]
+                        if var_name == self.output_symbol:
+                            raise BadSymbolError(
+                                self.infix_expr,
+                                self.get_expanded_position(curr_idx),
+                                'Output symbol used as an input variable in '
+                                'your expression.')
+
                         unique_symbol = self.get_unique_symbol(var_name)
+
                         condensed_expr = (
                             condensed_expr[:curr_idx] + unique_symbol +
                             condensed_expr[test_idx:])

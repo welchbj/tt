@@ -10,8 +10,11 @@ class TestCondenseExpression(unittest.TestCase):
     # === Helper methods ======================================================
     def helper_no_throw_test_condense_expression(self, raw_expr='',
                                                  expected_expr='',
-                                                 expected_symbol_mapping={}):
-        bool_equation_wrapper = BooleanEquationWrapper('F = ' + raw_expr)
+                                                 expected_symbol_mapping={},
+                                                 output_symbol='F'):
+        bool_equation_wrapper = BooleanEquationWrapper(
+            output_symbol + ' = ' + raw_expr)
+
         condensed_expr = bool_equation_wrapper.condensed_infix_expr
         symbol_mapping = bool_equation_wrapper.unique_symbol_to_var_name_dict
 
@@ -20,9 +23,10 @@ class TestCondenseExpression(unittest.TestCase):
 
     def helper_does_throw_test_condense_expression(self, bad_expr='',
                                                    exception_class=None,
-                                                   expected_error_pos=0):
+                                                   expected_error_pos=0,
+                                                   output_symbol='F'):
         try:
-            BooleanEquationWrapper('F = ' + bad_expr)
+            BooleanEquationWrapper(output_symbol + ' = ' + bad_expr)
         except exception_class as e:
             self.assertEqual(expected_error_pos, e.error_pos)
         except:
@@ -399,3 +403,17 @@ class TestCondenseExpression(unittest.TestCase):
             bad_expr='(op1 and ())',
             exception_class=BadParenPositionError,
             expected_error_pos=10)
+
+    def test_use_output_symbol_in_expression_at_beginning(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr='out or op1',
+            exception_class=BadSymbolError,
+            expected_error_pos=0,
+            output_symbol='out')
+
+    def test_use_output_symbol_in_expression_in_middle(self):
+        self.helper_does_throw_test_condense_expression(
+            bad_expr='op1 and op2 or out xor op3',
+            exception_class=BadSymbolError,
+            expected_error_pos=15,
+            output_symbol='out')
