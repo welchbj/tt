@@ -4,7 +4,7 @@
 import sys
 import logging as log
 
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentError
 
 from tt.eqtools import (BooleanEquationWrapper, GrammarError,
                         TooManySymbolsError)
@@ -14,6 +14,32 @@ __all__ = ['main']
 __version__ = 0.1
 
 logging_format = '%(levelname)s: %(message)s'
+
+
+# function wrappers; may be moved/refactored when this becomes too cluttered
+def table_cmd(bool_eq_wrapper):
+    TruthTablePrinter(bool_eq_wrapper.eval_result).print_tt()
+    print()
+
+
+def table_intermediates_cmd(bool_eq_wrapper):
+    pass
+
+
+def kmap_cmd(bool_eq_wrapper):
+    pass
+
+
+def sop_cmd(bool_eq_wrapper):
+    pass
+
+
+def pos_cmd(bool_eq_wrapper):
+    pass
+
+
+def minimal_cmd(bool_eq_wrapper):
+    pass
 
 
 def main(args=None):
@@ -40,6 +66,7 @@ def main(args=None):
     try:
         # Setup argument parser
         parser = ArgumentParser(
+            prog='tt',
             description='tt is a command line utility written in Python for '
                         'truth table and Karnaugh Map generation.\n'
                         'tt also provides Boolean algebra syntax checking.\n'
@@ -65,7 +92,24 @@ def main(args=None):
             help='Indicates that intermediate Boolean expressions should be\n'
                  'displayed with their own column in the truth table.\n'
                  'Not valid with the --kmap option.\n'
-                 'Currently unsupported.')
+                 'NOTE: Not yet implemented.')
+        parser.add_argument(
+            '--table',
+            action='store_true',
+            help='') # TODO
+        parser.add_argument(
+            '--minimal',
+            action='store_true',
+            help='Use this option to modify the --pos and --sop commands to\n'
+                 'get the minimal product of sums or sum of products form.')
+        parser.add_argument(
+            '--sop',
+            action='store_true',
+            help='') # TODO
+        parser.add_argument(
+            '--pos',
+            action='store_true',
+            help='') # TODO
         parser.add_argument(
             dest='equation',
             help='Boolean equation to be analyzed, enclosed with quotes.\n'
@@ -87,9 +131,14 @@ def main(args=None):
 
         # Process arguments
         args = parser.parse_args(args)
+
         verbose = args.verbose
         kmap = args.kmap
         intermediates = args.intermediates
+        table = args.table
+        minimal = args.minimal
+        sop = args.sop
+        pos = args.pos
         equation = args.equation
 
         if verbose:
@@ -98,20 +147,35 @@ def main(args=None):
         else:
             log.basicConfig(format=logging_format)
 
-        if kmap and intermediates:
-            parser.error(
-                '--intermediates option is not compatible with kmap generation'
-            )
-            raise NotImplementedError('--kmap and --intermediates')
-        elif kmap:
+        # temporary, until these features are implemented
+        if kmap:
             raise NotImplementedError('--kmap')
-        elif intermediates:
+        if intermediates:
             raise NotImplementedError('--intermediates')
-        else:  # default to truth table generation
-            bool_eq = BooleanEquationWrapper(equation)
-            eval_result = bool_eq.get_evaluation_result()
-            tt_printer = TruthTablePrinter(eval_result)
-            tt_printer.print_tt()
+        if minimal:
+            raise NotImplementedError('--minimal')
+        if sop:
+            raise NotImplementedError('--sop')
+        if pos:
+            raise NotImplementedError('--pos')
+
+        if intermediates and not table:
+            raise ArgumentError('The --intermediates option must be used in\n'
+                                'conjunction with the --table option.')
+
+        bool_eq_wrapper = BooleanEquationWrapper(equation)
+
+        if table:
+            if intermediates:
+                table_intermediates_cmd(bool_eq_wrapper)
+            else:
+                table_cmd(bool_eq_wrapper)
+        if kmap:
+            kmap_cmd(bool_eq_wrapper)
+        if pos:
+            pos_cmd(bool_eq_wrapper)
+        if sop:
+            sop_cmd(bool_eq_wrapper)
 
     except KeyboardInterrupt:
         return 0
@@ -120,6 +184,10 @@ def main(args=None):
         return 1
     except TooManySymbolsError as e:
         log.error(str(e))
+        return 1
+    except ArgumentError as e:
+        log.error(str(e))
+        return 1
     except NotImplementedError as e:
         log.error('Tried to use a feature that is not yet implemented: ' +
                   str(e))
