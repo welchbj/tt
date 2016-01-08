@@ -161,5 +161,7 @@ exit /b
 :upload
 call :check-dev-env || exit /b
 call :test-all || (@echo Cancelling upload; tests failed. & exit /b 1)
-pip upload register sdist bdist_wheel
+python setup.py register
+python setup.py sdist upload
+python setup.py bdist_wheel upload
 exit /b
