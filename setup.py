@@ -55,7 +55,7 @@ setup(
     author=tt_author,
     author_email=tt_author_email,
     url=tt_url,
-    license=tt_url,
+    license=tt_license,
     install_requires=tt_install_requires,
     packages=find_packages(exclude=['tests', '*.tests', '*.tests.*']),
     entry_points=tt_entry_points,
