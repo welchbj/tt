@@ -1,8 +1,3 @@
-WARNING:
-If you are reading this page, this is a working copy. None of the code examples (specifically anything
-related to installing from PyPI) are guaranteed/expected to work. Please use the README file on the master branch
-as a reference for featues currently present in tt.
-
 .. contents::
     :local:
     :depth: 1
@@ -20,7 +15,7 @@ Installation
 ============
 
 tt was developed in Python 3 and no effort has been made for compatibility with Python 2.
-tt was written in pure Python, so it only requires a Python installation to run.
+tt was written in pure Python, so it only requires a compatible Python installation to run.
 
 You can get the latest release from PyPI. Just use::
 
@@ -28,29 +23,31 @@ You can get the latest release from PyPI. Just use::
 
 Using this method, you can invoke tt with::
 
-    $ tt "F = A or B"
+    $ tt
 
 If you want to get the most up to date stable version, you can get the sources directly with::
 
-    $ git clone https://github.com/welchbj/tt.git
-    $ cd tt
+    $ git clone https://github.com/welchbj/tt.git && cd tt
 
 If you install tt using the git approach, you will have to invoke it directly with Python.
 This can be done with::
 
-    $ python [-m] tt "F = A or B"
+    $ python -m tt
 
 ================
 Command Line Use
 ================
 
-All you need to specify to tt is your Boolean equation (surrounded in quotes).
-Right now, tt assumes that your output variable will be on the left side of your equals sign and that
+All you need to specify to tt is your Boolean equation, which can be optionally
+surrouded in double quotes. Right now, tt assumes that your output variable will be on the left side of your equals sign and that
 the equivalent expression will be on the right side of the equals sign.
+
+You can use the ``--table`` option to output a truth table of your passed equation. Omitting all options
+except for the required equation will default to truth table generation, too. 
 
 A simple example::
 
-    $ tt "F = A and B"
+    $ tt --table F = A and B
     +---+---+---+
     | A | B | F |
     +---+---+---+
@@ -62,7 +59,7 @@ A simple example::
 
 tt can handle more complex variable names, too::
 
-    $ tt "out = operand_1 or operand_2"
+    $ tt --table out = operand_1 or operand_2
     +-----------+-----------+-----+
     | operand_1 | operand_2 | out |
     +-----------+-----------+-----+
@@ -74,7 +71,7 @@ tt can handle more complex variable names, too::
 
 tt can handle more complex Boolean operations and syntax, as well::
 
-    $ tt "out = (op1 xor (op2 and op3)) nand op4"
+    $ tt --table out = (op1 xor (op2 and op3)) nand op4
     +-----+-----+-----+-----+-----+
     | op1 | op2 | op3 | op4 | out |
     +-----+-----+-----+-----+-----+
@@ -96,9 +93,10 @@ tt can handle more complex Boolean operations and syntax, as well::
     |  1  |  1  |  1  |  1  |  1  |
     +-----+-----+-----+-----+-----+
 
-tt doesn't limit you to plain English operations, either::
+tt doesn't limit you to plain English operations, either. The equation is surrounded in quotes below
+to avoid escaping the | character in the terminal.::
 
-    $ tt "F = ~(A || B) && C"
+    $ tt --table "F = ~(A || B) && C"
     +---+---+---+---+
     | A | B | C | F |
     +---+---+---+---+
@@ -123,14 +121,14 @@ Too many equals signs::
 
 Unbalanced parentheses::
 
-    $ tt "out = ((A and B) or C))"
+    $ tt --table "out = ((A and B) or C))"
     ERROR: Unbalanced right parenthesis.
     ERROR: ((A and B) or C))
     ERROR:                 ^
 
 Malformed equation::
 
-    $ tt "out = A or (B and and C)"
+    $ tt out = A or (B and and C)
     ERROR: Unexpected operation.
     ERROR: A or (B and and C)
     ERROR:             ^
@@ -140,11 +138,11 @@ Development
 ===========
 
 The tt development pipeline was built with all major OSes in mind, and all command line
-instructions should be identical not matter what terminal or cmd prompt you're using. 
+instructions should be identical no matter what terminal or cmd prompt you're using. 
 All common development tasks should have a corresponding make target (either in make.bat or the Makefile). 
 If you can't find a target that you find yourself needing frequently, please feel free to add it!
 Please note, though, that the two "make" files are meant to be functionally equivalent, 
-so don't change one without updating the other.
+so please don't change one without updating the other.
 
 It is recommended that all development is done in a `virtualenv`_. `virtualenvwrapper`_ is super helpful, too.
 
@@ -155,9 +153,9 @@ Please note: All below examples are assumed to be done from within the top-level
 this is where the make files reside.
 
 The dependencies for different setups of tt environments are defined in the tt\\reqs directory.
-For development, you can install the appropriate packages with::
+For development, you can install the appropriate development packages with::
 
-    $ make get-reqs
+    $ make install-reqs
 
 This file can easily be updated with your current environment's installed packages with
 the target::
@@ -167,25 +165,19 @@ the target::
 We ask that you update the production requirements.txt manually, as there should be significantly fewer
 required packages for the published releases and we want to keep the install as lean as possible.
 
-Running tt's tests is pretty easy, too. You can run all the tests at once with::
+Running tt's tests is pretty easy, too. You can run all the Python unittests at once with::
 
     $ make test
 
-Or you can run the tests by group::
-
-    $ make test-unit
-    $ make test-functional
-
-Alternatively, you can invoke the Python unittest module directly. The same three examples would be run with::
-
-    $ python -m unittest discover -s tt\tests
+Alternatively, you can invoke the Python unittest module directly to run different groups
+of tests. The same three examples would be run with::
 
     $ python -m unittest discover -s tt\tests\unit
     $ python -m unittest discover -s tt\tests\functional
 
 For formatting of the code, tt tries to follow `PEP8`_ closely. flake8 is used to ensure that the code complies
 with this standard. Additionally, `Google style`_ docstrings are used. The docstrings in tt are modelled after 
-those found in the `napoleon documentation`_. 
+the nice examples in the `napoleon documentation`_. 
 
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _Google style: https://google.github.io/styleguide/pyguide.html 
@@ -193,12 +185,12 @@ those found in the `napoleon documentation`_.
 
 tt is designed to be a thoroughly tested application. Its test are divided into two groups:
 
-    #. unit - For testing individual methods in isolation
+    #. unit - For testing individual methods and pieces of functionality
     #. functional - For simulating actual use of the application by capturing what is sent to stdout and stderr
 
 The git structure of tt is pretty simple, as tt is a pretty simple application itself. Each release has its own 
 branch. Branch names are in the form v{major.minor}. If a branch is in a working and functional state,
-it should be merged into the develop branch. Working and functional is defined as:
+it can be merged into the develop branch. Working and functional is defined as:
 
     #. Passing all tests
     #. No output from flake8
@@ -219,29 +211,26 @@ Below indicates what is aimed to be included in the releases leading up to v1.0:
 
     * v0.2
 
-        #. add make file support
         #. introduce the project's setup.py file
+        #. add Windows make file
         #. improve requirements management, for both production and development
         #. update README, in reStructuredText instead of markdown
         #. introduce functional test framework
-        #. integrate with Travis CI
         #. initial publish to PyPI
 
     * v0.3
 
-        #. product-of-sum (--pos) and sum-of-product (--sop) form generation for Boolean equations
-        #. initial Karnaugh Map generation for equations of up to 4 variables
-
-    * v0.4
-
+        #. introduce Karnaugh Map functionality
         #. add indication of optimal groupings on Karnaugh Maps, perhaps with color via colorama
-        #. increase number of variables allowed in Karnaugh Map generation
         #. add --raw modifier to indicate only a plain Karnaugh Map should be output
-        #. add --min modifier to --pos and --som forms for minimization of result
+        #. port Windows make file to \*nix
+        #. integrate with Travis CI
 
-    * v0.5
+    * v.0.4
 
-        #. introduce the ability to generate logic circuit diagrams from equations
+        #. improve verbose output and logging
+        #. product-of-sum (--pos) and sum-of-product (--sop) form generation for Boolean equations
+        #. introduce functionality to generate logic circuit diagrams from equations
 
 =======
 License
