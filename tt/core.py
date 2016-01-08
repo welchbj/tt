@@ -12,7 +12,7 @@ from tt.fmttools import TruthTablePrinter
 from tt.utils import without_spaces, print_err
 
 __all__ = ['main']
-__version__ = 0.1
+__version__ = 0.2
 
 logging_format = '%(levelname)s: %(message)s'
 
@@ -64,7 +64,7 @@ def parse_args(args):
         '--kmap',
         action='store_true',
         help='Generate kmap of specified boolean equation.\n'
-             'Currently unsupported.')
+             'NOTE: Not yet implemented.')
     parser.add_argument(
         '--intermediates',
         action='store_true',

@@ -12,19 +12,19 @@ if /I "%~1"=="" call :_help & exit /b
 if /I "%~1"=="help" call :_help & exit /b
 if /I "%~1"=="clean" call :clean & exit /b
 if /I "%~1"=="test" call :test & exit /b
-if /I "%~1"=="doc" call :doc & exit /b
 if /I "%~1"=="flake8" call :flake8 & exit /b
-if /I "%~1"=="upload" call :upload & exit /b
 if /I "%~1"=="install-tt" call :install-tt & exit /b
 if /I "%~1"=="install-reqs" call :install-reqs & exit /b
 if /I "%~1"=="uninstall-tt" call :uninstall-tt & exit /b
-if /I "%~1"=="uninstall-all" call :uninstall-all & exit /b
+if /I "%~1"=="uninstall-reqs" call :uninstall-reqs & exit /b
+if /I "%~1"=="write-reqs" call :write-reqs & exit /b
+if /I "%~1"=="check-dev-env" call :check-dev-env & exit /b
 if /I "%~1"=="test-sdist" call :test-sdist & exit /b
 if /I "%~1"=="test-bdist-wheel" call :test-bdist-wheel & exit /b
-if /I "%~1"=="get-reqs" call :get-reqs & exit /b
-if /I "%~1"=="update-reqs" call :update-reqs & exit /b
-if /I "%~1"=="check-dev-env" call :check-dev-env & exit /b
-if /I "%~1"=="check-all" call :check-all & exit /b
+if /I "%~1"=="test-dist" call :test-dist & exit /b
+if /I "%~1"=="init" call :init & exit /b
+if /I "%~1"=="test-all" call :test-all & exit /b
+if /I "%~1"=="upload" call :upload & exit /b
 @echo Unknown target called. & exit /b 1
 
 rem # === Standalone Targets =================================================
@@ -34,43 +34,30 @@ rem # === Standalone Targets =================================================
 exit /b
 
 :clean
-@echo TODO
-exit /b
-
-:test
-@echo.
-@echo %TAG% Running unit tests
-@echo.
-python -m unittest discover -s tt\tests\unit
-@echo.
-@echo.
-@echo %TAG% Running functional tests
-@echo.
-python -m unittest discover -s tt\tests\functional
-@echo.
-exit /b
-
-:doc
-@echo.
-@echo %TAG% Beginning generation of documentation...
-sphinx-apidoc -f -o docs\source .
-pushd docs
-make html
-popd
+@echo %TAG% Cleaning environment...
+del /s /q *.pyc >nul 2>&1
+del /s /q dist >nul 2>&1
+rmdir dist >nul 2>&1
+del /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
+rmdir %TT_PYPI_NAME%.egg-info >nul 2>&1
 @echo %TAG% OK.
 @echo.
 exit /b
 
-:flake8
+:test
+@echo %TAG% Running tests...
 @echo.
+python -m unittest || exit /b
+exit /b
+
+:flake8
 @echo %TAG% Running flake8...
-flake8 --exclude=docs .
+flake8 . || exit /b
 @echo %TAG% OK.
 @echo.
 exit /b
 
 :install-tt
-@echo.
 @echo %TAG% Installing tt...
 pip install --upgrade --editable . >nul 2>&1
 where tt >nul 2>&1 || @echo %TAG% Installation of tt failed & exit /b 1
@@ -79,7 +66,6 @@ where tt >nul 2>&1 || @echo %TAG% Installation of tt failed & exit /b 1
 exit /b
 
 :install-reqs
-@echo.
 @echo %TAG% Installing dev requirements from %DEVREQS%...
 pip install --upgrade -r %DEVREQS% >nul 2>&1
 @echo %TAG% OK.
@@ -87,24 +73,22 @@ pip install --upgrade -r %DEVREQS% >nul 2>&1
 exit /b
 
 :uninstall-tt
-@echo.
 @echo %TAG% Uninstalling tt...
-where tt >nul 2>&1 || @echo %TAG% Cancelled uninstall; tt is already not installed. & exit /b 0
+where tt >nul 2>&1 || @echo %TAG% Cancelled uninstall; tt is already not installed. & @echo. & exit /b 0
 pip uninstall --yes %TT_PYPI_NAME% >nul 2>&1
-where tt >nul 1 2>&1 && @echo %TAG% Failed uninstall. & exit /b 1
+where tt >nul 1 2>&1 && @echo %TAG% Failed uninstall. & @echo. & exit /b 1
 @echo %TAG% OK.
 @echo.
 exit /b
 
 :uninstall-reqs
-@echo.
 @echo %TAG% Uninstalling all tt dev requirements...
 pip uninstall --yes -r %DEVREQS% >nul 2>&1
 @echo %TAG% OK.
 @echo.
 exit /b
 
-:update-reqs
+:write-reqs
 @echo %TAG% Updating %DEVREQS% with the current environment's installed packages
 pip freeze > %DEVREQS%
 @echo %TAG% OK.
@@ -122,39 +106,60 @@ python --version | findstr 3.* >nul 2>&1 || (@echo %TAG% Python 3 is not active.
 @echo %TAG% Asserting a virtualenv is active...
 python -c "import sys; print(hasattr(sys, 'real_prefix'))" | findstr /I true >nul 2>&1 || (@echo %TAG% Not running inside virtualenv. & exit /b 1)
 @echo %TAG% OK.
+@echo.
 exit /b
 
 rem # === Dependent Targets ==================================================
 
-:upload
-@echo TODO
-exit /b
-
 :init
-@echo.
 @echo %TAG% Beginning initialization of tt for testing...
-call :clean
-call :uninstall-reqs
+@echo.
 call :uninstall-tt
 call :install-reqs
 call :install-tt
 exit /b
 
 :test-sdist
-@echo TODO
+call :uninstall-reqs
+call :uninstall-tt
+call :clean
+@echo %TAG% Beginning test of source distribution...
+python setup.py sdist >nul 2>&1
+for %%f in (dist\*.zip) do set SDIST=%%f
+pip install --force-reinstall --upgrade %SDIST% >nul 2>&1
+where tt >nul 2>&1 || (@echo tt did not install properly from source dist. & exit /b 1)
+@echo %TAG% OK.
+@echo.
 exit /b
 
 :test-bdist-wheel
-@echo TODO
+call :uninstall-reqs
+call :uninstall-tt
+call :clean
+@echo %TAG% Beginning test of binary wheel distribution...
+python setup.py bdist_wheel >nul 2>&1
+for %%f in (dist\*.whl) do set WHLDIST=%%f
+pip install --force-reinstall --upgrade %WHLDIST% >nul 2>&1
+where tt >nul 2>&1 || (@echo tt did not install properly from wheel dist. & exit /b 1)
+@echo %TAG% OK.
+@echo.
 exit /b
 
 :test-dist
-@echo.
-@echo %TAG% Testing source and binary distributions of tt...
 call :test-sdist
 call :test-bdist-wheel
 exit /b
 
-:check-all
-@echo TODO
+:test-all
+call :check-dev-env || exit /b
+call :init
+call :flake8 || exit /b
+call :test || exit /b
+call :test-dist || exit /b
+exit /b
+
+:upload
+call :check-dev-env || exit /b
+call :test-all || (@echo Cancelling upload; tests failed. & exit /b 1)
+pip upload register sdist bdist_wheel
 exit /b
