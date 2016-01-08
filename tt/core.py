@@ -4,11 +4,12 @@
 import sys
 import logging as log
 
-from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentError
+from argparse import ArgumentParser, RawTextHelpFormatter
 
 from tt.eqtools import (BooleanEquationWrapper, GrammarError,
                         TooManySymbolsError)
 from tt.fmttools import TruthTablePrinter
+from tt.utils import without_spaces, print_err
 
 __all__ = ['main']
 __version__ = 0.1
@@ -42,6 +43,82 @@ def minimal_cmd(bool_eq_wrapper):
     pass
 
 
+def parse_args(args):
+    parser = ArgumentParser(
+        prog='tt',
+        description='tt is a command line utility written in Python for '
+                    'truth table and Karnaugh Map generation.\n'
+                    'tt also provides Boolean algebra syntax checking.\n'
+                    'Use tt --help for more information.',
+        formatter_class=RawTextHelpFormatter)
+    parser.add_argument(
+        '--version',
+        action='version',
+        version='v'+str(__version__),
+        help='Program version and latest build date')
+    parser.add_argument(
+        '--verbose',
+        action='store_true',
+        help='Specify verbose output, useful for debugging.')
+    parser.add_argument(
+        '--kmap',
+        action='store_true',
+        help='Generate kmap of specified boolean equation.\n'
+             'Currently unsupported.')
+    parser.add_argument(
+        '--intermediates',
+        action='store_true',
+        help='Indicates that intermediate Boolean expressions should be\n'
+             'displayed with their own column in the truth table.\n'
+             'Not valid with the --kmap option.\n'
+             'NOTE: Not yet implemented.')
+    parser.add_argument(
+        '--table',
+        action='store_true',
+        help='Generate the truth table for the passed equation.')
+    parser.add_argument(
+        '--minimal',
+        action='store_true',
+        help='Use this option to modify the --pos and --sop commands to\n'
+             'get the minimal product of sums or sum of products form.\n'
+             'NOTE: Not yet implemented.')
+    parser.add_argument(
+        '--sop',
+        action='store_true',
+        help='Generate the minimal sum-of-products form of the passed\n'
+             'equation.\n'
+             'NOTE: Not yet implemented.')
+    parser.add_argument(
+        '--pos',
+        action='store_true',
+        help='Generate the minimal product-of-sums form of the passed\n'
+             'equation.\n'
+             'NOTE: Not yet implemented.')
+    parser.add_argument(
+        dest='equation',
+        nargs='*',
+        help='Boolean equation to be analyzed.\n'
+             'Can be optionally enclosed in double-quotes, which is useful '
+             'for not having to escape the pipe character in your terminal.\n'
+             'Boolean operations can be specified using plain English or '
+             'their common symbolic equivalents.\n'
+             'For example, the two equations:\n'
+             '\t(1) out = operand_1 and operand_2 or operand_3\n'
+             '\t(2) "out = operand_1 && operand_2 || operand_3"\n'
+             'Would evaluate identically.\n'
+             '\n'
+             'Supported Boolean operations are:\n'
+             '\tnot\n'
+             '\txor\n'
+             '\txnor\n'
+             '\tand\n'
+             '\tnand\n'
+             '\tor\n'
+             '\tnor\n')
+
+    return parser.parse_args(args)
+
+
 def main(args=None):
     """The main entry point to the command line application.
 
@@ -59,93 +136,34 @@ def main(args=None):
             2: Unrecognized error occurred.
 
     """
-
-    if args is None:
-        args = sys.argv[1:]
-
     try:
-        # Setup argument parser
-        parser = ArgumentParser(
-            prog='tt',
-            description='tt is a command line utility written in Python for '
-                        'truth table and Karnaugh Map generation.\n'
-                        'tt also provides Boolean algebra syntax checking.\n'
-                        'Use tt --help for more information.',
-            formatter_class=RawTextHelpFormatter)
-        parser.add_argument(
-            '--version',
-            action='version',
-            version='v'+str(__version__),
-            help='Program version and latest build date')
-        parser.add_argument(
-            '--verbose',
-            action='store_true',
-            help='Specify verbose output, useful for debugging.')
-        parser.add_argument(
-            '--kmap',
-            action='store_true',
-            help='Generate kmap of specified boolean equation.\n'
-                 'Currently unsupported.')
-        parser.add_argument(
-            '--intermediates',
-            action='store_true',
-            help='Indicates that intermediate Boolean expressions should be\n'
-                 'displayed with their own column in the truth table.\n'
-                 'Not valid with the --kmap option.\n'
-                 'NOTE: Not yet implemented.')
-        parser.add_argument(
-            '--table',
-            action='store_true',
-            help='') # TODO
-        parser.add_argument(
-            '--minimal',
-            action='store_true',
-            help='Use this option to modify the --pos and --sop commands to\n'
-                 'get the minimal product of sums or sum of products form.')
-        parser.add_argument(
-            '--sop',
-            action='store_true',
-            help='') # TODO
-        parser.add_argument(
-            '--pos',
-            action='store_true',
-            help='') # TODO
-        parser.add_argument(
-            dest='equation',
-            help='Boolean equation to be analyzed, enclosed with quotes.\n'
-                 'Boolean operations can be specified using plain English or '
-                 'their common symbolic equivalents.\n'
-                 'For example, the two equations:\n'
-                 '\t(1) "out = operand_1 and operand_2 or operand_3"\n'
-                 '\t(2) "out = operand_1 && operand_2 || operand_3"\n'
-                 'Would evaluate identically.\n'
-                 '\n'
-                 'Supported Boolean operations are:\n'
-                 '\tnot\n'
-                 '\txor\n'
-                 '\txnor\n'
-                 '\tand\n'
-                 '\tnand\n'
-                 '\tor\n'
-                 '\tnor\n')
+        if args is None:
+            args = sys.argv[1:]
 
-        # Process arguments
-        args = parser.parse_args(args)
+        opts = parse_args(args)
 
-        verbose = args.verbose
-        kmap = args.kmap
-        intermediates = args.intermediates
-        table = args.table
-        minimal = args.minimal
-        sop = args.sop
-        pos = args.pos
-        equation = args.equation
+        verbose = opts.verbose
+        kmap = opts.kmap
+        intermediates = opts.intermediates
+        table = opts.table
+        minimal = opts.minimal
+        sop = opts.sop
+        pos = opts.pos
+        equation = ' '.join(opts.equation)
 
         if verbose:
             log.basicConfig(format=logging_format, level=log.DEBUG)
             log.info('Starting verbose output.')
         else:
             log.basicConfig(format=logging_format)
+
+        if not any((kmap, table, minimal, sop, pos)):
+            log.info('No action specified, defaulting to truth table '
+                     'generation.')
+            table = True
+
+        if not without_spaces(equation) or without_spaces(equation) == "''":
+            raise ValueError('A non-empty equation is required.')
 
         # temporary, until these features are implemented
         if kmap:
@@ -160,8 +178,8 @@ def main(args=None):
             raise NotImplementedError('--pos')
 
         if intermediates and not table:
-            raise ArgumentError('The --intermediates option must be used in\n'
-                                'conjunction with the --table option.')
+            raise ValueError('The --intermediates option must be used in\n'
+                             'conjunction with the --table option.')
 
         bool_eq_wrapper = BooleanEquationWrapper(equation)
 
@@ -177,23 +195,27 @@ def main(args=None):
         if sop:
             sop_cmd(bool_eq_wrapper)
 
+        return 0
+
     except KeyboardInterrupt:
         return 0
     except GrammarError as e:
         e.log()
         return 1
     except TooManySymbolsError as e:
-        log.error(str(e))
+        print_err(str(e))
         return 1
-    except ArgumentError as e:
-        log.error(str(e))
+    except ValueError as e:
+        print_err(str(e))
         return 1
     except NotImplementedError as e:
-        log.error('Tried to use a feature that is not yet implemented: ' +
+        print_err('Tried to use a feature that is not yet implemented: ' +
                   str(e))
         return 1
     except Exception as e:
         log.critical('An unknown error occurred. '
                      'Cannot continue program execution.\n' +
                      str(e))
+        import traceback
+        traceback.print_exc()
         return 2

@@ -1,12 +1,11 @@
 """A module for extracting and manipulating information from Boolean equations.
 """
 
-import logging as log
 import itertools
 
 from enum import Enum
 
-from tt.utils import without_spaces, matching_indices
+from tt.utils import print_err, without_spaces, matching_indices
 from tt.schema_provider import (schema, schema_search_ordered_list, SYM_NOT,
                                 SYM_XOR)
 
@@ -568,10 +567,10 @@ class GrammarError(Exception):
             None
 
         """
-        log.error(self.message)
+        print_err(self.message)
         if self.error_pos >= 0:
-            log.error(self.expr_or_equation)
-            log.error(' ' * self.error_pos + '^')
+            print_err(self.expr_or_equation)
+            print_err(' ' * self.error_pos + '^')
 
 
 class BadSymbolError(GrammarError):
