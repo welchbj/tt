@@ -3,8 +3,6 @@
 
 import itertools
 
-from enum import Enum
-
 from tt.utils import print_err, without_spaces, matching_indices
 from tt.schema_provider import (schema, schema_search_ordered_list, SYM_NOT,
                                 SYM_XOR)
@@ -324,24 +322,23 @@ class BooleanEquationWrapper(object):
         # Syntax checking is done in a post-processing of the condensed
         # expression
 
-        class NextValidState(Enum):
-            OPERAND = 0
-            OPERATION = 1
+        NEXT_STATE_OPERAND = 0
+        NEXT_STATE_OPERATION = 1
 
         left_paren_pos_stack = []
-        next_state = NextValidState.OPERAND
+        next_state = NEXT_STATE_OPERAND
         for pos, c in enumerate(condensed_expr):
             if not c.strip():
                 continue
             elif c == '(':
-                if next_state != NextValidState.OPERAND:
+                if next_state != NEXT_STATE_OPERAND:
                     raise BadParenPositionError(
                         self.infix_expr, self.get_expanded_position(pos),
                         'Unexpected parenthesis.')
                 else:
                     left_paren_pos_stack.append(pos)
             elif c == ')':
-                if next_state != NextValidState.OPERATION:
+                if next_state != NEXT_STATE_OPERATION:
                     raise BadParenPositionError(
                         self.infix_expr, self.get_expanded_position(pos),
                         'Unexpected parenthesis.')
@@ -353,29 +350,29 @@ class BooleanEquationWrapper(object):
                     else:
                         left_paren_pos_stack.pop()
             elif c in self.get_unique_symbol_list() or c in ['0', '1']:
-                if next_state != NextValidState.OPERAND:
+                if next_state != NEXT_STATE_OPERAND:
                     raise ExpressionOrderError(
                         self.infix_expr, self.get_expanded_position(pos),
                         'Unexpected operand.')
                 else:
-                    next_state = NextValidState.OPERATION
+                    next_state = NEXT_STATE_OPERATION
             else:
                 if pos == len(condensed_expr) - 1:
                     raise ExpressionOrderError(
                         self.infix_expr, self.get_expanded_position(pos),
                         'Unexpected operation.')
                 elif c == SYM_NOT:
-                    if next_state != NextValidState.OPERAND:
+                    if next_state != NEXT_STATE_OPERAND:
                         raise ExpressionOrderError(
                             self.infix_expr, self.get_expanded_position(pos),
                             'Unexpected operation.')
                 else:
-                    if next_state != NextValidState.OPERATION:
+                    if next_state != NEXT_STATE_OPERATION:
                         raise ExpressionOrderError(
                             self.infix_expr, self.get_expanded_position(pos),
                             'Unexpected operation.')
                     else:
-                        next_state = NextValidState.OPERAND
+                        next_state = NEXT_STATE_OPERAND
 
         if left_paren_pos_stack:
             raise UnbalancedParenError(
