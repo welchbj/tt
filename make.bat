@@ -8,10 +8,9 @@ set REQS=%CD%\reqs
 set DEVREQS="%REQS%\requirements-dev.txt"
 set TT_PYPI_NAME=ttable
 
-if /I "%~1"=="" call :_help & exit /b
+if /I "%~1"=="" @echo You must specify a target. & exit /b
 if /I "%~1"=="help" call :_help & exit /b
 if /I "%~1"=="clean" call :clean & exit /b
-if /I "%~1"=="test" call :test & exit /b
 if /I "%~1"=="flake8" call :flake8 & exit /b
 if /I "%~1"=="install-tt" call :install-tt & exit /b
 if /I "%~1"=="install-reqs" call :install-reqs & exit /b
@@ -22,32 +21,25 @@ if /I "%~1"=="check-dev-env" call :check-dev-env & exit /b
 if /I "%~1"=="test-sdist" call :test-sdist & exit /b
 if /I "%~1"=="test-bdist-wheel" call :test-bdist-wheel & exit /b
 if /I "%~1"=="test-dist" call :test-dist & exit /b
+if /I "%~1"=="test" call :test & exit /b
 if /I "%~1"=="init" call :init & exit /b
 if /I "%~1"=="test-all" call :test-all & exit /b
 if /I "%~1"=="upload" call :upload & exit /b
+
 @echo Unknown target called. & exit /b 1
 
 rem # === Standalone Targets =================================================
 
-:_help
-@echo TODO
-exit /b
 
 :clean
 @echo %TAG% Cleaning environment...
 del /s /q *.pyc >nul 2>&1
-del /s /q dist >nul 2>&1
-rmdir dist >nul 2>&1
-del /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
-rmdir %TT_PYPI_NAME%.egg-info >nul 2>&1
+rmdir /s /q .tox >nul 2>&1
+rmdir /s /q build >nul 2>&1
+rmdir /s /q dist >nul 2>&1
+rmdir /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
 @echo %TAG% OK.
 @echo.
-exit /b
-
-:test
-@echo %TAG% Running tests...
-@echo.
-python -m unittest || exit /b
 exit /b
 
 :flake8
@@ -111,6 +103,13 @@ exit /b
 
 rem # === Dependent Targets ==================================================
 
+:test
+call :init
+@echo %TAG% Running tests...
+@echo.
+python -m unittest || exit /b
+exit /b
+
 :init
 @echo %TAG% Beginning initialization of tt for testing...
 @echo.
@@ -151,8 +150,6 @@ call :test-bdist-wheel
 exit /b
 
 :test-all
-call :check-dev-env || exit /b
-call :init
 call :flake8 || exit /b
 call :test || exit /b
 call :test-dist || exit /b
@@ -161,7 +158,13 @@ exit /b
 :upload
 call :check-dev-env || exit /b
 call :test-all || (@echo Cancelling upload; tests failed. & exit /b 1)
-python setup.py register
-python setup.py sdist --formats=gztar,zip upload
-python setup.py bdist_wheel upload
+@echo python setup.py register
+
+python setup.py sdist --formats=zip
+python setup.py sdist --formats=gztar
+python setup.py bdist_wheel
+python setup.py build --plat-name=win32 bdist_msi
+python setup.py build --plat-name=win-amd64 bdist_msi
+
+for %%f in (dist\*) do @echo python setup.py upload %%f
 exit /b
