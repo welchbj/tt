@@ -1,5 +1,6 @@
 """The functions that didn't fit anywhere else.
 """
+from __future__ import print_function
 
 import sys
 

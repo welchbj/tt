@@ -1,5 +1,6 @@
 """The gateway between the CLI and tt's core functionality.
 """
+from __future__ import print_function
 
 import sys
 import logging as log

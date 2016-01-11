@@ -14,7 +14,7 @@ It currently features syntax checking of Boolean equations and output of corresp
 Installation
 ============
 
-tt was developed in Python 3 and no effort has been made for compatibility with Python 2.
+tt has been tested with Python 2.7, 3.3, 3.4, and 3.5.
 tt was written in pure Python, so it only requires a compatible Python installation to run.
 
 You can get the latest release from PyPI. Just use::
@@ -94,7 +94,7 @@ tt can handle more complex Boolean operations and syntax, as well::
     +-----+-----+-----+-----+-----+
 
 tt doesn't limit you to plain English operations, either. The equation is surrounded in quotes below
-to avoid escaping the | character in the terminal.::
+to avoid escaping the | and & characters in the terminal::
 
     $ tt --table "F = ~(A || B) && C"
     +---+---+---+---+
@@ -170,7 +170,7 @@ Running tt's tests is pretty easy, too. You can run all the Python unittests at 
     $ make test
 
 Alternatively, you can invoke the Python unittest module directly to run different groups
-of tests. The same three examples would be run with::
+of tests::
 
     $ python -m unittest discover -s tt\tests\unit
     $ python -m unittest discover -s tt\tests\functional

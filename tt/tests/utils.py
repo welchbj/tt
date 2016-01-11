@@ -5,9 +5,13 @@ import sys
 import unittest
 
 from contextlib import contextmanager
-from io import StringIO
 
 from tt.core import main
+
+if sys.version_info < (3, 0):
+    from io import BytesIO as StringIO
+else:
+    from io import StringIO
 
 
 # === stdout/stderr interaction ===============================================
@@ -22,6 +26,10 @@ def redirected_stream(stream_name):
 
 
 # === Generalized test cases ==================================================
+class FunctionalTestAssertions(object):
+    pass
+
+
 class FunctionalTestCase(unittest.TestCase):
 
     def functional_test_helper(self, cl_args=[],

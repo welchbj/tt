@@ -1,5 +1,6 @@
 """Generation of formatted truth tables, using object-oriented design patterns.
 """
+from __future__ import print_function, division
 
 import itertools
 
