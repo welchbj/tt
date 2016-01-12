@@ -1,5 +1,6 @@
-version: 
-  - 0.3.{build}
+version: 0.3.{build}
 
 build_script:
-  - cmd: pip install tox && tox
+- cmd: pip install tox && tox
+
+# https://github.com/ogrisel/python-appveyor-demo/blob/master/appveyor.yml
