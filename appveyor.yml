@@ -1,0 +1,5 @@
+version: 
+  - 0.3.{build}
+
+build_script:
+  - cmd: pip install tox && tox
