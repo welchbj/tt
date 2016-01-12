@@ -9,7 +9,6 @@ clean:
 	@ echo $(TAG) Cleaning environment...
 	@ find . -type f -name "*.py[co]" -delete
 	@ find . -type d -name "__pycache__" -delete 
-	@ rm -rf .tox 
 	@ rm -rf build 
 	@ rm -rf dist 
 	@ rm -rf $(TT_PYPI_NAME).egg-info
@@ -18,11 +17,7 @@ clean:
 test: init
 	@ echo $(TAG) Running tests...
 	@ python -m unittest discover -s tt
-
-flake8:
-	@ echo $(TAG) Running flake8...
-	@ flake8 .
-	@ echo $(TAG) OK.
+	@ echo
 
 install-tt:
 	@ echo $(TAG) Installing tt...
@@ -73,7 +68,7 @@ test-bdist-wheel: uninstall-tt uninstall-reqs clean
 test-dist: test-sdist test-bdist-wheel
 	@ echo
 
-test-all: flake8 test test-dist
+test-all: test test-dist
 	@ echo
 
 upload: test-all

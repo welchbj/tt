@@ -11,7 +11,6 @@ set TT_PYPI_NAME=ttable
 if /I "%~1"=="" @echo You must specify a target. & exit /b
 if /I "%~1"=="help" call :_help & exit /b
 if /I "%~1"=="clean" call :clean & exit /b
-if /I "%~1"=="flake8" call :flake8 & exit /b
 if /I "%~1"=="install-tt" call :install-tt & exit /b
 if /I "%~1"=="install-reqs" call :install-reqs & exit /b
 if /I "%~1"=="uninstall-tt" call :uninstall-tt & exit /b
@@ -30,21 +29,12 @@ if /I "%~1"=="upload" call :upload & exit /b
 
 rem # === Standalone Targets =================================================
 
-
 :clean
 @echo %TAG% Cleaning environment...
 del /s /q *.pyc >nul 2>&1
-rmdir /s /q .tox >nul 2>&1
 rmdir /s /q build >nul 2>&1
 rmdir /s /q dist >nul 2>&1
 rmdir /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
-@echo %TAG% OK.
-@echo.
-exit /b
-
-:flake8
-@echo %TAG% Running flake8...
-flake8 . || exit /b
 @echo %TAG% OK.
 @echo.
 exit /b
@@ -107,7 +97,8 @@ rem # === Dependent Targets ==================================================
 call :init
 @echo %TAG% Running tests...
 @echo.
-python -m unittest || exit /b
+python -m unittest discover -s tt || exit /b
+@echo.
 exit /b
 
 :init
@@ -150,7 +141,6 @@ call :test-bdist-wheel
 exit /b
 
 :test-all
-call :flake8 || exit /b
 call :test || exit /b
 call :test-dist || exit /b
 exit /b
