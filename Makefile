@@ -53,16 +53,16 @@ init: uninstall-tt install-reqs install-tt
 
 test-sdist: uninstall-tt uninstall-reqs clean
 	@ echo $(TAG) Beginning test of source distribution...
-	@ python setup.py sdist
-	@ pip install --force-reinstall --upgrade dist/*
+	@ python setup.py sdist >/dev/null
+	@ pip install --force-reinstall --upgrade dist/* >/dev/null
 	@ which tt >/dev/null
 	@ echo $(TAG) OK.
 
 test-bdist-wheel: uninstall-tt uninstall-reqs clean
 	@ echo $(TAG) Beginning test of binary wheel distribution...
-	@ python setup.py bdist_wheel
-	@ pip install --force-reinstall --upgrade dist/*
-	@ which tt
+	@ python setup.py bdist_wheel >/dev/null
+	@ pip install --force-reinstall --upgrade dist/* >/dev/null
+	@ which tt >/dev/null
 	@ echo $(TAG) OK.
 
 test-dist: test-sdist test-bdist-wheel
