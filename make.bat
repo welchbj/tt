@@ -9,8 +9,8 @@ set DEVREQS="%REQS%\requirements-dev.txt"
 set TT_PYPI_NAME=ttable
 
 if /I "%~1"=="" @echo You must specify a target. & exit /b
-if /I "%~1"=="help" call :_help & exit /b
 if /I "%~1"=="clean" call :clean & exit /b
+if /I "%~1"=="py-version" call :py-version & exit /b
 if /I "%~1"=="install-tt" call :install-tt & exit /b
 if /I "%~1"=="install-reqs" call :install-reqs & exit /b
 if /I "%~1"=="uninstall-tt" call :uninstall-tt & exit /b
@@ -24,10 +24,7 @@ if /I "%~1"=="test" call :test & exit /b
 if /I "%~1"=="init" call :init & exit /b
 if /I "%~1"=="test-all" call :test-all & exit /b
 if /I "%~1"=="upload" call :upload & exit /b
-
 @echo Unknown target called. & exit /b 1
-
-rem # === Standalone Targets =================================================
 
 :clean
 @echo %TAG% Cleaning environment...
@@ -38,6 +35,18 @@ rmdir /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
 @echo %TAG% OK.
 @echo.
 exit /b
+
+:py-version
+@echo ----------------------------
+@echo Running with Python version:
+@echo ----------------------------
+@echo.
+python --version
+@echo.
+@echo ----------------------------
+@echo.
+@echo.
+@echo.
 
 :install-tt
 @echo %TAG% Installing tt...
@@ -78,20 +87,13 @@ pip freeze > %DEVREQS%
 type %DEVREQS%
 exit /b
 
-:check-dev-env
-rem # An initial check to make sure that the environment is good for testing/publishing purposes.
-rem # Checks that Python 3 is being run and that a virtualenv is active.
-@echo %TAG% Asserting Python 3 is the active Python...
-python --version | findstr 3.* >nul 2>&1 || (@echo %TAG% Python 3 is not active. & exit /b 1)
-@echo %TAG% OK.
+:init
+@echo %TAG% Beginning initialization of tt for testing...
 @echo.
-@echo %TAG% Asserting a virtualenv is active...
-python -c "import sys; print(hasattr(sys, 'real_prefix'))" | findstr /I true >nul 2>&1 || (@echo %TAG% Not running inside virtualenv. & exit /b 1)
-@echo %TAG% OK.
-@echo.
+call :uninstall-tt
+call :install-reqs
+call :install-tt
 exit /b
-
-rem # === Dependent Targets ==================================================
 
 :test
 call :init
@@ -99,19 +101,6 @@ call :init
 @echo.
 python -m unittest discover -s tt || exit /b
 @echo.
-exit /b
-
-:_echo-version
-python --version
-@echo.
-exit /b
-
-:init
-@echo %TAG% Beginning initialization of tt for testing...
-@echo.
-call :uninstall-tt
-call :install-reqs
-call :install-tt
 exit /b
 
 :test-sdist
@@ -146,7 +135,7 @@ call :test-bdist-wheel
 exit /b
 
 :test-all
-call _echo-version || exit /b
+call :py-version || exit /b
 call :test || exit /b
 call :test-dist || exit /b
 exit /b

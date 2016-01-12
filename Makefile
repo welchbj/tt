@@ -15,13 +15,16 @@ clean:
 	@ echo $(TAG) OK.
 	@ echo
 
-echo-version:
-	python --version
+py-version:
+	@ echo ----------------------------
+	@ echo Running with Python version:
+	@ echo ----------------------------
 	@ echo
-
-test: init
-	@ echo $(TAG) Running tests...
-	@ python -m unittest discover -s tt
+	@ python --version
+	@ echo
+	@ echo ----------------------------
+	@ echo
+	@ echo
 	@ echo
 
 install-tt:
@@ -61,10 +64,15 @@ write-reqs:
 init: uninstall-tt install-reqs install-tt
 	@ echo
 
+test: init
+	@ echo $(TAG) Running tests...
+	@ python -m unittest discover -s tt
+	@ echo
+
 test-sdist: uninstall-tt uninstall-reqs clean
 	@ echo $(TAG) Beginning test of source distribution...
 	@ python setup.py sdist >/dev/null 2>&1
-	@ pip install --force-reinstall --upgrade dist/* >/dev/null
+	@ pip install --force-reinstall --upgrade dist/* >/dev/null 2>&1
 	@ which tt >/dev/null
 	@ echo $(TAG) OK.
 	@ echo
@@ -72,7 +80,7 @@ test-sdist: uninstall-tt uninstall-reqs clean
 test-bdist-wheel: uninstall-tt uninstall-reqs clean
 	@ echo $(TAG) Beginning test of binary wheel distribution...
 	@ python setup.py bdist_wheel >/dev/null 2>&1
-	@ pip install --force-reinstall --upgrade dist/* >/dev/null
+	@ pip install --force-reinstall --upgrade dist/* >/dev/null 2>&1
 	@ which tt >/dev/null
 	@ echo $(TAG) OK.
 	@ echo
@@ -80,7 +88,7 @@ test-bdist-wheel: uninstall-tt uninstall-reqs clean
 test-dist: test-sdist test-bdist-wheel
 	@ echo
 
-test-all: echo-version test test-dist
+test-all: py-version test test-dist
 	@ echo
 
 upload: test-all
