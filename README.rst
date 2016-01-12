@@ -1,7 +1,12 @@
-.. contents::
-    :local:
-    :depth: 1
-    :backlinks: none
+*******************************************
+tt - a Boolean algebra command-line utility
+*******************************************
+
+-----
+
+|pypi| |nixbuild|
+
+-----
 
 ========
 Synopsis
@@ -27,7 +32,7 @@ Using this method, you can invoke tt with::
 
 If you want to get the most up to date stable version, you can get the sources directly with::
 
-    $ git clone https://github.com/welchbj/tt.git && cd tt
+    $ git clone https://github.com/welchbj/tt.git && cd tt && git checkout develop
 
 If you install tt using the git approach, you will have to invoke it directly with Python.
 This can be done with::
@@ -146,9 +151,6 @@ so please don't change one without updating the other.
 
 It is recommended that all development is done in a `virtualenv`_. `virtualenvwrapper`_ is super helpful, too.
 
-.. _virtualenv: https://virtualenv.readthedocs.org/en/latest/userguide.html
-.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.org/en/latest/
-
 Please note: All below examples are assumed to be done from within the top-level tt directory;
 this is where the make files reside.
 
@@ -179,21 +181,18 @@ For formatting of the code, tt tries to follow `PEP8`_ closely. flake8 is used t
 with this standard. Additionally, `Google style`_ docstrings are used. The docstrings in tt are modelled after 
 the nice examples in the `napoleon documentation`_. 
 
-.. _PEP8: https://www.python.org/dev/peps/pep-0008/
-.. _Google style: https://google.github.io/styleguide/pyguide.html 
-.. _napoleon documentation: http://sphinxcontrib-napoleon.readthedocs.org/en/latest/example_google.html
-
 tt is designed to be a thoroughly tested application. Its test are divided into two groups:
 
     #. unit - For testing individual methods and pieces of functionality
     #. functional - For simulating actual use of the application by capturing what is sent to stdout and stderr
 
-The git structure of tt is pretty simple, as tt is a pretty simple application itself. Each release has its own 
-branch. Branch names are in the form v{major.minor}. If a branch is in a working and functional state,
-it can be merged into the develop branch. Working and functional is defined as:
+Cross Python version testing is made easy with `tox`_. The configuration of the `tox.ini`_ file allows for the proper
+testing against Python 2.7, 3.3, 3.4, and 3.5 just by invoking the ``tox`` command in the top-level directory of the project, 
+regardless of your platform. The flexiblity of `tox`_ makes tt's CI on `Travis CI`_ and `AppVeyor`_ pretty seamless. 
 
-    #. Passing all tests
-    #. No output from flake8
+The git structure of tt is pretty simple, as tt is a pretty simple application itself. Each release has its own 
+branch. Branch names are in the form v{major.minor}. If a branch passes the builds by `Travis CI` and `AppVeyor`, then
+it is considered stable and should be merged into the develop branch.
 
 Once a release is completed, the develop branch will be merged into the master branch, and the master branch 
 will be tagged with the corresponding version, in the form release-{major}.{minor}. Following these guideleines, 
@@ -220,11 +219,13 @@ Below indicates what is aimed to be included in the releases leading up to v1.0:
 
     * v0.3
 
+        #. integrate with Travis CI
+        #. integrate with AppVeyor
+        #. integrate with Coveralls
         #. introduce Karnaugh Map functionality
         #. add indication of optimal groupings on Karnaugh Maps, perhaps with color via colorama
         #. add --raw modifier to indicate only a plain Karnaugh Map should be output
         #. port Windows make file to \*nix
-        #. integrate with Travis CI
 
     * v.0.4
 
@@ -238,4 +239,26 @@ License
 
 tt uses the `MIT License`_.
 
+.. _virtualenv: https://virtualenv.readthedocs.org/en/latest/userguide.html
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.org/en/latest/
+.. _PEP8: https://www.python.org/dev/peps/pep-0008/
+.. _Google style: https://google.github.io/styleguide/pyguide.html 
+.. _napoleon documentation: http://sphinxcontrib-napoleon.readthedocs.org/en/latest/example_google.html
+.. _tox: https://tox.readthedocs.org/en/latest/
+.. _tox.ini: https://github.com/welchbj/tt/blob/develop/tox.ini
+.. _Travis CI: https://travis-ci.org/welchbj/tt/
+.. _AppVeyor: 
 .. _MIT License: https://opensource.org/licenses/MIT
+
+.. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
+    :target: https://pypi.python.org/pypi/ttable
+    :alt: tt's PyPI page
+
+.. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
+    :target: https://travis-ci.org/welchbj/tt
+    :alt: Mac/Linux build status of most recent push to develop branch
+
+.. contents::
+    :local:
+    :depth: 1
+    :backlinks: none
