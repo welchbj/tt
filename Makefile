@@ -15,6 +15,10 @@ clean:
 	@ echo $(TAG) OK.
 	@ echo
 
+echo-version:
+	python --version
+	@ echo
+
 test: init
 	@ echo $(TAG) Running tests...
 	@ python -m unittest discover -s tt
@@ -76,7 +80,7 @@ test-bdist-wheel: uninstall-tt uninstall-reqs clean
 test-dist: test-sdist test-bdist-wheel
 	@ echo
 
-test-all: test test-dist
+test-all: echo-version test test-dist
 	@ echo
 
 upload: test-all

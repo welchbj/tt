@@ -101,6 +101,11 @@ python -m unittest discover -s tt || exit /b
 @echo.
 exit /b
 
+:_echo-version
+python --version
+@echo.
+exit /b
+
 :init
 @echo %TAG% Beginning initialization of tt for testing...
 @echo.
@@ -141,6 +146,7 @@ call :test-bdist-wheel
 exit /b
 
 :test-all
+call _echo-version || exit /b
 call :test || exit /b
 call :test-dist || exit /b
 exit /b
