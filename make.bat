@@ -45,8 +45,6 @@ python --version
 @echo.
 @echo ----------------------------
 @echo.
-@echo.
-@echo.
 
 :install-tt
 @echo %TAG% Installing tt...
