@@ -4,7 +4,7 @@ tt - a Boolean algebra command-line utility
 
 -----
 
-|pypi| |nixbuild|
+|pypi| |nixbuild| |winbuild|
 
 -----
 
@@ -256,7 +256,11 @@ tt uses the `MIT License`_.
 
 .. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
     :target: https://travis-ci.org/welchbj/tt
-    :alt: Mac/Linux build status of most recent push to develop branch
+    :alt: Mac/Linux build status of most recent push to develop branch, on Travis CI
+
+.. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
+    :target: https://ci.appveyor.com/project/welchbj/tt
+    :alt: Windows build status of most recent push to develop branch, on AppVeyor
 
 .. contents::
     :local:
