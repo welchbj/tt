@@ -1,4 +1,6 @@
-include LICENSE.txt
+include LICENSE.txt 
 include README.rst
 
-recursive-include reqs *
+graft reqs
+
+global-exclude *.py[co]
