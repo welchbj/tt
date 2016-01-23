@@ -22,7 +22,7 @@ Installation
 tt has been tested with Python 2.7, 3.3, 3.4, and 3.5.
 tt was written in pure Python, so it only requires a compatible Python installation to run.
 
-You can get the latest release from PyPI. Just use::
+You can get the latest release from PyPI. Right now, the PyPI version only works with Python 3.4 and 3.5. Just use::
 
     $ pip install ttable
 
@@ -247,7 +247,7 @@ tt uses the `MIT License`_.
 .. _tox: https://tox.readthedocs.org/en/latest/
 .. _tox.ini: https://github.com/welchbj/tt/blob/develop/tox.ini
 .. _Travis CI: https://travis-ci.org/welchbj/tt/
-.. _AppVeyor: 
+.. _AppVeyor: https://ci.appveyor.com/project/welchbj/tt
 .. _MIT License: https://opensource.org/licenses/MIT
 
 .. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
