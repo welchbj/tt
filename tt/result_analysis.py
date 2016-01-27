@@ -1,11 +1,9 @@
 """A module used for transforming evaluation results into different forms.
 """
 
+from collections import namedtuple
 
-# define what symbols are used in sop/pos output representation
-OUT_SYM_NOT = '~'
-OUT_SYM_AND = ' and '
-OUT_SYM_OR = ' or '
+from tt.bittools import get_nth_gray_code, get_int_concatenation
 
 
 class EquationTransformer(object):
@@ -38,12 +36,66 @@ def to_minimal_form():
     pass
 
 
-def dec_to_bool_list(num, tot_chars=None):
-    result = bin(num)[2:]
+KmapPoint = namedtuple('KmapPoint', ['gray_code', 'val'])
 
-    if tot_chars is not None:
-        fill = '0' * (tot_chars-len(result))
-        result = fill + result
 
-    result_as_bool_list = [c == '1' for c in result]
-    return result_as_bool_list
+def eval_result_as_kmap_grid(eval_result):
+    """Convert an ``EvaluationResultWrapper`` instance to a representation of a
+    Karnuagh Map.
+
+    Args:
+        eval_result (EvaluationResultWrapper): The result instance which will
+            be converted to a more intuitive representation of a Karnaugh Map.
+
+    Returns:
+        List[List[KmapPoint]]: A list array of ``KmapPoint``s, in row-by-row
+            ordering according to increasing Gray Code.
+
+    Raises:
+        TooFewKarnaughMapInputs: Raise if less than 2 inputs are found in
+            ``eval_result``.
+
+    """
+    num_vars = len(eval_result.input_symbols)
+
+    if num_vars <= 2:
+        raise TooFewKarnaughMapInputs('Karnaugh Map generation requires an '
+                                      'equation of at least 2 variables.')
+
+    row_pow = num_vars // 2
+    col_pow = row_pow + num_vars % 2
+
+    num_rows = 2 ** row_pow
+    num_cols = 2 ** col_pow
+
+    kmap_grid = []
+
+    col_gcodes = [get_nth_gray_code(n) for n in range(num_cols)]
+    row_gcodes = col_gcodes[:num_rows]
+
+    for i, row_gcode in enumerate(row_gcodes):
+        kmap_grid.append([])
+        for col_gcode in col_gcodes:
+            gcode = get_int_concatenation(row_gcode, col_gcode, col_pow)
+            kmap_point = KmapPoint(
+                gray_code=gcode, val=eval_result.result_list[gcode])
+            kmap_grid[i].append(kmap_point)
+
+    return kmap_grid
+
+
+class ExpandedKmapGrid(object):
+    """
+    TODO
+
+    For the optimization of POS and SOP forms.
+
+    """
+    pass
+
+
+class TooFewKarnaughMapInputs(Exception):
+    """Error for when a Karnaugh Map is attempted with less than 2 inputs.
+
+    """
+    pass
