@@ -17,11 +17,15 @@ def get_int_concatenation(int1, int2, int_size):
         int: The concatention of ``int1`` and ``int2``, treated as integers
             with bit length of ``int_size``.
 
+    Notes:
+        ``int_size`` is assumed to be greater than or equal to the position of
+            the most significant non-zero bit in ``int2``.
+
     Examples:
-    >>> x = get_int_concatentation(1, 2, 2)
+    >>>x = get_int_concatentation(1, 2, 2)
     >>>bin(x)
     '0b110'
-    >>> x = get_int_concatentation(1, 2, 3)
+    >>>x = get_int_concatentation(1, 2, 3)
     >>>bin(x)
     '0b1010'
 
@@ -32,7 +36,7 @@ def get_int_concatenation(int1, int2, int_size):
 def get_parity(x):
     """Get the bit parity of ``x``.
 
-    Note:
+    Notes:
         Not currently used, but this may be useful in the future.
 
     """
@@ -66,6 +70,10 @@ def get_bit_string(n, num_chars=None):
 
     Returns:
         str: The binary representation of ``n``.
+
+    Notes:
+        ``num_chars`` is assumed to be greater than or equal to the position of
+            the most significant non-zero bit in ``n``.
 
     """
     fmt_str = '{:0' + (str(num_chars) if num_chars is not None else '') + 'b}'
