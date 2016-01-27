@@ -1,147 +1,133 @@
-@echo off
-rem # This is the equivalent of a Makefile in Windows.
-rem # This should be functionally equivalent to the Makefile found in the 
-rem # same directory.
+@ECHO off
 
-set TAG=[tt]
-set REQS=%CD%\reqs
-set DEVREQS="%REQS%\requirements-dev.txt"
-set TT_PYPI_NAME=ttable
+REM # This should be functionally equivalent to the Makefile found in the 
+REM # same directory.
 
-if /I "%~1"=="" @echo You must specify a target. & exit /b
-if /I "%~1"=="clean" call :clean & exit /b
-if /I "%~1"=="py-version" call :py-version & exit /b
-if /I "%~1"=="install-tt" call :install-tt & exit /b
-if /I "%~1"=="install-reqs" call :install-reqs & exit /b
-if /I "%~1"=="uninstall-tt" call :uninstall-tt & exit /b
-if /I "%~1"=="uninstall-reqs" call :uninstall-reqs & exit /b
-if /I "%~1"=="write-reqs" call :write-reqs & exit /b
-if /I "%~1"=="check-dev-env" call :check-dev-env & exit /b
-if /I "%~1"=="test-sdist" call :test-sdist & exit /b
-if /I "%~1"=="test-bdist-wheel" call :test-bdist-wheel & exit /b
-if /I "%~1"=="test-dist" call :test-dist & exit /b
-if /I "%~1"=="test" call :test & exit /b
-if /I "%~1"=="init" call :init & exit /b
-if /I "%~1"=="test-all" call :test-all & exit /b
-if /I "%~1"=="upload" call :upload & exit /b
-@echo Unknown target called. & exit /b 1
+SET TAG=[tt]
+SET REQS=%CD%\reqs
+SET DEVREQS="%REQS%\requirements-dev.txt"
+SET TT_PYPI_NAME=ttable
+
+IF NOT "x%1"=="x" CALL :%1 || EXIT /B 1
+EXIT /B 0
 
 :clean
-@echo %TAG% Cleaning environment...
-del /s /q *.pyc >nul 2>&1
-rmdir /s /q build >nul 2>&1
-rmdir /s /q dist >nul 2>&1
-rmdir /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
-@echo %TAG% OK.
-@echo.
-exit /b
+ECHO %TAG% Cleaning environment...
+DEL /s /q *.pyc >nul 2>&1
+RD /s /q build >nul 2>&1
+RD /s /q dist >nul 2>&1
+RD /s /q %TT_PYPI_NAME%.egg-info >nul 2>&1
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :py-version
-@echo ----------------------------
-@echo Running with Python version:
-@echo ----------------------------
-@echo.
+ECHO ----------------------------
+ECHO Running with Python version:
+ECHO ----------------------------
+ECHO.
 python --version
-@echo.
-@echo ----------------------------
-@echo.
+ECHO.
+ECHO ----------------------------
+ECHO.
+EXIT /B 0
 
 :install-tt
-@echo %TAG% Installing tt...
+ECHO %TAG% Installing tt...
 pip install --upgrade --editable . >nul 2>&1
-where tt >nul 2>&1 || @echo %TAG% Installation of tt failed & exit /b 1
-@echo %TAG% OK.
-@echo.
-exit /b
+CALL where tt >nul 2>&1 || (ECHO %TAG% Installation of tt failed. & ECHO. & EXIT /b 1)
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :install-reqs
-@echo %TAG% Installing dev requirements from %DEVREQS%...
+ECHO %TAG% Installing dev requirements from %DEVREQS%...
 pip install --upgrade -r %DEVREQS% >nul 2>&1
-@echo %TAG% OK.
-@echo.
-exit /b
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :uninstall-tt
-@echo %TAG% Uninstalling tt...
-where tt >nul 2>&1 || @echo %TAG% Cancelled uninstall; tt is already not installed. & @echo. & exit /b 0
+ECHO %TAG% Uninstalling tt...
+CALL where tt >nul 2>&1 || (ECHO %TAG% Cancelled uninstall; tt is already not installed. & ECHO. & EXIT /B 0)
 pip uninstall --yes %TT_PYPI_NAME% >nul 2>&1
-where tt >nul 1 2>&1 && @echo %TAG% Failed uninstall. & @echo. & exit /b 1
-@echo %TAG% OK.
-@echo.
-exit /b
+CALL where tt >nul 1 2>&1 && (ECHO %TAG% Failed uninstall. & ECHO. & EXIT /B 1)
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :uninstall-reqs
-@echo %TAG% Uninstalling all tt dev requirements...
+ECHO %TAG% Uninstalling all tt dev requirements...
 pip uninstall --yes -r %DEVREQS% >nul 2>&1
-@echo %TAG% OK.
-@echo.
-exit /b
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :write-reqs
-@echo %TAG% Updating %DEVREQS% with the current environment's installed packages
+ECHO %TAG% Updating %DEVREQS% with the current environment's installed packages
 pip freeze > %DEVREQS%
-@echo %TAG% OK.
-@echo %TAG% New contents of %DEVREQS% are:
-type %DEVREQS%
-exit /b
+ECHO %TAG% OK.
+ECHO %TAG% New contents of %DEVREQS% are:
+TYPE %DEVREQS%
+EXIT /B 0
 
 :init
-@echo %TAG% Beginning initialization of tt for testing...
-@echo.
-call :uninstall-tt
-call :install-reqs
-call :install-tt
-exit /b
+ECHO %TAG% Beginning initialization of tt for testing...
+ECHO.
+CALL :uninstall-tt || EXIT /B 1
+CALL :install-reqs || EXIT /B 1
+CALL :install-tt || EXIT /B 1
+EXIT /B 0
 
 :test
-call :init
-@echo %TAG% Running tests...
-@echo.
-python -m unittest discover -s tt || exit /b
-@echo.
-exit /b
+CALL :init || EXIT /B 1
+ECHO %TAG% Running tests...
+ECHO.
+CALL python -m unittest discover -s tt || EXIT /B 1
+ECHO.
+EXIT /B 0
 
 :test-sdist
-call :uninstall-reqs
-call :uninstall-tt
-call :clean
-@echo %TAG% Beginning test of source distribution...
+CALL :uninstall-reqs
+CALL :uninstall-tt
+CALL :clean
+ECHO %TAG% Beginning test of source distribution...
 python setup.py sdist >nul 2>&1
-for %%f in (dist\*.zip) do set SDIST=%%f
+FOR %%f IN (dist\*.zip) DO SET SDIST=%%f
 pip install --force-reinstall --upgrade %SDIST% >nul 2>&1
-where tt >nul 2>&1 || (@echo tt did not install properly from source dist. & exit /b 1)
-@echo %TAG% OK.
-@echo.
-exit /b
+CALL where tt >nul 2>&1 || (ECHO %TAG% tt did not install properly from source dist. & EXIT /B 1)
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :test-bdist-wheel
-call :uninstall-reqs
-call :uninstall-tt
-call :clean
-@echo %TAG% Beginning test of binary wheel distribution...
+CALL :uninstall-reqs || EXIT /B 1
+CALL :uninstall-tt || EXIT /B 1
+CALL :clean || EXIT /B 1
+ECHO %TAG% Beginning test of binary wheel distribution...
 python setup.py bdist_wheel >nul 2>&1
-for %%f in (dist\*.whl) do set WHLDIST=%%f
+FOR %%f IN (dist\*.whl) DO SET WHLDIST=%%f
 pip install --force-reinstall --upgrade %WHLDIST% >nul 2>&1
-where tt >nul 2>&1 || (@echo tt did not install properly from wheel dist. & exit /b 1)
-@echo %TAG% OK.
-@echo.
-exit /b
+CALL where tt >nul 2>&1 || (ECHO %TAG% tt did not install properly from wheel dist. & EXIT /B 1)
+ECHO %TAG% OK.
+ECHO.
+EXIT /B 0
 
 :test-dist
-call :test-sdist
-call :test-bdist-wheel
-exit /b
+CALL :test-sdist || EXIT /B 1
+CALL :test-bdist-wheel || EXIT /B 1
+EXIT /B 0
 
 :test-all
-call :py-version || exit /b
-call :test || exit /b
-call :test-dist || exit /b
-exit /b
+CALL :py-version || EXIT /B 1
+CALL :test || EXIT /B 1
+CALL :test-dist || EXIT /B 1
+EXIT /B 0
 
 :upload
-call :check-dev-env || exit /b
-call :test-all || (@echo Cancelling upload; tests failed. & exit /b 1)
-@echo python setup.py register
+CALL :check-dev-env || EXIT /b 1
+CALL :test-all || (ECHO Cancelling upload; tests failed. & EXIT /b 1)
+ECHO python setup.py register
 
 python setup.py sdist --formats=zip
 python setup.py sdist --formats=gztar
@@ -149,5 +135,5 @@ python setup.py bdist_wheel
 python setup.py build --plat-name=win32 bdist_msi
 python setup.py build --plat-name=win-amd64 bdist_msi
 
-for %%f in (dist\*) do @echo python setup.py upload %%f
-exit /b
+FOR %%f IN (dist\*) DO ECHO python setup.py upload %%f
+EXIT /B 0
