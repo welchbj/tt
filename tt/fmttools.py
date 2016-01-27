@@ -1,4 +1,4 @@
-"""Generation of formatted truth tables, using object-oriented design patterns.
+"""Generation of formatted truth tables and Karnuagh Maps.
 """
 from __future__ import print_function, division
 
@@ -118,7 +118,6 @@ def print_kmap(input_vars, kmap_grid):
         greater than 1. Each box of the grid should remain a square and scale
         to the length of the Gray codes listed along the top of the Karnaugh
         map.
-
 
     """
     num_rows = len(kmap_grid)
