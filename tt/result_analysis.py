@@ -58,7 +58,7 @@ def eval_result_as_kmap_grid(eval_result):
     """
     num_vars = len(eval_result.input_symbols)
 
-    if num_vars <= 2:
+    if num_vars < 2:
         raise TooFewKarnaughMapInputs('Karnaugh Map generation requires an '
                                       'equation of at least 2 variables.')
 
