@@ -26,7 +26,7 @@ def get_int_concatenation(int1, int2, int_size):
     '0b1010'
 
     """
-    return (int1 << int2.bit_length) | int2
+    return (int1 << int_size) | int2
 
 
 def get_parity(x):
