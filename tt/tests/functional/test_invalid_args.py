@@ -8,18 +8,21 @@ class TestInvalidArgs(FunctionalTestCase):
         self.functional_test_helper(
             cl_args=[],
             expected_stdout='',
-            expected_stderr='ERROR: A non-empty equation is required.\n')
+            expected_stderr='ERROR: A non-empty equation is required. '
+                            'Try using the --help option.\n')
 
     def test_empty_str_equation(self):
         # python -m tt --table ""
         self.functional_test_helper(
             cl_args=['--table', ''],
             expected_stdout='',
-            expected_stderr='ERROR: A non-empty equation is required.\n')
+            expected_stderr='ERROR: A non-empty equation is required. '
+                            'Try using the --help option.\n')
 
     def test_empty_str_equation_no_opts(self):
         # python -m tt ""
         self.functional_test_helper(
             cl_args=[''],
             expected_stdout='',
-            expected_stderr='ERROR: A non-empty equation is required.\n')
+            expected_stderr='ERROR: A non-empty equation is required. '
+                            'Try using the --help option.\n')

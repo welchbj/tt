@@ -9,18 +9,20 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 
 from tt.eqtools import (BooleanEquationWrapper, GrammarError,
                         TooManySymbolsError)
-from tt.fmttools import TruthTablePrinter
+from tt.fmttools import print_tt, print_kmap
+from tt.result_analysis import (eval_result_as_kmap_grid,
+                                TooFewKarnaughMapInputs)
 from tt.utils import without_spaces, print_err
 
 __all__ = ['main']
-__version__ = 0.2
+__version__ = 0.3
 
 logging_format = '%(levelname)s: %(message)s'
 
 
 # function wrappers; may be moved/refactored when this becomes too cluttered
 def table_cmd(bool_eq_wrapper):
-    TruthTablePrinter(bool_eq_wrapper.eval_result).print_tt()
+    print_tt(bool_eq_wrapper.eval_result)
     print()
 
 
@@ -29,7 +31,9 @@ def table_intermediates_cmd(bool_eq_wrapper):
 
 
 def kmap_cmd(bool_eq_wrapper):
-    pass
+    eval_result = bool_eq_wrapper.eval_result
+    print_kmap(eval_result.input_symbols,
+               eval_result_as_kmap_grid(eval_result))
 
 
 def sop_cmd(bool_eq_wrapper):
@@ -64,8 +68,7 @@ def parse_args(args):
     parser.add_argument(
         '--kmap',
         action='store_true',
-        help='Generate kmap of specified boolean equation.\n'
-             'NOTE: Not yet implemented.')
+        help='Generate kmap of specified boolean equation.\n')
     parser.add_argument(
         '--intermediates',
         action='store_true',
@@ -164,11 +167,10 @@ def main(args=None):
             table = True
 
         if not without_spaces(equation) or without_spaces(equation) == "''":
-            raise ValueError('A non-empty equation is required.')
+            raise ValueError('A non-empty equation is required. '
+                             'Try using the --help option.')
 
         # temporary, until these features are implemented
-        if kmap:
-            raise NotImplementedError('--kmap')
         if intermediates:
             raise NotImplementedError('--intermediates')
         if minimal:
@@ -204,6 +206,9 @@ def main(args=None):
         e.log()
         return 1
     except TooManySymbolsError as e:
+        print_err(str(e))
+        return 1
+    except TooFewKarnaughMapInputs as e:
         print_err(str(e))
         return 1
     except ValueError as e:
