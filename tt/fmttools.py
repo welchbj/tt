@@ -123,8 +123,8 @@ def print_kmap(input_vars, kmap_grid):
     num_rows = len(kmap_grid)
     num_cols = len(kmap_grid[0])
 
-    num_gcode_digits_row = int(math.log2(num_rows))
-    num_gcode_digits_col = int(math.log2(num_cols))
+    num_gcode_digits_row = int(math.log(num_rows, 2))
+    num_gcode_digits_col = int(math.log(num_cols, 2))
 
     row_gcode_ints = [get_nth_gray_code(n) for n in range(num_rows)]
     col_gcode_ints = [get_nth_gray_code(n) for n in range(num_cols)]
