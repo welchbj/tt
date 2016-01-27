@@ -183,11 +183,9 @@ def print_kmap(input_vars, kmap_grid):
     for i, row in enumerate(kmap_grid):
         r_gcode_str = row_gcode_strs[i]
         r_gcode_int = row_gcode_ints[i]
-        curr_row_gcodes = [get_int_concatenation(
-                               r_gcode_int,
-                               c_gcode,
-                               num_gcode_digits_col)
-                           for c_gcode in col_gcode_ints]
+        curr_row_gcodes = [
+            get_int_concatenation(r_gcode_int, c_gcode, num_gcode_digits_col)
+            for c_gcode in col_gcode_ints]
         row_results = [kmap_point.val for kmap_point in row]
 
         print(minterm_row_template.format(r_gcode_str, *curr_row_gcodes))
