@@ -8,11 +8,16 @@ tt - a Boolean algebra command-line utility
 
 -----
 
+.. contents::
+    :local:
+    :depth: 1
+    :backlinks: none
+
 ========
 Synopsis
 ========
 
-tt is a command line tool for truth table and, in the future, Karnaugh Map generation.
+tt is a command line tool for truth table and Karnuagh Map generation.
 It currently features syntax checking of Boolean equations and output of corresponding truth tables.
 
 ============
@@ -20,7 +25,7 @@ Installation
 ============
 
 tt has been tested with Python 2.7, 3.3, 3.4, and 3.5.
-tt was written in pure Python, so it only requires a compatible Python installation to run.
+tt is written in pure Python, so it only requires a compatible Python installation to run.
 
 You can get the latest release from PyPI. Right now, the PyPI version only works with Python 3.4 and 3.5. Just use::
 
@@ -114,6 +119,22 @@ to avoid escaping the | and & characters in the terminal::
     | 1 | 1 | 0 | 0 |
     | 1 | 1 | 1 | 0 |
     +---+---+---+---+
+
+And if you wanted a Karnaugh Map for that equation::
+
+    $ tt --kmap "F = ~(A || B) && C"
+    A \ B C
+
+        00      01      11      10
+      +-------+-------+-------+-------+
+    0 | 0     | 1     | 3     | 2     |
+      |   0   |   1   |   0   |   0   |
+      |       |       |       |       |
+      +-------+-------+-------+-------+
+    1 | 4     | 5     | 7     | 6     |
+      |   0   |   0   |   0   |   0   |
+      |       |       |       |       |
+      +-------+-------+-------+-------+
 
 tt provides syntax checking for your equations, too. Below are a few examples.
 
@@ -223,15 +244,21 @@ Below indicates what is aimed to be included in the releases leading up to v1.0:
         #. integrate with AppVeyor
         #. integrate with Coveralls
         #. introduce Karnaugh Map functionality
-        #. add indication of optimal groupings on Karnaugh Maps, perhaps with color via colorama
-        #. add --raw modifier to indicate only a plain Karnaugh Map should be output
+        #. add indication of optimal groupings on Karnaugh Maps
         #. port Windows make file to \*nix
 
-    * v.0.4
+    * v0.4
 
         #. improve verbose output and logging
+        #. add option to order inputs in truth table alphabetically (--alphabetical)
         #. product-of-sum (--pos) and sum-of-product (--sop) form generation for Boolean equations
         #. introduce functionality to generate logic circuit diagrams from equations
+
+    * v0.5
+
+        #. if too many options are present, we can look into the idea of using argument sub-groups (already supported by Python's argparse)
+        #. add more Boolean operations, such as "if and only if" (<->) and "implies" (->)
+        #. improve FunctionalTestCase's output diff for expected vs actual stdout/stderr
 
 =======
 License
@@ -256,11 +283,11 @@ tt uses the `MIT License`_.
 
 .. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
     :target: https://travis-ci.org/welchbj/tt
-    :alt: Mac/Linux build status of most recent push to develop branch, on Travis CI
+    :alt: Mac/Linux build on Travis CI
 
 .. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/welchbj/tt
-    :alt: Windows build status of most recent push to develop branch, on AppVeyor
+    :alt: Windows build on AppVeyor
 
 .. contents::
     :local:
