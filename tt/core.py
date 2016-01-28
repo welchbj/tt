@@ -34,6 +34,7 @@ def kmap_cmd(bool_eq_wrapper):
     eval_result = bool_eq_wrapper.eval_result
     print_kmap(eval_result.input_symbols,
                eval_result_as_kmap_grid(eval_result))
+    print()
 
 
 def sop_cmd(bool_eq_wrapper):
