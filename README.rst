@@ -242,7 +242,6 @@ Below indicates what is aimed to be included in the releases leading up to v1.0:
 
         #. integrate with Travis CI
         #. integrate with AppVeyor
-        #. integrate with Coveralls
         #. introduce Karnaugh Map functionality
         #. add indication of optimal groupings on Karnaugh Maps
         #. port Windows make file to \*nix
