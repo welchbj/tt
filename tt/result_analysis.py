@@ -85,13 +85,20 @@ def eval_result_as_kmap_grid(eval_result):
 
 
 class ExpandedKmapGrid(object):
-    """
-    TODO
+    """Wraps a 2-D list representation of Karnaugh Map.
 
     For the optimization of POS and SOP forms.
 
     """
-    pass
+
+    def __init__(self, kmap):
+        self.min_row = -len(kmap[0][0])
+        self.min_col = 0
+        self.max_row = 0
+        self.max_col = 0
+
+    def get_val(r, c):
+        pass
 
 
 class TooFewKarnaughMapInputs(Exception):
