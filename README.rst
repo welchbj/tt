@@ -27,7 +27,7 @@ Installation
 tt has been tested with Python 2.7, 3.3, 3.4, and 3.5.
 tt is written in pure Python, so it only requires a compatible Python installation to run.
 
-You can get the latest release from PyPI.
+You can get the latest release from PyPI::
 
     $ pip install ttable
 
