@@ -1,6 +1,6 @@
 @ECHO off
 
-REM # This should be functionally equivalent to the Makefile found in the 
+REM # This should be functionally equivalent to the Makefile found in the
 REM # same directory.
 
 SET TAG=[tt]
@@ -125,15 +125,18 @@ CALL :test-dist || EXIT /B 1
 EXIT /B 0
 
 :upload
-CALL :check-dev-env || EXIT /b 1
-CALL :test-all || (ECHO Cancelling upload; tests failed. & EXIT /b 1)
-ECHO python setup.py register
-
+REM CALL :test-all || (ECHO Cancelling upload; tests failed. & EXIT /b 1)
+REM python setup.py register
+REM
 python setup.py sdist --formats=zip
 python setup.py sdist --formats=gztar
 python setup.py bdist_wheel
 python setup.py build --plat-name=win32 bdist_msi
 python setup.py build --plat-name=win-amd64 bdist_msi
 
-FOR %%f IN (dist\*) DO ECHO python setup.py upload %%f
+SETLOCAL EnableDelayedExpansion
+SET ARTIFACTS=
+FOR %%f IN (dist\*) DO SET ARTIFACTS=!ARTIFACTS! "%%f"
+ECHO python setup.py !ARTIFACTS! upload
+ENDLOCAL
 EXIT /B 0
