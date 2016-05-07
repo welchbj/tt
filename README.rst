@@ -53,7 +53,7 @@ surrouded in double quotes. Right now, tt assumes that your output variable will
 the equivalent expression will be on the right side of the equals sign.
 
 You can use the ``--table`` option to output a truth table of your passed equation. Omitting all options
-except for the required equation will default to truth table generation, too. 
+except for the required equation will default to truth table generation, too.
 
 A simple example::
 
@@ -164,10 +164,10 @@ Development
 ===========
 
 The tt development pipeline was built with all major OSes in mind, and all command line
-instructions should be identical no matter what terminal or cmd prompt you're using. 
-All common development tasks should have a corresponding make target (either in make.bat or the Makefile). 
+instructions should be identical no matter what terminal or cmd prompt you're using.
+All common development tasks should have a corresponding make target (either in make.bat or the Makefile).
 If you can't find a target that you find yourself needing frequently, please feel free to add it!
-Please note, though, that the two "make" files are meant to be functionally equivalent, 
+Please note, though, that the two "make" files are meant to be functionally equivalent,
 so please don't change one without updating the other.
 
 It is recommended that all development is done in a `virtualenv`_. `virtualenvwrapper`_ is super helpful, too.
@@ -199,8 +199,8 @@ of tests::
     $ python -m unittest discover -s tt\tests\functional
 
 For formatting of the code, tt tries to follow `PEP8`_ closely. flake8 is used to ensure that the code complies
-with this standard. Additionally, `Google style`_ docstrings are used. The docstrings in tt are modelled after 
-the nice examples in the `napoleon documentation`_. 
+with this standard. Additionally, `Google style`_ docstrings are used. The docstrings in tt are modelled after
+the nice examples in the `napoleon documentation`_.
 
 tt is designed to be a thoroughly tested application. Its test are divided into two groups:
 
@@ -208,15 +208,15 @@ tt is designed to be a thoroughly tested application. Its test are divided into 
     #. functional - For simulating actual use of the application by capturing what is sent to stdout and stderr
 
 Cross Python version testing is made easy with `tox`_. The configuration of the `tox.ini`_ file allows for the proper
-testing against Python 2.7, 3.3, 3.4, and 3.5 just by invoking the ``tox`` command in the top-level directory of the project, 
-regardless of your platform. The flexiblity of `tox`_ makes tt's CI on `Travis CI`_ and `AppVeyor`_ pretty seamless. 
+testing against Python 2.7, 3.3, 3.4, and 3.5 just by invoking the ``tox`` command in the top-level directory of the project,
+regardless of your platform. The flexiblity of `tox`_ makes tt's CI on `Travis CI`_ and `AppVeyor`_ pretty seamless.
 
-The git structure of tt is pretty simple, as tt is a pretty simple application itself. Each release has its own 
+The git structure of tt is pretty simple, as tt is a pretty simple application itself. Each release has its own
 branch. Branch names are in the form v{major.minor}. If a branch passes the builds by `Travis CI` and `AppVeyor`, then
 it is considered stable and should be merged into the develop branch.
 
-Once a release is completed, the develop branch will be merged into the master branch, and the master branch 
-will be tagged with the corresponding version, in the form release-{major}.{minor}. Following these guideleines, 
+Once a release is completed, the develop branch will be merged into the master branch, and the master branch
+will be tagged with the corresponding version, in the form release-{major}.{minor}. Following these guideleines,
 any clone from the master or develop branch should yield a functioning version of tt, with master being a fully stable release.
 
 =======
@@ -242,23 +242,22 @@ Below indicates what is aimed to be included in the releases leading up to v1.0:
 
         #. integrate with Travis CI
         #. integrate with AppVeyor
-        #. integrate with Coveralls
         #. introduce Karnaugh Map functionality
-        #. add indication of optimal groupings on Karnaugh Maps
         #. port Windows make file to \*nix
 
     * v0.4
 
+        #. add indication of optimal groupings on Karnaugh Maps
         #. improve verbose output and logging
+        #. implement minimization of equations, using Quine–McCluskey algorithm
         #. add option to order inputs in truth table alphabetically (--alphabetical)
-        #. product-of-sum (--pos) and sum-of-product (--sop) form generation for Boolean equations
         #. introduce functionality to generate logic circuit diagrams from equations
 
     * v0.5
 
         #. if too many options are present, we can look into the idea of using argument sub-groups (already supported by Python's argparse)
         #. add more Boolean operations, such as "if and only if" (<->) and "implies" (->)
-        #. improve FunctionalTestCase's output diff for expected vs actual stdout/stderr
+        #. product-of-sum (--pos) and sum-of-product (--sop) form generation for Boolean equations
 
 =======
 License
@@ -269,7 +268,7 @@ tt uses the `MIT License`_.
 .. _virtualenv: https://virtualenv.readthedocs.org/en/latest/userguide.html
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.org/en/latest/
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
-.. _Google style: https://google.github.io/styleguide/pyguide.html 
+.. _Google style: https://google.github.io/styleguide/pyguide.html
 .. _napoleon documentation: http://sphinxcontrib-napoleon.readthedocs.org/en/latest/example_google.html
 .. _tox: https://tox.readthedocs.org/en/latest/
 .. _tox.ini: https://github.com/welchbj/tt/blob/develop/tox.ini
