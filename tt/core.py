@@ -32,8 +32,10 @@ def table_intermediates_cmd(bool_eq_wrapper):
 
 def kmap_cmd(bool_eq_wrapper):
     eval_result = bool_eq_wrapper.eval_result
-    print_kmap(eval_result.input_symbols,
-               eval_result_as_kmap_grid(eval_result))
+    kmap = eval_result_as_kmap_grid(eval_result)
+
+    print_kmap(eval_result.input_symbols, kmap)
+
     print()
 
 
