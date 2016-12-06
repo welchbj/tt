@@ -1,8 +1,9 @@
+__pycache__
+*.py[co]
+
 .idea
 .tox
 build
 dist
 ttable.egg-info
-
 *.egg
-*.pyc
