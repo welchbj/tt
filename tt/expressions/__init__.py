@@ -1,3 +1,3 @@
-from .bexpr import BooleanExpression
-from .errors import (GrammarError, ExpressionOrderError, BadParenPositionError,
+from .bexpr import BooleanExpression  # noqa
+from .errors import (GrammarError, ExpressionOrderError, BadParenPositionError,  # noqa
                      UnbalancedParenError)
