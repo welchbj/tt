@@ -73,3 +73,6 @@ DELIMITERS = {' ', '(', ')'}
 
 
 CONSTANT_VALUES = {'0', '1'}
+
+
+MAX_OPERATOR_STR_LEN = max(len(k) for k in OPERATOR_MAPPING.keys())

@@ -1,6 +1,9 @@
 """A node for use in expression trees."""
 
-from ..operators import CONSTANT_VALUES, OPERATOR_MAPPING
+from ..operators import CONSTANT_VALUES, MAX_OPERATOR_STR_LEN, OPERATOR_MAPPING
+
+
+DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
 
 
 class ExpressionTreeNode(object):
@@ -26,7 +29,7 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement `evaluate`.')
 
-    def __str__(self, depth=0, indent_size=5, stem_list=[]):
+    def __str__(self, depth=0, indent_size=DEFAULT_INDENT_SIZE, stem_list=[]):
         ret = ''
 
         if depth > 0:
