@@ -59,4 +59,7 @@ class BooleanExpressionTree(object):
         self.root = stack.pop()
 
     def __str__(self):
-        return 'Empty!\n' if self.root is None else str(self.root)
+        if self.root is None:
+            return 'Empty!'
+        else:
+            return str(self.root)[:-1]
