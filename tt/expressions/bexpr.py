@@ -33,13 +33,14 @@ class BooleanExpression(object):
 
         self.symbols = []
         self._symbol_set = set()
+
         self.tokens = []
         self.postfix_tokens = []
 
         self._tokenize()
         self._to_postfix()
 
-        self.expr_tree = BooleanExpressionTree(self.tokens)
+        self.expr_tree = BooleanExpressionTree(self.postfix_tokens)
 
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.

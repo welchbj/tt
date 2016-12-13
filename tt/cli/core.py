@@ -42,13 +42,19 @@ def get_parsed_args(args=None):
         '--tokens',
         action='store_true',
         dest='tokens',
-        help='print the parsed tokens of the expression')
+        help='print the parsed tokens of the passed expression')
 
     parser.add_argument(
         '--postfix-tokens',
         action='store_true',
         dest='postfix_tokens',
-        help='print the tokens of this expression in postfix form')
+        help='print the tokens of the postfix form of the passed expression')
+
+    parser.add_argument(
+        '--tree',
+        action='store_true',
+        dest='tree',
+        help='print the tree representation of the passed expression')
 
     parser.add_argument(
         'expression',
@@ -82,6 +88,7 @@ def main(args=None):
 
         tokens = opts.tokens
         postfix_tokens = opts.postfix_tokens
+        tree = opts.tree
         expression = ' '.join(opts.expression)
 
         b = BooleanExpression(expression)
@@ -91,6 +98,9 @@ def main(args=None):
 
         if postfix_tokens:
             print_info('\n'.join(b.postfix_tokens))
+
+        if tree:
+            print_info(b.expr_tree)
 
         return 0
     except Exception as e:

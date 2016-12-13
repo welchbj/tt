@@ -1,5 +1,10 @@
 """An expression tree implementation for Boolean expressions."""
 
+from ..operators import OPERATOR_MAPPING, TT_NOT_OP
+from .tree_node import (BinaryOperatorExpressionTreeNode,
+                        OperandExpressionTreeNode,
+                        UnaryOperatorExpressionTreeNode)
+
 
 class BooleanExpressionTree(object):
 
@@ -11,16 +16,47 @@ class BooleanExpressionTree(object):
         ``BooleanExpression`` class) will not be checked.
 
     Attributes:
-        root (tt.trees.BooleanExpressionTreeNode): The root of the tree;
-            ``None`` for an empty tree.
         postfix_tokens (List[str]): The tokens in the expression from which to
             build the tree.
+        root (tt.trees.ExpressionTreeNode): The root of the tree;
+            ``None`` for an empty tree.
 
     """
 
     def __init__(self, postfix_tokens):
         self.postfix_tokens = postfix_tokens
 
+        self.root = None
+        self._build_tree()
+
+    def _build_tree(self):
+        """Iterate over the ``postfix_tokens``, constructing the tree.
+
+        Notes:
+            This method will populate this class's ``root`` attribute.
+
+        """
+        if not self.postfix_tokens:
+            self.root = None
+            return
+
+        stack = []
+        operators = OPERATOR_MAPPING.keys()
+
+        for token in self.postfix_tokens:
+            if token in operators:
+                if OPERATOR_MAPPING[token] == TT_NOT_OP:
+                    node = UnaryOperatorExpressionTreeNode(
+                        token, stack.pop())
+                else:
+                    node = BinaryOperatorExpressionTreeNode(
+                        token, stack.pop(), stack.pop())
+            else:
+                node = OperandExpressionTreeNode(token)
+
+            stack.append(node)
+
+        self.root = stack.pop()
+
     def __str__(self):
-        # TODO
-        pass
+        return 'Empty!\n' if self.root is None else str(self.root)
