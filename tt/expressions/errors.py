@@ -26,15 +26,21 @@ class GrammarError(Exception):
 
 
 class ExpressionOrderError(GrammarError):
-    # TODO
+
+    """An exception for unexpected operands or operators."""
+
     pass
 
 
 class BadParenPositionError(GrammarError):
-    # TODO
+
+    """An exception for unexpected parentheses."""
+
     pass
 
 
 class UnbalancedParenError(GrammarError):
-    # TODO
+
+    """An exception for unbalanced parentheses."""
+
     pass
