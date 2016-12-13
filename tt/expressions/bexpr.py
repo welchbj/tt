@@ -2,7 +2,9 @@
 
 import re
 
-from ..operators import OPERATOR_MAPPING, TT_NOT_OP
+from ..operators import (CONSTANT_VALUES, DELIMITERS, OPERATOR_MAPPING,
+                         TT_NOT_OP)
+from ..trees import BooleanExpressionTree
 from .errors import (BadParenPositionError, ExpressionOrderError,
                      UnbalancedParenError)
 
@@ -18,7 +20,11 @@ class BooleanExpression(object):
             this expression.
         tokens (List[str]): A list of strings, each element indicating
             a different token of the parsed expression.
-        expr_tree_root (TODO): TODO
+        postfix_tokens (List[str]): A list of strings, representing the
+            ``tokens`` list converted to postfix form.
+        expr_tree (tt.trees.BooleanExpressionTree): The expression tree
+            representing the expression wrapped in this class, derived from
+            the tokens parsed by this class.
 
     """
 
@@ -26,11 +32,14 @@ class BooleanExpression(object):
         self.raw_expr = raw_expr
 
         self.symbols = []
+        self._symbol_set = set()
         self.tokens = []
-        self.expr_tree_root = None  # TODO
+        self.postfix_tokens = []
 
         self._tokenize()
-        self._build_expr_tree()
+        self._to_postfix()
+
+        self.expr_tree = BooleanExpressionTree(self.tokens)
 
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.
@@ -42,11 +51,8 @@ class BooleanExpression(object):
         operator_strs = [k for k in OPERATOR_MAPPING.keys()]
         is_symbolic = {op: not op[0].isalpha() for op in operator_strs}
         operator_search_list = sorted(operator_strs, key=len, reverse=True)
-        delimiters = {' ', '(', ')'} | set(k[0] for k, v in is_symbolic.items()
-                                           if v)
-        constant_values = {'0', '1'}
-        parsed_operands = set()
-
+        delimiters = DELIMITERS | set(k[0] for k, v in is_symbolic.items()
+                                      if v)
         EXPECTING_OPERAND = 1
         EXPECTING_OPERATOR = 2
         grammar_state = EXPECTING_OPERAND
@@ -131,9 +137,9 @@ class BooleanExpression(object):
 
                     operand = self.raw_expr[idx:operand_end_idx]
                     self.tokens.append(operand)
-                    if operand not in (parsed_operands | constant_values):
+                    if operand not in (self._symbol_set | CONSTANT_VALUES):
                         self.symbols.append(operand)
-                        parsed_operands.add(operand)
+                        self._symbol_set.add(operand)
 
                     idx = operand_end_idx
                     grammar_state = EXPECTING_OPERATOR
@@ -145,5 +151,29 @@ class BooleanExpression(object):
                 'Unbalanced left parenthesis', self.raw_expr,
                 left_paren_positions[open_paren_count-1])
 
-    def _build_expr_tree(self):
-        pass
+    def _to_postfix(self):
+        """Populate the ``postfix_tokens`` attribute."""
+        operand_set = self._symbol_set | CONSTANT_VALUES
+        stack = []
+
+        for token in self.tokens:
+            if token in operand_set:
+                self.postfix_tokens.append(token)
+            elif token == '(':
+                stack.append(token)
+            elif token in OPERATOR_MAPPING.keys():
+                if not stack:
+                    stack.append(token)
+                else:
+                    while (stack and stack[-1] != '(' and
+                            OPERATOR_MAPPING[stack[-1]].precedence >
+                            OPERATOR_MAPPING[token].precedence):
+                        self.postfix_tokens.append(stack.pop())
+                    stack.append(token)
+            elif token == ')':
+                while stack and stack[-1] != '(':
+                    self.postfix_tokens.append(stack.pop())
+                stack.pop()
+
+        for token in reversed(stack):
+            self.postfix_tokens.append(token)

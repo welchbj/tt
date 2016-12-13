@@ -67,3 +67,9 @@ OPERATOR_MAPPING = {
     'nor': TT_NOR_OP,
     'NOR': TT_NOR_OP
 }
+
+
+DELIMITERS = {' ', '(', ')'}
+
+
+CONSTANT_VALUES = {'0', '1'}

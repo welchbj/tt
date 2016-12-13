@@ -45,6 +45,12 @@ def get_parsed_args(args=None):
         help='print the parsed tokens of the expression')
 
     parser.add_argument(
+        '--postfix-tokens',
+        action='store_true',
+        dest='postfix_tokens',
+        help='print the tokens of this expression in postfix form')
+
+    parser.add_argument(
         'expression',
         nargs='*',
         help=(
@@ -75,12 +81,16 @@ def main(args=None):
         opts = get_parsed_args(args)
 
         tokens = opts.tokens
+        postfix_tokens = opts.postfix_tokens
         expression = ' '.join(opts.expression)
 
         b = BooleanExpression(expression)
 
         if tokens:
             print_info('\n'.join(b.tokens))
+
+        if postfix_tokens:
+            print_info('\n'.join(b.postfix_tokens))
 
         return 0
     except Exception as e:

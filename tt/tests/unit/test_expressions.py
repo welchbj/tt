@@ -13,6 +13,7 @@ class TestExpressions(unittest.TestCase):
     """Tests for Boolean expressions, namely the BooleanExpression class."""
 
     def helper_test_tokenization(self, expr, expected_tokens=None,
+                                 expected_postfix_tokens=None,
                                  expected_symbols=None):
         """Helper for testing tokenization on valid expressions.
 
@@ -28,6 +29,7 @@ class TestExpressions(unittest.TestCase):
         """
         b = BooleanExpression(expr)
         self.assertEqual(expected_tokens, b.tokens)
+        self.assertEqual(expected_postfix_tokens, b.postfix_tokens)
         self.assertEqual(expected_symbols, b.symbols)
 
     def helper_test_tokenization_raises(self, expr,
@@ -70,9 +72,11 @@ class TestExpressions(unittest.TestCase):
 
         for op in binary_ops:
             self.helper_test_tokenization(
-                'A {0} ((B {0} C) {0} D) {0} E'.format(op),
-                expected_tokens=['A', op, '(', '(', 'B', op, 'C', ')', op, 'D',
-                                 ')', op, 'E'],
+                '(A {0} ((B {0} C) {0} D)) {0} E'.format(op),
+                expected_tokens=['(', 'A', op, '(', '(', 'B', op, 'C', ')', op, 'D',
+                                 ')', ')', op, 'E'],
+                expected_postfix_tokens=['A', 'B', 'C', op, 'D', op, op, 'E',
+                                         op],
                 expected_symbols=['A', 'B', 'C', 'D', 'E'])
 
     def test_empty(self):
@@ -80,6 +84,7 @@ class TestExpressions(unittest.TestCase):
         self.helper_test_tokenization(
             '',
             expected_tokens=[],
+            expected_postfix_tokens=[],
             expected_symbols=[])
 
     def test_single_symbol(self):
@@ -87,6 +92,7 @@ class TestExpressions(unittest.TestCase):
         self.helper_test_tokenization(
             'operand',
             expected_tokens=['operand'],
+            expected_postfix_tokens=['operand'],
             expected_symbols=['operand'])
 
     def test_single_character_symbol(self):
@@ -94,6 +100,7 @@ class TestExpressions(unittest.TestCase):
         self.helper_test_tokenization(
             'a',
             expected_tokens=['a'],
+            expected_postfix_tokens=['a'],
             expected_symbols=['a'])
 
     def test_single_constant(self):
@@ -101,15 +108,19 @@ class TestExpressions(unittest.TestCase):
         self.helper_test_tokenization(
             '0',
             expected_tokens=['0'],
+            expected_postfix_tokens=['0'],
             expected_symbols=[])
 
     def test_only_constants_symbolic_operators(self):
         """Test an expression of only constants and symbolic operators."""
         self.helper_test_tokenization(
-            '!0&&1||(~~0||~~1)&&0\\/1/\\!0',
-            expected_tokens=['!', '0', '&&', '1', '||', '(', '~', '~', '0',
-                             '||', '~', '~', '1', ')', '&&', '0', '\\/', '1',
-                             '/\\', '!', '0'],
+            '(!0&&1||(~~0||~~1))&&((0\\/1)/\\!0)',
+            expected_tokens=['(', '!', '0', '&&', '1', '||', '(', '~', '~',
+                             '0', '||', '~', '~', '1', ')', ')', '&&', '(',
+                             '(', '0', '\\/', '1', ')', '/\\', '!', '0', ')'],
+            expected_postfix_tokens=['0', '!', '1', '&&', '0', '~', '~', '1',
+                                     '~', '~', '||', '||', '0', '1', '\\/',
+                                     '0', '!', '/\\', '&&'],
             expected_symbols=[])
 
     def test_only_constants_plain_english_operators(self):
@@ -119,30 +130,38 @@ class TestExpressions(unittest.TestCase):
             expected_tokens=['not', '0', 'and', '1', 'or', '(', 'not', 'not',
                              '0', 'or', 'not', 'not', '1', ')', 'and', '0',
                              'or', '1', 'and', '0'],
+            expected_postfix_tokens=['0', 'not', '1', 'and', '0', 'not', 'not',
+                                     '1', 'not', 'not', 'or', '0', 'and', '1',
+                                     '0', 'and', 'or', 'or'],
             expected_symbols=[])
 
     def test_superfluous_parentheses_symbolic_operators(self):
         """Test symbolic operators with unnecessary parentheses."""
         self.helper_test_tokenization(
-            '(A)||(B)&&(C)',
-            expected_tokens=['(', 'A', ')', '||', '(', 'B', ')', '&&', '(',
-                             'C', ')'],
+            '((A)||(B))&&(C)',
+            expected_tokens=['(', '(', 'A', ')', '||', '(', 'B', ')', ')',
+                             '&&', '(', 'C', ')'],
+            expected_postfix_tokens=['A', 'B', '||', 'C', '&&'],
             expected_symbols=['A', 'B', 'C'])
 
     def test_superfluous_parentheses_plain_english_operators(self):
         """Test plain English operators with unnecessary parentheses."""
         self.helper_test_tokenization(
-            '(A)and(B)or(C)',
-            expected_tokens=['(', 'A', ')', 'and', '(', 'B', ')', 'or', '(',
-                             'C', ')'],
+            '((A)and(B))or(C)',
+            expected_tokens=['(', '(', 'A', ')', 'and', '(', 'B', ')', ')',
+                             'or', '(', 'C', ')'],
+            expected_postfix_tokens=['A', 'B', 'and', 'C', 'or'],
             expected_symbols=['A', 'B', 'C'])
 
     def test_symbolic_operators_without_spaces(self):
         """Test using symbolic operators without spaces before operands."""
         self.helper_test_tokenization(
-            'A&&B||(C&D)|!E\\/(~F)',
-            expected_tokens=['A', '&&', 'B', '||', '(', 'C', '&', 'D', ')',
-                             '|', '!', 'E', '\\/', '(', '~', 'F', ')'],
+            '(A&&B||(C&D))|(!E\\/(~F))',
+            expected_tokens=['(', 'A', '&&', 'B', '||', '(', 'C', '&', 'D',
+                             ')', ')', '|', '(', '!', 'E', '\\/', '(', '~',
+                             'F', ')', ')'],
+            expected_postfix_tokens=['A', 'B', '&&', 'C', 'D', '&', '||', 'E',
+                                     '!', 'F', '~', '\\/', '|'],
             expected_symbols=['A', 'B', 'C', 'D', 'E', 'F'])
 
     def test_several_nots(self):
@@ -151,6 +170,8 @@ class TestExpressions(unittest.TestCase):
             '~!~!! not not ~ !!!! operand',
             expected_tokens=['~', '!', '~', '!', '!', 'not', 'not', '~', '!',
                              '!', '!', '!', 'operand'],
+            expected_postfix_tokens=['operand', '!', '!', '!', '!', '~', 'not',
+                                     'not', '!', '!', '~', '!', '~'],
             expected_symbols=['operand'])
 
     def test_concentric_parentheses(self):
@@ -160,6 +181,7 @@ class TestExpressions(unittest.TestCase):
             expected_tokens=['(', '(', '(', 'op1', ')', ')', ')', 'and',
                              '(', '(', '(', '(', '(', 'op2', ')', ')', ')',
                              ')', ')', 'or', '(', '1', ')'],
+            expected_postfix_tokens=['op1', 'op2', 'and', '1', 'or'],
             expected_symbols=['op1', 'op2'])
 
     def test_leading_symbolic_operators(self):
