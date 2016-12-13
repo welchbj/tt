@@ -48,6 +48,9 @@ class BooleanExpression(object):
         This method will populate the ``symbols`` and ``tokens`` attributes,
         and is the first step in the expression-processing pipeline.
 
+        Raises:
+            GrammarError: If a malformed expression is received.
+
         """
         operator_strs = [k for k in OPERATOR_MAPPING.keys()]
         is_symbolic = {op: not op[0].isalpha() for op in operator_strs}
@@ -128,7 +131,7 @@ class BooleanExpression(object):
 
                 if not is_operator:
                     if grammar_state != EXPECTING_OPERAND:
-                        raise ExpressionOrderError('Unexpected operator',
+                        raise ExpressionOrderError('Unexpected operand',
                                                    self.raw_expr, idx)
 
                     operand_end_idx = idx + 1
