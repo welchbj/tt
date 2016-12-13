@@ -14,7 +14,8 @@ class TestExpressions(unittest.TestCase):
 
     def helper_test_tokenization(self, expr, expected_tokens=None,
                                  expected_postfix_tokens=None,
-                                 expected_symbols=None):
+                                 expected_symbols=None,
+                                 expected_tree_str=None):
         """Helper for testing tokenization on valid expressions.
 
         Args:
@@ -27,12 +28,15 @@ class TestExpressions(unittest.TestCase):
                 tokens for the passed expression.
             expected_symbols (List[str]): The list of expected symbols for the
                 passed expression.
+            expected_tree_str (str): The expected string representation of the
+                constructed expression tree.
 
         """
         b = BooleanExpression(expr)
         self.assertEqual(expected_tokens, b.tokens)
         self.assertEqual(expected_postfix_tokens, b.postfix_tokens)
         self.assertEqual(expected_symbols, b.symbols)
+        self.assertEqual(expected_tree_str, str(b.expr_tree))
 
     def helper_test_tokenization_raises(self, expr,
                                         expected_exc_type=None,
@@ -75,11 +79,21 @@ class TestExpressions(unittest.TestCase):
         for op in binary_ops:
             self.helper_test_tokenization(
                 '(A {0} ((B {0} C) {0} D)) {0} E'.format(op),
-                expected_tokens=['(', 'A', op, '(', '(', 'B', op, 'C', ')', op, 'D',
-                                 ')', ')', op, 'E'],
+                expected_tokens=['(', 'A', op, '(', '(', 'B', op, 'C', ')', op,
+                                 'D', ')', ')', op, 'E'],
                 expected_postfix_tokens=['A', 'B', 'C', op, 'D', op, op, 'E',
                                          op],
-                expected_symbols=['A', 'B', 'C', 'D', 'E'])
+                expected_symbols=['A', 'B', 'C', 'D', 'E'],
+                expected_tree_str='\n'.join((
+                    op,
+                    '`----{}'.format(op),
+                    '|    `----A',
+                    '|    `----{}'.format(op),
+                    '|         `----{}'.format(op),
+                    '|         |    `----B',
+                    '|         |    `----C',
+                    '|         `----D',
+                    '`----E')))
 
     def test_empty(self):
         """Test an empty expression."""
@@ -87,7 +101,9 @@ class TestExpressions(unittest.TestCase):
             '',
             expected_tokens=[],
             expected_postfix_tokens=[],
-            expected_symbols=[])
+            expected_symbols=[],
+            expected_tree_str=(
+                'Empty!'))
 
     def test_single_symbol(self):
         """Test an expression of a single variable."""
@@ -95,7 +111,9 @@ class TestExpressions(unittest.TestCase):
             'operand',
             expected_tokens=['operand'],
             expected_postfix_tokens=['operand'],
-            expected_symbols=['operand'])
+            expected_symbols=['operand'],
+            expected_tree_str=(
+                'operand'))
 
     def test_single_character_symbol(self):
         """Test an expression containing only an operand of one character."""
@@ -103,7 +121,9 @@ class TestExpressions(unittest.TestCase):
             'a',
             expected_tokens=['a'],
             expected_postfix_tokens=['a'],
-            expected_symbols=['a'])
+            expected_symbols=['a'],
+            expected_tree_str=(
+                'a'))
 
     def test_single_constant(self):
         """Test an expression only containing a constant."""
@@ -111,7 +131,9 @@ class TestExpressions(unittest.TestCase):
             '0',
             expected_tokens=['0'],
             expected_postfix_tokens=['0'],
-            expected_symbols=[])
+            expected_symbols=[],
+            expected_tree_str=(
+                '0'))
 
     def test_only_constants_symbolic_operators(self):
         """Test an expression of only constants and symbolic operators."""
@@ -123,7 +145,27 @@ class TestExpressions(unittest.TestCase):
             expected_postfix_tokens=['0', '!', '1', '&&', '0', '~', '~', '1',
                                      '~', '~', '||', '||', '0', '1', '\\/',
                                      '0', '!', '/\\', '&&'],
-            expected_symbols=[])
+            expected_symbols=[],
+            expected_tree_str='\n'.join((
+                '&&',
+                '`----||',
+                '|    `----&&',
+                '|    |    `----!',
+                '|    |    |    `----0',
+                '|    |    `----1',
+                '|    `----||',
+                '|         `----~',
+                '|         |    `----~',
+                '|         |         `----0',
+                '|         `----~',
+                '|              `----~',
+                '|                   `----1',
+                '`----/\\',
+                '     `----\\/',
+                '     |    `----0',
+                '     |    `----1',
+                '     `----!',
+                '          `----0')))
 
     def test_only_constants_plain_english_operators(self):
         """Test an expression of only constants and plain English operators."""
@@ -135,7 +177,26 @@ class TestExpressions(unittest.TestCase):
             expected_postfix_tokens=['0', 'not', '1', 'and', '0', 'not', 'not',
                                      '1', 'not', 'not', 'or', '0', 'and', '1',
                                      '0', 'and', 'or', 'or'],
-            expected_symbols=[])
+            expected_symbols=[],
+            expected_tree_str='\n'.join((
+                'or',
+                '`----and',
+                '|    `----not',
+                '|    |    `----0',
+                '|    `----1',
+                '`----or',
+                '     `----and',
+                '     |    `----or',
+                '     |    |    `----not',
+                '     |    |    |    `----not',
+                '     |    |    |         `----0',
+                '     |    |    `----not',
+                '     |    |         `----not',
+                '     |    |              `----1',
+                '     |    `----0',
+                '     `----and',
+                '          `----1',
+                '          `----0')))
 
     def test_superfluous_parentheses_symbolic_operators(self):
         """Test symbolic operators with unnecessary parentheses."""
@@ -144,7 +205,13 @@ class TestExpressions(unittest.TestCase):
             expected_tokens=['(', '(', 'A', ')', '||', '(', 'B', ')', ')',
                              '&&', '(', 'C', ')'],
             expected_postfix_tokens=['A', 'B', '||', 'C', '&&'],
-            expected_symbols=['A', 'B', 'C'])
+            expected_symbols=['A', 'B', 'C'],
+            expected_tree_str='\n'.join((
+                '&&',
+                '`----||',
+                '|    `----A',
+                '|    `----B',
+                '`----C')))
 
     def test_superfluous_parentheses_plain_english_operators(self):
         """Test plain English operators with unnecessary parentheses."""
@@ -153,7 +220,13 @@ class TestExpressions(unittest.TestCase):
             expected_tokens=['(', '(', 'A', ')', 'and', '(', 'B', ')', ')',
                              'or', '(', 'C', ')'],
             expected_postfix_tokens=['A', 'B', 'and', 'C', 'or'],
-            expected_symbols=['A', 'B', 'C'])
+            expected_symbols=['A', 'B', 'C'],
+            expected_tree_str='\n'.join((
+                'or',
+                '`----and',
+                '|    `----A',
+                '|    `----B',
+                '`----C')))
 
     def test_symbolic_operators_without_spaces(self):
         """Test using symbolic operators without spaces before operands."""
@@ -164,7 +237,21 @@ class TestExpressions(unittest.TestCase):
                              'F', ')', ')'],
             expected_postfix_tokens=['A', 'B', '&&', 'C', 'D', '&', '||', 'E',
                                      '!', 'F', '~', '\\/', '|'],
-            expected_symbols=['A', 'B', 'C', 'D', 'E', 'F'])
+            expected_symbols=['A', 'B', 'C', 'D', 'E', 'F'],
+            expected_tree_str='\n'.join((
+                '|',
+                '`----||',
+                '|    `----&&',
+                '|    |    `----A',
+                '|    |    `----B',
+                '|    `----&',
+                '|         `----C',
+                '|         `----D',
+                '`----\\/',
+                '     `----!',
+                '     |    `----E',
+                '     `----~',
+                '          `----F')))
 
     def test_several_nots(self):
         """Test several consecutive unary not operators."""
@@ -174,7 +261,21 @@ class TestExpressions(unittest.TestCase):
                              '!', '!', '!', 'operand'],
             expected_postfix_tokens=['operand', '!', '!', '!', '!', '~', 'not',
                                      'not', '!', '!', '~', '!', '~'],
-            expected_symbols=['operand'])
+            expected_symbols=['operand'],
+            expected_tree_str='\n'.join((
+                '~',
+                '`----!',
+                '     `----~',
+                '          `----!',
+                '               `----!',
+                '                    `----not',
+                '                         `----not',
+                '                              `----~',
+                '                                   `----!',
+                '                                        `----!',
+                '                                             `----!',
+                '                                                  `----!',
+                '                                                       `----operand')))  # noqa
 
     def test_concentric_parentheses(self):
         """Test many grouped parentheses."""
@@ -184,7 +285,13 @@ class TestExpressions(unittest.TestCase):
                              '(', '(', '(', '(', '(', 'op2', ')', ')', ')',
                              ')', ')', 'or', '(', '1', ')'],
             expected_postfix_tokens=['op1', 'op2', 'and', '1', 'or'],
-            expected_symbols=['op1', 'op2'])
+            expected_symbols=['op1', 'op2'],
+            expected_tree_str='\n'.join((
+                'or',
+                '`----and',
+                '|    `----op1',
+                '|    `----op2',
+                '`----1')))
 
     def test_leading_symbolic_operators(self):
         """Test beginning an expression with a symbolic operator."""
