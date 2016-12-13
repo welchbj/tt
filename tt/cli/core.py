@@ -4,7 +4,7 @@ import sys
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from ..expressions import BooleanExpression
+from ..expressions import BooleanExpression, GrammarError
 from .utils import print_err, print_info
 
 
@@ -103,6 +103,11 @@ def main(args=None):
             print_info(b.expr_tree)
 
         return 0
+    except GrammarError as e:
+        print_err('Error! ', e.message, ':', sep='')
+        print_err(e.expr_str)
+        print_err(' ' * e.error_pos, '^', sep='')
+        return 1
     except Exception as e:
         print_err('Received unexpected error; re-raising it!')
         raise e
