@@ -23,6 +23,8 @@ class TestExpressions(unittest.TestCase):
                 form.
             expected_tokens (List[str]): The list of expected tokens for the
                 passed expression.
+            expected_postfix_tokens (List[str]): The list of expected postfix
+                tokens for the passed expression.
             expected_symbols (List[str]): The list of expected symbols for the
                 passed expression.
 
