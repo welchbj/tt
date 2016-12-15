@@ -2,10 +2,12 @@
 
 import re
 
-from ..operators import (CONSTANT_VALUES, DELIMITERS, OPERATOR_MAPPING,
-                         TT_NOT_OP)
+from ..definitions import (BOOLEAN_VALUES, CONSTANT_VALUES, DELIMITERS,
+                           OPERATOR_MAPPING, TT_NOT_OP)
 from ..trees import BooleanExpressionTree
-from .errors import (BadParenPositionError, ExpressionOrderError,
+from .errors import (BadParenPositionError, EmptyExpressionError,
+                     ExpressionOrderError, ExtraTokenError,
+                     InvalidBooleanValueError, MissingTokenError,
                      UnbalancedParenError)
 
 
@@ -41,6 +43,46 @@ class BooleanExpression(object):
         self._to_postfix()
 
         self.expr_tree = BooleanExpressionTree(self.postfix_tokens)
+
+    def evaluate(self, **kwargs):
+        """Evaluate the Boolean expression for the passed keyword arguments.
+
+        Args:
+            kwargs: Keys are names of symbols in this expression; the specified
+                value for each of these keys will be substituted into the
+                expression for evaluation.
+
+        Returns:
+            int: The result of the expression evaluation: either ``1`` or
+                ``0``.
+
+        Raises:
+            MissingTokenError: If a keyword arg representing a variable that
+                was not parsed from the expression is passed in.
+            InvalidBooleanValueError: If a value other than ``True``,
+                ``False``, ``0``, or ``1`` is passed as a value for a keyword
+                argument.
+
+        """
+        for k, v in kwargs.items():
+            if k not in self._symbol_set:
+                raise ExtraTokenError(
+                    '"{}" is not a symbol in this expression'.format(k))
+
+            if v not in BOOLEAN_VALUES:
+                raise InvalidBooleanValueError(
+                    '"{}" passed as value for "{}" is not a valid Boolean '
+                    'value'.format(v, k))
+
+        passed_symbol_set = set(kwargs.keys())
+        if len(passed_symbol_set) < len(self._symbol_set):
+            msg = 'Did not receive value for the following symbols: '
+            msg += ', '.join('"{}"'.format(sym) for sym in
+                             self._symbol_set - passed_symbol_set)
+            raise MissingTokenError(msg)
+
+        truthy = self.expr_tree.evaluate(kwargs)
+        return int(truthy)
 
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.
@@ -154,6 +196,9 @@ class BooleanExpression(object):
             raise UnbalancedParenError(
                 'Unbalanced left parenthesis', self.raw_expr,
                 left_paren_positions[open_paren_count-1])
+
+        if not self.tokens:
+            raise EmptyExpressionError('Empty expression is invalid')
 
     def _to_postfix(self):
         """Populate the ``postfix_tokens`` attribute."""

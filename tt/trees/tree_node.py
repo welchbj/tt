@@ -1,6 +1,6 @@
 """A node for use in expression trees."""
 
-from ..operators import CONSTANT_VALUES, MAX_OPERATOR_STR_LEN, OPERATOR_MAPPING
+from ..definitions import MAX_OPERATOR_STR_LEN, OPERATOR_MAPPING
 
 
 DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
@@ -26,6 +26,21 @@ class ExpressionTreeNode(object):
         self.r_child = r_child
 
     def evaluate(self, input_dict):
+        """Recursively evaluate this node.
+
+        Args:
+            input_dict (Dict): A dictionary mapping expression symbols to the
+                value for which they should be subsituted in expression
+                evaluation.
+
+        Notes:
+            Node evaluation does no checking of the validity of inputs; they
+            should be check before being passed here.
+
+        Returns:
+            A truthy value.
+
+        """
         raise NotImplementedError(
             'Expression tree nodes must implement `evaluate`.')
 
@@ -75,8 +90,9 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
         self.operator = OPERATOR_MAPPING[operator_str]
 
     def evaluate(self, input_dict):
-        # TODO
-        pass
+        return self.operator.eval_func(
+            self.l_child.evaluate(input_dict),
+            self.r_child.evaluate(input_dict))
 
 
 class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
@@ -90,8 +106,8 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         self.operator = OPERATOR_MAPPING[operator_str]
 
     def evaluate(self, input_dict):
-        # TODO
-        pass
+        return self.operator.eval_func(
+            self.l_child.evaluate(input_dict))
 
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
@@ -102,5 +118,9 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         super(OperandExpressionTreeNode, self).__init__(operand_str)
 
     def evaluate(self, input_dict):
-        # TODO
-        pass
+        if self.symbol_name == '0':
+            return 0
+        elif self.symbol_name == '1':
+            return 1
+        else:
+            return input_dict[self.symbol_name]

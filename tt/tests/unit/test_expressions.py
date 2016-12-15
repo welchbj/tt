@@ -1,11 +1,12 @@
 """Tests for tokenization/parsing of Boolean expressions."""
 
-import unittest
 import traceback
+import unittest
 
+from ...definitions import OPERATOR_MAPPING, TT_NOT_OP
 from ...expressions import (BadParenPositionError, BooleanExpression,
-                            ExpressionOrderError, UnbalancedParenError)
-from ...operators import OPERATOR_MAPPING, TT_NOT_OP
+                            EmptyExpressionError, ExpressionOrderError,
+                            UnbalancedParenError)
 
 
 class TestExpressions(unittest.TestCase):
@@ -63,7 +64,7 @@ class TestExpressions(unittest.TestCase):
                 self.assertEqual(expected_error_pos, e.error_pos)
             did_catch = True
         except Exception as e:
-            traceback.print_exception(e)
+            traceback.print_exc()
             self.fail('Received exception of type ' + type(e).__name__ +
                       ' but was expecting type ' + expected_exc_type.__name__ +
                       '.')
@@ -94,16 +95,6 @@ class TestExpressions(unittest.TestCase):
                     '|         |    `----C',
                     '|         `----D',
                     '`----E')))
-
-    def test_empty(self):
-        """Test an empty expression."""
-        self.helper_test_tokenization(
-            '',
-            expected_tokens=[],
-            expected_postfix_tokens=[],
-            expected_symbols=[],
-            expected_tree_str=(
-                'Empty!'))
 
     def test_single_symbol(self):
         """Test an expression of a single variable."""
@@ -292,6 +283,24 @@ class TestExpressions(unittest.TestCase):
                 '|    `----op1',
                 '|    `----op2',
                 '`----1')))
+
+    def test_empty(self):
+        """Test an empty expression."""
+        self.helper_test_tokenization_raises(
+            '',
+            expected_exc_type=EmptyExpressionError)
+
+    def test_all_spaces(self):
+        """Test an expression of all spaces."""
+        self.helper_test_tokenization_raises(
+            '              ',
+            expected_exc_type=EmptyExpressionError)
+
+    def test_all_whitespace(self):
+        """Test an expression of all whitespace."""
+        self.helper_test_tokenization_raises(
+            '   \t \t     \t \t     \t',
+            expected_exc_type=EmptyExpressionError)
 
     def test_leading_symbolic_operators(self):
         """Test beginning an expression with a symbolic operator."""

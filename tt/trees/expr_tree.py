@@ -1,6 +1,6 @@
 """An expression tree implementation for Boolean expressions."""
 
-from ..operators import OPERATOR_MAPPING, TT_NOT_OP
+from ..definitions import OPERATOR_MAPPING, TT_NOT_OP
 from .tree_node import (BinaryOperatorExpressionTreeNode,
                         OperandExpressionTreeNode,
                         UnaryOperatorExpressionTreeNode)
@@ -28,6 +28,23 @@ class BooleanExpressionTree(object):
 
         self.root = None
         self._build_tree()
+
+    def evaluate(self, input_dict):
+        """Evaluate the expression held in this tree for specified inputs.
+
+        Args:
+            input_dict (Dict): A dict mapping string variable names to the
+                values for which they should be evaluated.
+
+        Returns:
+            The truthy result of the expression tree evaluation.
+
+        Notes:
+            This function does not check to ensure the validity of
+                ``input_dict`` in any way.
+
+        """
+        return self.root.evaluate(input_dict)
 
     def _build_tree(self):
         """Iterate over the ``postfix_tokens``, constructing the tree.

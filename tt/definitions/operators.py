@@ -27,8 +27,8 @@ PRECEDENCE = {
 
 
 TT_NOT_OP = BooleanOperator(PRECEDENCE['HIGH'], lambda a: not a)
-TT_XOR_OP = BooleanOperator(PRECEDENCE['MEDIUM'], lambda a, b: a == b)
-TT_XNOR_OP = BooleanOperator(PRECEDENCE['MEDIUM'], lambda a, b: a != b)
+TT_XOR_OP = BooleanOperator(PRECEDENCE['MEDIUM'], lambda a, b: a != b)
+TT_XNOR_OP = BooleanOperator(PRECEDENCE['MEDIUM'], lambda a, b: a == b)
 TT_AND_OP = BooleanOperator(PRECEDENCE['LOW'], lambda a, b: a and b)
 TT_NAND_OP = BooleanOperator(PRECEDENCE['LOW'], lambda a, b: not(a and b))
 TT_OR_OP = BooleanOperator(PRECEDENCE['ZERO'], lambda a, b: a or b)
@@ -67,12 +67,6 @@ OPERATOR_MAPPING = {
     'nor': TT_NOR_OP,
     'NOR': TT_NOR_OP
 }
-
-
-DELIMITERS = {' ', '(', ')'}
-
-
-CONSTANT_VALUES = {'0', '1'}
 
 
 MAX_OPERATOR_STR_LEN = max(len(k) for k in OPERATOR_MAPPING.keys())
