@@ -1,5 +1,5 @@
-from .evaluation import (EvaluationError, ExtraTokenError,  # noqa
-                         InvalidBooleanValueError, MissingTokenError)
+from .evaluation import (EvaluationError, ExtraSymbolError,  # noqa
+                         InvalidBooleanValueError, MissingSymbolError)
 from .grammar import (BadParenPositionError, GrammarError,  # noqa
                       EmptyExpressionError, ExpressionOrderError,
                       UnbalancedParenError)

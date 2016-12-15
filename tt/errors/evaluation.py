@@ -20,7 +20,7 @@ class EvaluationError(Exception):
         super(EvaluationError, self).__init__(self.message, *args)
 
 
-class ExtraTokenError(EvaluationError):
+class ExtraSymbolError(EvaluationError):
 
     """Exception for a passed token that is not a symbol in the expression."""
 
@@ -34,7 +34,7 @@ class InvalidBooleanValueError(EvaluationError):
     pass
 
 
-class MissingTokenError(EvaluationError):
+class MissingSymbolError(EvaluationError):
 
     """An exception type for a missing token value in evaluation."""
 

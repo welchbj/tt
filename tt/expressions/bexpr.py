@@ -5,8 +5,8 @@ import re
 from ..definitions import (BOOLEAN_VALUES, CONSTANT_VALUES, DELIMITERS,
                            OPERATOR_MAPPING, TT_NOT_OP)
 from ..errors import (BadParenPositionError, EmptyExpressionError,
-                      ExpressionOrderError, ExtraTokenError,
-                      InvalidBooleanValueError, MissingTokenError,
+                      ExpressionOrderError, ExtraSymbolError,
+                      InvalidBooleanValueError, MissingSymbolError,
                       UnbalancedParenError)
 from ..trees import BooleanExpressionTree
 
@@ -57,8 +57,9 @@ class BooleanExpression(object):
                 ``0``.
 
         Raises:
-            MissingTokenError: If a keyword arg representing a variable that
+            MissingSymbolError: If a keyword arg representing a variable that
                 was not parsed from the expression is passed in.
+
             InvalidBooleanValueError: If a value other than ``True``,
                 ``False``, ``0``, or ``1`` is passed as a value for a keyword
                 argument.
@@ -66,7 +67,7 @@ class BooleanExpression(object):
         """
         for k, v in kwargs.items():
             if k not in self._symbol_set:
-                raise ExtraTokenError(
+                raise ExtraSymbolError(
                     '"{}" is not a symbol in this expression'.format(k))
 
             if v not in BOOLEAN_VALUES:
@@ -79,7 +80,7 @@ class BooleanExpression(object):
             msg = 'Did not receive value for the following symbols: '
             msg += ', '.join('"{}"'.format(sym) for sym in
                              self._symbol_set - passed_symbol_set)
-            raise MissingTokenError(msg)
+            raise MissingSymbolError(msg)
 
         truthy = self.tree.evaluate(kwargs)
         return int(truthy)
