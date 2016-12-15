@@ -4,8 +4,8 @@ import traceback
 import unittest
 
 from ...definitions import BOOLEAN_VALUES
-from ...errors import (ExtraTokenError, InvalidBooleanValueError,
-                       MissingTokenError)
+from ...errors import (ExtraSymbolError, InvalidBooleanValueError,
+                       MissingSymbolError)
 from ...expressions import BooleanExpression
 
 
@@ -215,7 +215,7 @@ class TestEvaluations(unittest.TestCase):
         """Test attempting to evaluate without passing a token value."""
         self.helper_test_evaluate_raises(
             'A or (B and (C and not D))',
-            expected_exc_type=MissingTokenError,
+            expected_exc_type=MissingSymbolError,
             A=0,
             B=1,
             D=1)
@@ -224,7 +224,7 @@ class TestEvaluations(unittest.TestCase):
         """Test attempting to evaluate without passing token values."""
         self.helper_test_evaluate_raises(
             'A or (B and (C and not D))',
-            expected_exc_type=MissingTokenError,
+            expected_exc_type=MissingSymbolError,
             A=0,
             D=1)
 
@@ -232,13 +232,13 @@ class TestEvaluations(unittest.TestCase):
         """Test attempting to evaluate without passing any token values."""
         self.helper_test_evaluate_raises(
             '(A nand B) and not D',
-            expected_exc_type=MissingTokenError)
+            expected_exc_type=MissingSymbolError)
 
     def test_single_extra_token(self):
         """Test attempting to pass a single token not in the expression."""
         self.helper_test_evaluate_raises(
             'A and not B',
-            expected_exc_type=ExtraTokenError,
+            expected_exc_type=ExtraSymbolError,
             A=1,
             B=1,
             C=0)
@@ -247,7 +247,7 @@ class TestEvaluations(unittest.TestCase):
         """Test attempting to pass several tokens not in the expression."""
         self.helper_test_evaluate_raises(
             'A or B or C',
-            expected_exc_type=ExtraTokenError,
+            expected_exc_type=ExtraSymbolError,
             A=0,
             B=0,
             C=0,
@@ -258,7 +258,7 @@ class TestEvaluations(unittest.TestCase):
         """Test attempting to pass all tokens not in the expression."""
         self.helper_test_evaluate_raises(
             '1 or 0',
-            expected_exc_type=ExtraTokenError,
+            expected_exc_type=ExtraSymbolError,
             A=1,
             B=1,
             C=1)
