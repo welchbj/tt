@@ -4,8 +4,9 @@ import traceback
 import unittest
 
 from ...definitions import BOOLEAN_VALUES
-from ...expressions import (BooleanExpression, ExtraTokenError,
-                            InvalidBooleanValueError, MissingTokenError)
+from ...errors import (ExtraTokenError, InvalidBooleanValueError,
+                       MissingTokenError)
+from ...expressions import BooleanExpression
 
 
 class TestEvaluations(unittest.TestCase):

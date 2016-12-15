@@ -4,7 +4,8 @@ import sys
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from ..expressions import BooleanExpression, GrammarError
+from ..errors import GrammarError
+from ..expressions import BooleanExpression
 from .utils import print_err, print_info
 
 

@@ -4,11 +4,11 @@ import re
 
 from ..definitions import (BOOLEAN_VALUES, CONSTANT_VALUES, DELIMITERS,
                            OPERATOR_MAPPING, TT_NOT_OP)
+from ..errors import (BadParenPositionError, EmptyExpressionError,
+                      ExpressionOrderError, ExtraTokenError,
+                      InvalidBooleanValueError, MissingTokenError,
+                      UnbalancedParenError)
 from ..trees import BooleanExpressionTree
-from .errors import (BadParenPositionError, EmptyExpressionError,
-                     ExpressionOrderError, ExtraTokenError,
-                     InvalidBooleanValueError, MissingTokenError,
-                     UnbalancedParenError)
 
 
 class BooleanExpression(object):

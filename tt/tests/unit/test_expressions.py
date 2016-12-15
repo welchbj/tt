@@ -4,9 +4,9 @@ import traceback
 import unittest
 
 from ...definitions import OPERATOR_MAPPING, TT_NOT_OP
-from ...expressions import (BadParenPositionError, BooleanExpression,
-                            EmptyExpressionError, ExpressionOrderError,
-                            UnbalancedParenError)
+from ...errors import (BadParenPositionError, EmptyExpressionError,
+                       ExpressionOrderError, UnbalancedParenError)
+from ...expressions import BooleanExpression
 
 
 class TestExpressions(unittest.TestCase):
