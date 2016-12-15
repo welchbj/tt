@@ -37,7 +37,7 @@ class TestExpressions(unittest.TestCase):
         self.assertEqual(expected_tokens, b.tokens)
         self.assertEqual(expected_postfix_tokens, b.postfix_tokens)
         self.assertEqual(expected_symbols, b.symbols)
-        self.assertEqual(expected_tree_str, str(b.expr_tree))
+        self.assertEqual(expected_tree_str, str(b.tree))
 
     def helper_test_tokenization_raises(self, expr,
                                         expected_exc_type=None,

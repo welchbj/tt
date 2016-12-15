@@ -24,7 +24,7 @@ class BooleanExpression(object):
             a different token of the parsed expression.
         postfix_tokens (List[str]): A list of strings, representing the
             ``tokens`` list converted to postfix form.
-        expr_tree (tt.trees.BooleanExpressionTree): The expression tree
+        tree (tt.trees.BooleanExpressionTree): The expression tree
             representing the expression wrapped in this class, derived from
             the tokens parsed by this class.
 
@@ -42,7 +42,7 @@ class BooleanExpression(object):
         self._tokenize()
         self._to_postfix()
 
-        self.expr_tree = BooleanExpressionTree(self.postfix_tokens)
+        self.tree = BooleanExpressionTree(self.postfix_tokens)
 
     def evaluate(self, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
@@ -81,7 +81,7 @@ class BooleanExpression(object):
                              self._symbol_set - passed_symbol_set)
             raise MissingTokenError(msg)
 
-        truthy = self.expr_tree.evaluate(kwargs)
+        truthy = self.tree.evaluate(kwargs)
         return int(truthy)
 
     def _tokenize(self):
