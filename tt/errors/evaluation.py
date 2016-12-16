@@ -1,13 +1,11 @@
 """Exception type definitions related to expression evaluation."""
 
+from .base import TtError
 
-class EvaluationError(Exception):
 
-    """Base type for errors that occur in the evaluation of an expression.
+class EvaluationError(TtError):
 
-    Attributes:
-        message (str): An additional helpful message that could be displayed
-            to the user to better explain the error.
+    """An exception type for errors occurring in expression evaluation.
 
     Notes:
         This exception type should be sub-classed and is not meant to be raised
@@ -15,9 +13,7 @@ class EvaluationError(Exception):
 
     """
 
-    def __init__(self, message, *args):
-        self.message = message
-        super(EvaluationError, self).__init__(self.message, *args)
+    pass
 
 
 class ExtraSymbolError(EvaluationError):

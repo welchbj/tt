@@ -1,7 +1,9 @@
 """Exception type definitions related to expression grammar and parsing."""
 
+from .base import TtError
 
-class GrammarError(Exception):
+
+class GrammarError(TtError):
 
     """Base type for errors that occur in the handling of expression.
 
