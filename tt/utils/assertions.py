@@ -6,7 +6,7 @@ from ..errors import (ExtraSymbolError, InvalidBooleanValueError,
 
 
 def assert_iterable_contains_all_expr_symbols(iterable, reference_set):
-    """Assert that all values in the passed reference set are in the iterable.
+    """Assert a one-to-one presence of all symbols in the passed iterable.
 
     Args:
         iterable: An iterable of strings to assert.
@@ -16,13 +16,26 @@ def assert_iterable_contains_all_expr_symbols(iterable, reference_set):
     Notes:
         This function will consume the passed iterable.
 
+    Raises:
+        ExtraSymbolError: If the passed iterable contains symbols not present
+            in the reference set.
+        MissingSymbolError: If the passed iterable is missing symbols present
+            in the reference set.
+
     """
     passed_symbol_set = set(iterable)
-    diff_set = reference_set - passed_symbol_set
-    if diff_set:
+    passed_excess_set = passed_symbol_set - reference_set
+    reference_excess_set = reference_set - passed_symbol_set
+
+    if reference_excess_set:
         msg = 'Did not receive value for the following symbols: '
-        msg += ', '.join('"{}"'.format(sym) for sym in diff_set)
+        msg += ', '.join('"{}"'.format(sym) for sym in reference_excess_set)
         raise MissingSymbolError(msg)
+
+    if passed_excess_set:
+        msg = 'Received unexpected symbols: '
+        msg += ', '.join('"{}"'.format(sym) for sym in passed_excess_set)
+        raise ExtraSymbolError(msg)
 
 
 def assert_all_valid_keys(symbol_input_dict, symbol_set):

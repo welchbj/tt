@@ -44,10 +44,14 @@ class BooleanExpression(object):
 
         self.tree = BooleanExpressionTree(self.postfix_tokens)
 
-    def evaluate(self, **kwargs):
+    def evaluate(self, checked=True, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
 
         Args:
+            checked (bool, optional): If ``True``, all inputs will be asserted
+                to be present in the parsed expression and to have valid
+                Boolean values; otherwise, ``kwargs`` is passed straight to the
+                expression tree. Defaults to ``True``.
             kwargs: Keys are names of symbols in this expression; the specified
                 value for each of these keys will be substituted into the
                 expression for evaluation.
@@ -65,9 +69,10 @@ class BooleanExpression(object):
             for more information about the exceptions raised by this method.
 
         """
-        assert_all_valid_keys(kwargs, self._symbol_set)
-        assert_iterable_contains_all_expr_symbols(kwargs.keys(),
-                                                  self._symbol_set)
+        if checked:
+            assert_all_valid_keys(kwargs, self._symbol_set)
+            assert_iterable_contains_all_expr_symbols(kwargs.keys(),
+                                                      self._symbol_set)
 
         truthy = self.tree.evaluate(kwargs)
         return int(truthy)
