@@ -2,13 +2,13 @@
 
 import re
 
-from ..definitions import (BOOLEAN_VALUES, CONSTANT_VALUES, DELIMITERS,
-                           OPERATOR_MAPPING, TT_NOT_OP)
+from ..definitions import (CONSTANT_VALUES, DELIMITERS, OPERATOR_MAPPING,
+                           TT_NOT_OP)
 from ..errors import (BadParenPositionError, EmptyExpressionError,
-                      ExpressionOrderError, ExtraSymbolError,
-                      InvalidBooleanValueError, MissingSymbolError,
-                      UnbalancedParenError)
+                      ExpressionOrderError, UnbalancedParenError)
 from ..trees import BooleanExpressionTree
+from ..utils import (assert_all_valid_keys,
+                     assert_iterable_contains_all_expr_symbols)
 
 
 class BooleanExpression(object):
@@ -21,7 +21,7 @@ class BooleanExpression(object):
         symbols (List[str]): The list of unique symbols present in
             this expression.
         tokens (List[str]): A list of strings, each element indicating
-            a different token of the parsed expression.
+                     a different token of the parsed expression.
         postfix_tokens (List[str]): A list of strings, representing the
             ``tokens`` list converted to postfix form.
         tree (tt.trees.BooleanExpressionTree): The expression tree
@@ -57,30 +57,17 @@ class BooleanExpression(object):
                 ``0``.
 
         Raises:
-            MissingSymbolError: If a keyword arg representing a variable that
-                was not parsed from the expression is passed in.
+            ExtraSymbolError, InvalidBooleanValueError, MissingSymbolError
 
-            InvalidBooleanValueError: If a value other than ``True``,
-                ``False``, ``0``, or ``1`` is passed as a value for a keyword
-                argument.
+        Notes:
+            See ``tt.utils.assertions.assert_all_valid_keys`` and
+            ``tt.utils.assertions.assert_iterable_contains_all_expr_symbols``
+            for more information about the exceptions raised by this method.
 
         """
-        for k, v in kwargs.items():
-            if k not in self._symbol_set:
-                raise ExtraSymbolError(
-                    '"{}" is not a symbol in this expression'.format(k))
-
-            if v not in BOOLEAN_VALUES:
-                raise InvalidBooleanValueError(
-                    '"{}" passed as value for "{}" is not a valid Boolean '
-                    'value'.format(v, k))
-
-        passed_symbol_set = set(kwargs.keys())
-        if len(passed_symbol_set) < len(self._symbol_set):
-            msg = 'Did not receive value for the following symbols: '
-            msg += ', '.join('"{}"'.format(sym) for sym in
-                             self._symbol_set - passed_symbol_set)
-            raise MissingSymbolError(msg)
+        assert_all_valid_keys(kwargs, self._symbol_set)
+        assert_iterable_contains_all_expr_symbols(kwargs.keys(),
+                                                  self._symbol_set)
 
         truthy = self.tree.evaluate(kwargs)
         return int(truthy)
