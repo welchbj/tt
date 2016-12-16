@@ -44,14 +44,12 @@ class BooleanExpression(object):
 
         self.tree = BooleanExpressionTree(self.postfix_tokens)
 
-    def evaluate(self, checked=True, **kwargs):
+    def evaluate(self, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
 
+        This is a checked wrapper around the ``evaluate_unchecked`` function.
+
         Args:
-            checked (bool, optional): If ``True``, all inputs will be asserted
-                to be present in the parsed expression and to have valid
-                Boolean values; otherwise, ``kwargs`` is passed straight to the
-                expression tree. Defaults to ``True``.
             kwargs: Keys are names of symbols in this expression; the specified
                 value for each of these keys will be substituted into the
                 expression for evaluation.
@@ -61,7 +59,9 @@ class BooleanExpression(object):
                 ``0``.
 
         Raises:
-            ExtraSymbolError, InvalidBooleanValueError, MissingSymbolError
+            ExtraSymbolError
+            InvalidBooleanValueError
+            MissingSymbolError
 
         Notes:
             See ``tt.utils.assertions.assert_all_valid_keys`` and
@@ -69,11 +69,25 @@ class BooleanExpression(object):
             for more information about the exceptions raised by this method.
 
         """
-        if checked:
-            assert_all_valid_keys(kwargs, self._symbol_set)
-            assert_iterable_contains_all_expr_symbols(kwargs.keys(),
-                                                      self._symbol_set)
+        assert_all_valid_keys(kwargs, self._symbol_set)
+        assert_iterable_contains_all_expr_symbols(kwargs.keys(),
+                                                  self._symbol_set)
 
+        return self.evaluate_unchecked(**kwargs)
+
+    def evaluate_unchecked(self, **kwargs):
+        """Evaluate the Boolean expression without checking the input.
+
+        Args:
+            kwargs: Keys are names of symbols in this expression; the specified
+                value for each of these keys will be substituted into the
+                expression for evaluation.
+
+        Returns:
+            int: The result of the expression evaluation: either ``1`` or
+                ``0``.
+
+        """
         truthy = self.tree.evaluate(kwargs)
         return int(truthy)
 
