@@ -16,16 +16,23 @@ class EvaluationError(TtError):
     pass
 
 
+class DuplicateSymbolError(EvaluationError):
+
+    """An exception type for user-specified duplicate symbols."""
+
+    pass
+
+
 class ExtraSymbolError(EvaluationError):
 
-    """Exception for a passed token that is not a symbol in the expression."""
+    """An exception for a passed token that is not a parsed symbol."""
 
     pass
 
 
 class InvalidBooleanValueError(EvaluationError):
 
-    """Exception for an invalid truth value passed in evaluation."""
+    """An exception for an invalid truth value passed in evaluation."""
 
     pass
 
@@ -33,5 +40,12 @@ class InvalidBooleanValueError(EvaluationError):
 class MissingSymbolError(EvaluationError):
 
     """An exception type for a missing token value in evaluation."""
+
+    pass
+
+
+class NoEvaluationVariationError(EvaluationError):
+
+    """An exception type for when evaluation of an expression will not vary."""
 
     pass

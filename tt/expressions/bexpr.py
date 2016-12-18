@@ -19,7 +19,8 @@ class BooleanExpression(object):
         raw_expr (str): The raw string expression, to be parsed upon
             initialization.
         symbols (List[str]): The list of unique symbols present in
-            this expression.
+            this expression, in the order of their first appearance in the
+            expression.
         tokens (List[str]): A list of strings, each element indicating
                      a different token of the parsed expression.
         postfix_tokens (List[str]): A list of strings, representing the

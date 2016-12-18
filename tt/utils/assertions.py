@@ -1,8 +1,8 @@
 """Utilities for asserting inputs and states."""
 
 from ..definitions import BOOLEAN_VALUES
-from ..errors import (ExtraSymbolError, InvalidBooleanValueError,
-                      MissingSymbolError)
+from ..errors import (DuplicateSymbolError, ExtraSymbolError,
+                      InvalidBooleanValueError, MissingSymbolError)
 
 
 def assert_iterable_contains_all_expr_symbols(iterable, reference_set):
@@ -17,13 +17,19 @@ def assert_iterable_contains_all_expr_symbols(iterable, reference_set):
         This function will consume the passed iterable.
 
     Raises:
+        DuplicateSymbolError: If the passed iterable contains more than one of
+            the same symbol.
         ExtraSymbolError: If the passed iterable contains symbols not present
             in the reference set.
         MissingSymbolError: If the passed iterable is missing symbols present
             in the reference set.
 
     """
-    passed_symbol_set = set(iterable)
+    passed_symbol_list = list(iterable)
+    passed_symbol_set = set(passed_symbol_list)
+    if len(passed_symbol_list) != len(passed_symbol_set):
+        raise DuplicateSymbolError('Received duplicate symbols')
+
     passed_excess_set = passed_symbol_set - reference_set
     reference_excess_set = reference_set - passed_symbol_set
 
@@ -42,7 +48,8 @@ def assert_all_valid_keys(symbol_input_dict, symbol_set):
     """Assert that all keys in the passed input dict are valid.
 
     Valid keys are considered those that are present in the passed set of
-    symbols and that map to valid Boolean values.
+    symbols and that map to valid Boolean values. Dictionaries cannot have
+    duplicate keys, so no duplicate checking is necessary.
 
     Args:
         symbol_input_dict (Dict): A dict containing symbol names mapping to
