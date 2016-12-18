@@ -14,14 +14,15 @@ except ImportError:
 
 here = os.path.abspath(os.path.dirname(__file__))
 tt_dir = os.path.join(here, 'tt')
-reqs_dir = os.path.join(here, 'reqs')
 
 tt_pypi_name = 'ttable'
-tt_description = 'Command line tool for Boolean algebra operations'
+tt_description = ('A library and command-line tool for working with Boolean '
+                  'expressions')
 tt_license = 'MIT'
 tt_author = 'Brian Welch'
 tt_author_email = 'welch18@vt.edu'
 tt_url = 'https://github.com/welchbj/tt'
+tt_install_requires = []  # no dependencies. Wow!
 
 version_pattern = re.compile(r'__version__\s+=\s+(.*)')
 with codecs.open(os.path.join(tt_dir, 'core.py'),
@@ -31,11 +32,6 @@ with codecs.open(os.path.join(tt_dir, 'core.py'),
 with codecs.open(os.path.join(here, 'README.rst'),
                  encoding='utf-8') as f:
     tt_long_description = f.read()
-
-with codecs.open(os.path.join(reqs_dir, 'requirements.txt'),
-                 encoding='utf-8') as f:
-    tt_install_requires = [line.strip() for
-                           line in f.readlines() if line.strip()]
 
 tt_entry_points = {
     'console_scripts': ['tt = tt.__main__:main']
