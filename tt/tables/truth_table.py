@@ -10,7 +10,7 @@ from ..utils import (assert_all_valid_keys,
                      assert_iterable_contains_all_expr_symbols)
 
 
-DEFAULT_CELL_PADDING = 1
+_DEFAULT_CELL_PADDING = 1
 
 
 class TruthTable(object):
@@ -25,7 +25,7 @@ class TruthTable(object):
             appear in the truth table (from left to right). If omitted, the
             ordering of the symbols will be consistent with the symbol's first
             occurrence in the passed expression.
-        results (List[bool]): A list of ``int``s representing the resultant
+        results (List[bool]): A list of ``int`` s representing the resultant
             evaluations for each combination of possible inputs.
 
     Raises:
@@ -146,7 +146,7 @@ class TruthTable(object):
 
         return row
 
-    def _get_col_widths(self, padding=DEFAULT_CELL_PADDING):
+    def _get_col_widths(self, padding=_DEFAULT_CELL_PADDING):
         """Get a list of integers, representing the column widths of the table.
 
         Args:

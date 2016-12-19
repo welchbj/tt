@@ -1,3 +1,5 @@
+"""tt error types."""
+
 from .base import TtError  # noqa
 from .evaluation import (DuplicateSymbolError, EvaluationError,  # noqa
                          ExtraSymbolError, InvalidBooleanValueError,

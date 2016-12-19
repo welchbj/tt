@@ -9,7 +9,7 @@ class TtError(Exception):
         message (str): An additional helpful message that could be displayed
             to the user to better explain the error.
 
-    Notes:
+    Warning:
         This exception type should be sub-classed and is not meant to be raised
         explicitly.
 

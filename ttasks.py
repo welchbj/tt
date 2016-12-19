@@ -3,19 +3,45 @@
 from __future__ import print_function
 
 import os
+import subprocess
 import sys
 import unittest
 
 from argparse import ArgumentParser, RawTextHelpFormatter
+from subprocess import PIPE, STDOUT
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+DOCS_DIR = os.path.join(HERE, 'docs')
 TT_DIR = os.path.join(HERE, 'tt')
 TESTS_DIR = os.path.join(TT_DIR, 'tests')
 
 
+class SubprocessFailureError(Exception):
+    """An exception for a failed subprocess."""
+
+
 class TestFailureError(Exception):
     """An exception type for failed tests."""
+
+
+def api_docs():
+    """Build the API doc sources."""
+    ret = subprocess.run(
+        ['sphinx-apidoc',
+         '--force',
+         '--module-first',
+         '-o', DOCS_DIR,
+         'tt'],
+        shell=True,
+        stdout=PIPE,
+        stderr=STDOUT)
+
+    print(ret.stdout.decode('utf-8'))
+
+    if ret.returncode:
+        print('Unable to build API doc sources.', file=sys.stderr)
+        raise SubprocessFailureError
 
 
 def test():
@@ -32,7 +58,8 @@ def test():
 
 
 TASKS = {
-    'test': test,
+    'api-docs': api_docs,
+    'test': test
 }
 
 
@@ -83,7 +110,7 @@ def main(args=None):
         task = TASKS[opts.task]
         task()
         return 0
-    except TestFailureError:
+    except (SubprocessFailureError, TestFailureError):
         return 1
     except Exception as e:
         print('Received unexpected exception; re-raising it.', file=sys.stderr)

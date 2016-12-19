@@ -220,46 +220,6 @@ will be tagged with the corresponding version, in the form release-{major}.{mino
 any clone from the master or develop branch should yield a functioning version of tt, with master being a fully stable release.
 
 =======
-Roadmap
-=======
-
-Below indicates what is aimed to be included in the releases leading up to v1.0:
-
-    * v0.1
-
-        #. Initial release
-
-    * v0.2
-
-        #. introduce the project's setup.py file
-        #. add Windows make file
-        #. improve requirements management, for both production and development
-        #. update README, in reStructuredText instead of markdown
-        #. introduce functional test framework
-        #. initial publish to PyPI
-
-    * v0.3
-
-        #. integrate with Travis CI
-        #. integrate with AppVeyor
-        #. introduce Karnaugh Map functionality
-        #. port Windows make file to \*nix
-
-    * v0.4
-
-        #. add indication of optimal groupings on Karnaugh Maps
-        #. improve verbose output and logging
-        #. implement minimization of equations, using Quine–McCluskey algorithm
-        #. add option to order inputs in truth table alphabetically (--alphabetical)
-        #. introduce functionality to generate logic circuit diagrams from equations
-
-    * v0.5
-
-        #. if too many options are present, we can look into the idea of using argument sub-groups (already supported by Python's argparse)
-        #. add more Boolean operations, such as "if and only if" (<->) and "implies" (->)
-        #. product-of-sum (--pos) and sum-of-product (--sop) form generation for Boolean equations
-
-=======
 License
 =======
 
@@ -287,8 +247,3 @@ tt uses the `MIT License`_.
 .. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/welchbj/tt
     :alt: Windows build on AppVeyor
-
-.. contents::
-    :local:
-    :depth: 1
-    :backlinks: none

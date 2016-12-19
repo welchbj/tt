@@ -17,7 +17,7 @@ class GrammarError(TtError):
             ``expr_str`` the troublesome spot began; can be left as ``None``
             for errors without a specific troublesome position.
 
-    Notes:
+    Warning:
         This exception type should be sub-classed and is not meant to be raised
         explicitly.
 
@@ -31,28 +31,16 @@ class GrammarError(TtError):
 
 
 class BadParenPositionError(GrammarError):
-
     """An exception type for unexpected parentheses."""
-
-    pass
 
 
 class EmptyExpressionError(GrammarError):
-
     """An exception type for when an empty expression is received."""
-
-    pass
 
 
 class ExpressionOrderError(GrammarError):
-
     """An exception type for unexpected operands or operators."""
-
-    pass
 
 
 class UnbalancedParenError(GrammarError):
-
     """An exception type for unbalanced parentheses."""
-
-    pass
