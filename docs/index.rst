@@ -20,6 +20,7 @@ Welcome to the documentation site for tt.
 
     development
     prior_art
+    special_thanks
     author
 
 
