@@ -9,7 +9,7 @@ Welcome to the documentation site for tt.
 -----
 
 .. warning::
-    tt is heavily tested and fully usable, but is still pre-1.0/stable software with **no guarantees** of maintaining backwards compatibility until hitting version 1.0.
+    tt is heavily tested and fully usable, but is still pre-1.0/stable software with **no guarantees** of avoiding breaking API changes until hitting version 1.0.
 
 
 .. include:: ../README.rst
@@ -20,6 +20,7 @@ Welcome to the documentation site for tt.
 
     development
     prior_art
+    author
 
 
 API Docs
