@@ -39,7 +39,7 @@ html_theme_options = {
     'github_type': 'star',
 
     'extra_nav_links': {},
-    # 'sidebar_includehidden': True,
+    'sidebar_includehidden': True,
     'fixed_sidebar': True
 }
 
