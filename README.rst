@@ -21,38 +21,32 @@ As a Library
 tt aims to provide a Pythonic interface for working with Boolean expressions. Here are some simple examples from the REPL::
 
     >>> from tt import BooleanExpression, TruthTable
-    >>> b = BooleanExpression('A xor (B or C)')
+    >>> b = BooleanExpression('A xor (B and 1)')
     >>> b.tokens
-    ['A', 'xor', '(', 'B', 'or', 'C', ')']
+    ['A', 'xor', '(', 'B', 'and', '1', ')']
+    >>> b.symbols
+    ['A', 'B']
     >>> print(b.tree)
     xor
     `----A
-    `----or
-        `----B
-        `----C
-    >>> b.evaluate(A=True, B=False, C=True)
-    False
+    `----and
+         `----B
+         `----1
+    >>> b.evaluate(A=True, B=False)
+    True
     >>> t = TruthTable(b)
     >>> print(t)
-    +---+---+---+---+
-    | A | B | C |   |
-    +---+---+---+---+
-    | 0 | 0 | 0 | 0 |
-    +---+---+---+---+
-    | 0 | 0 | 1 | 1 |
-    +---+---+---+---+
-    | 0 | 1 | 0 | 1 |
-    +---+---+---+---+
-    | 0 | 1 | 1 | 1 |
-    +---+---+---+---+
-    | 1 | 0 | 0 | 1 |
-    +---+---+---+---+
-    | 1 | 0 | 1 | 0 |
-    +---+---+---+---+
-    | 1 | 1 | 0 | 0 |
-    +---+---+---+---+
-    | 1 | 1 | 1 | 0 |
-    +---+---+---+---+
+    +---+---+---+
+    | A | B |   |
+    +---+---+---+
+    | 0 | 0 | 0 |
+    +---+---+---+
+    | 0 | 1 | 1 |
+    +---+---+---+
+    | 1 | 0 | 1 |
+    +---+---+---+
+    | 1 | 1 | 0 |
+    +---+---+---+
     >>> t = TruthTable('A or B', fill_all=False)
     >>> print(t)
     Empty!
@@ -78,7 +72,6 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     +---+---+---+
     | 1 | 1 | 1 |
     +---+---+---+
-
 
 From the Command Line
 `````````````````````
@@ -117,6 +110,7 @@ License
 -------
 
 tt uses the `MIT License`_.
+
 
 .. _MIT License: https://opensource.org/licenses/MIT
 .. _project site: http://tt.bwel.ch
