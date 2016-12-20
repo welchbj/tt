@@ -132,7 +132,7 @@ def main(args=None):
             return 2
 
         opts.expression = ' '.join(opts.expression)
-        opts.func(opts)
+        func(opts)
 
         return 0
     except GrammarError as e:
