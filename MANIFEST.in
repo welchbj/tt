@@ -1,6 +1,6 @@
-include LICENSE.txt 
+include LICENSE.txt
 include README.rst
 
-graft reqs
+graft docs
 
 global-exclude *.py[co]
