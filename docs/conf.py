@@ -18,6 +18,8 @@ autodoc_default_flags = ['members',
                          'special-members',
                          'show-inheritance']
 
+suppress_warnings = ['image.nonlocal_uri']
+
 html_theme = 'alabaster'
 html_sidebars = {
     '**': [
@@ -35,7 +37,6 @@ html_theme_options = {
     'github_user': 'welchbj',
     'github_repo': 'tt',
     'github_type': 'star',
-    'travis_button': True,
 
     'extra_nav_links': {},
     # 'sidebar_includehidden': True,

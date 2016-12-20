@@ -56,8 +56,7 @@ class BooleanExpression(object):
                 expression for evaluation.
 
         Returns:
-            int: The result of the expression evaluation: either ``1`` or
-                ``0``.
+            bool: The Boolean result of evaluating the expression.
 
         Raises:
             ExtraSymbolError
@@ -85,12 +84,11 @@ class BooleanExpression(object):
                 expression for evaluation.
 
         Returns:
-            int: The result of the expression evaluation: either ``1`` or
-                ``0``.
+            bool: The Boolean result of evaluating the expression.
 
         """
         truthy = self.tree.evaluate(kwargs)
-        return int(truthy)
+        return bool(truthy)
 
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.
