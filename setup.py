@@ -14,6 +14,7 @@ except ImportError:
 
 here = os.path.abspath(os.path.dirname(__file__))
 tt_dir = os.path.join(here, 'tt')
+cli_dir = os.path.join(tt_dir, 'cli')
 
 tt_pypi_name = 'ttable'
 tt_description = ('A library and command-line tool for working with Boolean '
@@ -21,11 +22,11 @@ tt_description = ('A library and command-line tool for working with Boolean '
 tt_license = 'MIT'
 tt_author = 'Brian Welch'
 tt_author_email = 'welch18@vt.edu'
-tt_url = 'https://github.com/welchbj/tt'
+tt_url = 'http://tt.bwel.ch'
 tt_install_requires = []  # no dependencies. Wow!
 
-version_pattern = re.compile(r'__version__\s+=\s+(.*)')
-with codecs.open(os.path.join(tt_dir, 'core.py'),
+version_pattern = re.compile(r"__version__\s+=\s+'(.*)'")
+with codecs.open(os.path.join(cli_dir, 'core.py'),
                  encoding='utf-8') as f:
     tt_version = version_pattern.search(f.read()).group(1)
 
