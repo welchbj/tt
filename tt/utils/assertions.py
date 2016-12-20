@@ -13,7 +13,7 @@ def assert_iterable_contains_all_expr_symbols(iterable, reference_set):
         reference_set (Set[str]): A set of strings, each of which will be
             asserted to be present in the passed iterable.
 
-    Notes:
+    Note:
         This function will consume the passed iterable.
 
     Raises:

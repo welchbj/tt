@@ -33,7 +33,7 @@ class ExpressionTreeNode(object):
                 value for which they should be subsituted in expression
                 evaluation.
 
-        Notes:
+        Note:
             Node evaluation does no checking of the validity of inputs; they
             should be check before being passed here.
 

@@ -179,7 +179,7 @@ class TruthTable(object):
     def _input_combos(self, combo_len=None):
         """Get a generator of Boolean input combinations.
 
-        Notes:
+        Note:
             This function expects the ``_ordering`` attribute to be non-empty.
 
         Args:

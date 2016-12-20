@@ -63,7 +63,7 @@ class BooleanExpression(object):
             InvalidBooleanValueError
             MissingSymbolError
 
-        Notes:
+        Note:
             See ``tt.utils.assertions.assert_all_valid_keys`` and
             ``tt.utils.assertions.assert_iterable_contains_all_expr_symbols``
             for more information about the exceptions raised by this method.

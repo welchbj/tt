@@ -10,7 +10,7 @@ class BooleanExpressionTree(object):
 
     """An expression tree for Boolean expressions.
 
-    Notes:
+    Note:
         This class expects any input it receives to be well-formed; any
         tokenized lists you pass it directly (instead of through the
         ``BooleanExpression`` class) will not be checked.
@@ -39,7 +39,7 @@ class BooleanExpressionTree(object):
         Returns:
             The truthy result of the expression tree evaluation.
 
-        Notes:
+        Note:
             This function does not check to ensure the validity of
                 ``input_dict`` in any way.
 
@@ -49,7 +49,7 @@ class BooleanExpressionTree(object):
     def _build_tree(self):
         """Iterate over the ``postfix_tokens``, constructing the tree.
 
-        Notes:
+        Note:
             This method will populate this class's ``root`` attribute.
 
         """
