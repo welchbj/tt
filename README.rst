@@ -6,14 +6,14 @@ tt is a Python library and command-line tool for working with Boolean expression
 Installation
 ------------
 
-tt has been tested with Python 2.7, 3.3, 3.4, and 3.5 and is written in pure Python, so it only requires a compatible Python installation to run. You can get the latest release from PyPI with::
+tt has been tested with Python 2.7, 3.3, 3.4, and 3.5 and is written in pure Python with no dependencies, so it only requires a compatible Python installation to run. You can get the latest release from PyPI with::
 
     pip install ttable
 
 Basic Usage
 -----------
 
-Below are a couple of examples to show you the kind of things tt can do. For more examples and further documentation, take a look at the project site (TODO).
+Below are a couple of examples to show you the kind of things tt can do. For more examples and further documentation, take a look at the `project site`_.
 
 As a Library
 ````````````
@@ -119,3 +119,4 @@ License
 tt uses the `MIT License`_.
 
 .. _MIT License: https://opensource.org/licenses/MIT
+.. _project site: http://tt.bwel.ch
