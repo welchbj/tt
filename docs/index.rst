@@ -19,6 +19,7 @@ Welcome to the documentation site for tt.
     :hidden:
 
     development
+    prior_art
 
 
 API Docs
@@ -44,6 +45,3 @@ Feel free to peruse through the source, or take a look through the auto-generate
 .. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/welchbj/tt
     :alt: Windows build on AppVeyor
-
-.. _Google style: https://google.github.io/styleguide/pyguide.html
-.. _napoleon documentation: http://sphinxcontrib-napoleon.readthedocs.org/en/latest/example_google.html
