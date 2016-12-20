@@ -107,6 +107,11 @@ tt also provides a command-line interface for working with expressions. Here are
     | 1 | 1 | 1 |
     +---+---+---+
 
+    $ tt tree A or or B
+    Error! Unexpected binary operator "or":
+    A or or B
+         ^
+
 
 License
 -------
