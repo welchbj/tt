@@ -15,7 +15,7 @@ class ExpressionTreeNode(object):
             node.
         l_child (tt.trees.ExpressionTreeNode, optional): This node's left
             child.
-        right_child (tt.trees.ExpressionTreeNode, optional): This node's right
+        r_child (tt.trees.ExpressionTreeNode, optional): This node's right
             child.
 
     """
