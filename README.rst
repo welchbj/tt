@@ -1,7 +1,7 @@
 Synopsis
 --------
 
-tt is a Python library and command-line tool for working with Boolean expressions.
+tt is a Python library and command-line tool for working with Boolean expressions. This README provides a high level glance at the project; please check out the `project site`_ for more information.
 
 Installation
 ------------
