@@ -40,7 +40,11 @@ html_theme_options = {
 
     'extra_nav_links': {},
     'sidebar_includehidden': True,
-    'fixed_sidebar': True
+    'fixed_sidebar': True,
+
+    'font_family': "'PT Sans Caption', sans-serif",
+    'font_size': '0.9em',
+    'head_font_family': "'Cabin', sans-serif"
 }
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
