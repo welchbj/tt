@@ -7,4 +7,5 @@ build
 dist
 docs/_build
 ttable.egg-info
+todo.txt
 *.egg
