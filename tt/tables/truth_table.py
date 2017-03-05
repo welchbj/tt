@@ -72,7 +72,7 @@ class TruthTable(object):
         rows.append(self._get_as_table_row(self._ordering + [' '], col_widths))
         rows.append(row_sep)
 
-        for i, inputs in enumerate(self._input_combos()):
+        for i, inputs in enumerate(self.input_combos()):
             result = self.results[i]
             if result is None:
                 continue
@@ -109,7 +109,7 @@ class TruthTable(object):
         # I think the restriction of inputs can be greatly optimized by
         # pre-computing the ranges of indices for which the inputs will
         # be valid
-        for i, input_combo in enumerate(self._input_combos()):
+        for i, input_combo in enumerate(self.input_combos()):
             input_dict = {symbol: input_combo[j] for j, symbol in
                           enumerate(self._ordering)}
 
@@ -121,6 +121,29 @@ class TruthTable(object):
 
             if not skip:
                 self.results[i] = self.expr.evaluate_unchecked(**input_dict)
+
+    def input_combos(self, combo_len=None):
+        """Get a generator of Boolean input combinations for this expression.
+
+        The length of each tuple of combinations is the same as the
+        number of symbols in this expression if no ``combo_len`` value is
+        specified; otherwise, the specified value is used.
+
+        Iterating through the returned generator, without fiddling with the
+        ``combo_len`` input, will yield every combination of inputs for this
+        expression.
+
+        Args:
+            combo_len (int, optional): The number of values required in each
+                set of combinations; by default, the number of symbols in this
+                expression will be used.
+
+        Returns:
+            A generator of tuples containing permutations of Boolean inputs.
+
+        """
+        repeat = len(self._ordering) if combo_len is None else combo_len
+        return itertools.product((False, True), repeat=repeat)
 
     def _get_as_table_row(self, items, col_widths):
         """Convert an iterable to a row in the table ``__str__``.
@@ -175,21 +198,3 @@ class TruthTable(object):
 
         """
         return '+' + '+'.join('-' * i for i in col_widths) + '+'
-
-    def _input_combos(self, combo_len=None):
-        """Get a generator of Boolean input combinations.
-
-        Note:
-            This function expects the ``_ordering`` attribute to be non-empty.
-
-        Args:
-            combo_len (int, optional): The number of values required in each
-                set of combinations; by default, the number of symbols in this
-                expression will be used.
-
-        Returns:
-            A generator of lists holding permutations of Boolean inputs.
-
-        """
-        repeat = len(self._ordering) if combo_len is None else combo_len
-        return itertools.product((False, True), repeat=repeat)
