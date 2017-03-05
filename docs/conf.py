@@ -1,3 +1,4 @@
+import codecs
 import os
 import sys
 
@@ -5,10 +6,13 @@ from datetime import datetime
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DOCS_DIR = os.path.dirname(HERE)
-BASE_DIR = os.path.dirname(DOCS_DIR)
+BASE_DIR = os.path.dirname(HERE)
 TT_MODULE_DIR = os.path.join(BASE_DIR, 'tt')
-sys.path.insert(0, TT_MODULE_DIR)
+TT_VERSION_FILE = os.path.join(TT_MODULE_DIR, 'version.py')
+sys.path.insert(0, BASE_DIR)
+
+with codecs.open(TT_VERSION_FILE, encoding='utf-8') as f:
+    exec(f.read())  # loads __version__ and __version_info__
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
@@ -55,8 +59,8 @@ project = 'tt'
 year = datetime.now().year
 author = 'Brian Welch'
 copyright = '{}, {}'.format(year, author)
-version = '0.4'
-release = '0.4.1'
+version = '.'.join(str(i) for i in __version_info__[:2])  # noqa
+release = __version__  # noqa
 master_doc = 'index'
 source_suffix = '.rst'
 pygments_style = 'sphinx'

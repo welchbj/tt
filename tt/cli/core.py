@@ -7,10 +7,8 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from ..errors import GrammarError
 from ..expressions import BooleanExpression
 from ..tables import TruthTable
+from ..version import __version__
 from .utils import print_err, print_info
-
-
-__version__ = '0.4.1'
 
 
 def _add_expression_arg(parser):
