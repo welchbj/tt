@@ -19,6 +19,7 @@ Welcome to the documentation site for tt.
     :hidden:
 
     development
+    release_notes
     prior_art
     special_thanks
     author
