@@ -23,7 +23,7 @@ Testing is done with Python's `unittest`_ module. All tests can be run using the
 
     python ttasks.py test
 
-Cross Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against Python 2.7, 3.3, 3.4, 3.5, and 3.6 as well as run the source through `Flake8`_. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `Travis CI`_ (for OSX/Linux builds) and `AppVeyor`_ (for Windows builds).
+Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against Python 2.7, 3.3, 3.4, 3.5, and 3.6 as well as run the source through `Flake8`_. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_ in order to test on Linux and the `PyPy`_ runtime, too.
 
 
 Style
@@ -58,6 +58,7 @@ Below are features I'd like to add eventually, roughly ordered in anticipated sc
 .. _tox: https://tox.readthedocs.org/en/latest/
 .. _Travis CI: https://travis-ci.org/welchbj/tt/
 .. _AppVeyor: https://ci.appveyor.com/project/welchbj/tt
+.. _PyPy: https://pypy.org/
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _Flake8: http://flake8.pycqa.org/en/latest/
 .. _editorconfig: http://editorconfig.org/
