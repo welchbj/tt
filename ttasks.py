@@ -19,8 +19,27 @@ class TestFailureError(Exception):
     """An exception type for failed tests."""
 
 
+def _print_py_version():
+    """Print a formatted notice of the current Python version to stdout."""
+    v_info = sys.version_info
+    v_maj, v_min, v_mic = v_info.major, v_info.minor, v_info.micro
+    py_version = '.'.join(str(i) for i in (v_maj, v_min, v_mic))
+
+    info_str = '| Running tests with Python version ' + py_version + ' |'
+    num_dashes = len(info_str) - 2
+    box_top = '+' + '-' * num_dashes + '+'
+
+    print()
+    print(box_top)
+    print(info_str)
+    print(box_top)
+    print()
+
+
 def test():
     """Run tt tests."""
+    _print_py_version()
+
     suite = unittest.defaultTestLoader.discover(
         TESTS_DIR,
         pattern='test_*.py',
