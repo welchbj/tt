@@ -2,10 +2,10 @@ version: '{branch}, build {build}'
 os: Windows Server 2012 R2
 install:
 - cmd: >-
-    set BASE_PY=C:\Python35
+    set BASE_PY=C:\Python36
 
     set PATH=%BASE_PY%;%BASE_PY%\Scripts;%PATH%
-    
+
     pip install tox
 build_script:
 - cmd: tox
