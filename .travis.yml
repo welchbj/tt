@@ -1,8 +1,24 @@
+os:
+  - linux
+  - osx
+
 language:
   - python
 
 python:
+  # Python versions are included here to ensure presence in Travis image, but we only run tox from 3.6
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
   - "3.6"
+
+matrix:
+  exclude:
+    - python: "2.7"
+    - python: "3.3"
+    - python: "3.4"
+    - python: "3.5"
 
 install:
   - pip install tox
