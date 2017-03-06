@@ -23,7 +23,7 @@ Testing is done with Python's `unittest`_ module. All tests can be run using the
 
     python ttasks.py test
 
-Cross Python version testing is achieved through `tox`_, and the project's CI is run on `Travis CI`_ and `AppVeyor`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project
+Cross Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against Python 2.7, 3.3, 3.4, 3.5, and 3.6 as well as run the source through `Flake8`_. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `Travis CI`_ (for OSX/Linux builds) and `AppVeyor`_ (for Windows builds).
 
 
 Style
