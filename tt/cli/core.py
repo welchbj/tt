@@ -24,7 +24,7 @@ def _add_expression_arg(parser: ArgumentParser) -> None:
 
 
 def _tokens(opts: argparse.Namespace) -> None:
-    """Run the `tokens` command."""
+    """Run the ``tokens`` command."""
     b = BooleanExpression(opts.expression)
     print_info('\n'.join(b.tokens))
 
@@ -50,12 +50,10 @@ def _table(opts: argparse.Namespace) -> None:
 def get_parsed_args(args: List[str]=None) -> argparse.Namespace:
     """Get the parsed command line arguments.
 
-    Args:
-        args: The command line args to parse; if ommitted, ``sys.argv``
-            will be used.
-
-    Returns:
-        The ``Namespace`` object indicating the parsed arguments.
+    :param args: The command-line args to parse; if omitted, ``sys.argv`` will
+        be used,
+    :return: The :class:`Namespace <python:argparse.Namespace>` object holding
+        the parsed args.
 
     """
     parser = ArgumentParser(
@@ -112,11 +110,8 @@ def get_parsed_args(args: List[str]=None) -> argparse.Namespace:
 def main(args: List[str]=None) -> int:
     """The main routine to run the tt command-line interface.
 
-    Args:
-        args: The command-line arguments.
-
-    Returns:
-        The exit code of the program.
+    :param args: The command-line arguments.
+    :return: The exit code of the program.
 
     """
     try:
