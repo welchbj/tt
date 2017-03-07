@@ -40,7 +40,6 @@ tt relies on some well-written and well-documented projects and libraries for it
     * `six`_
     * `snowballstemmer`_
     * `Sphinx`_
-    * `Sphinx napoleon extension`_
     * `tox`_
     * `virtualenv`_
 
@@ -70,6 +69,5 @@ tt relies on some well-written and well-documented projects and libraries for it
 .. _six: https://pythonhosted.org/six/
 .. _snowballstemmer: https://github.com/shibukawa/snowball_py
 .. _Sphinx: http://www.sphinx-doc.org/en/latest/
-.. _Sphinx napoleon extension: http://www.sphinx-doc.org/en/latest/ext/napoleon.html
 .. _tox: https://tox.readthedocs.io/en/latest/
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/

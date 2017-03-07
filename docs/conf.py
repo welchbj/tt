@@ -15,7 +15,6 @@ with codecs.open(TT_VERSION_FILE, encoding='utf-8') as f:
     exec(f.read())  # loads __version__ and __version_info__
 
 extensions = ['sphinx.ext.autodoc',
-              'sphinx_autodoc_typehints',
               'sphinx.ext.intersphinx',
               'sphinx.ext.viewcode']
 

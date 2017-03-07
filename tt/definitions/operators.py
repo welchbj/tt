@@ -3,23 +3,64 @@
 
 class BooleanOperator(object):
 
-    """A wrapper around a Boolean operator.
-
-    Attributes:
-        precedence (int): The precendence of this operator, relative to other
-            operators.
-        eval_func (function): The function representing the operation to be
-            performed by this operator.
-
-    """
+    """A wrapper around a Boolean operator."""
 
     def __init__(self, precedence, eval_func, name):
-        self.precedence = precedence
-        self.eval_func = eval_func
-        self.name = name
+        self._precedence = precedence
+        self._eval_func = eval_func
+        self._name = name
 
     def __repr__(self):
         return '<BooleanOperator {}>'.format(self.name)
+
+    @property
+    def precedence(self):
+        """Precedence of this operator, relative to other operators.
+
+        :type: :class:`int <python:int>`
+
+        For example::
+
+            >>> from tt.definitions import TT_AND_OP, TT_OR_OP
+            >>> TT_AND_OP.precedence > TT_OR_OP.precedence
+            True
+
+        """
+        return self._precedence
+
+    @property
+    def eval_func(self):
+        """The evaluation function wrapped by this operator.
+
+        :type: :data:`Callable <python:typing.Callable>`
+
+        For example::
+
+            >>> from tt.definitions import TT_XOR_OP
+            >>> TT_XOR_OP.eval_func(0, 0)
+            False
+            >>> TT_XOR_OP.eval_func(True, False)
+            True
+
+        """
+        return self._eval_func
+
+    @property
+    def name(self):
+        """The human-readable name of this operator.
+
+        Some examples::
+
+            >>> from tt.definitions import TT_NOT_OP, TT_XOR_OP
+            >>> TT_NOT_OP.name
+            'NOT'
+            >>> TT_XOR_OP.name
+            'XOR'
+
+        :type: :class:`str <python:str>`
+
+        """
+        return self._name
 
 
 _PRECEDENCE = {
@@ -33,37 +74,65 @@ _PRECEDENCE = {
 TT_NOT_OP = BooleanOperator(_PRECEDENCE['HIGH'],
                             lambda a: not a,
                             'NOT')
-"""BooleanOperator: tt's implementation of a Boolean NOT."""
+"""tt's operator implementation of a Boolean NOT.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 TT_XOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
                             lambda a, b: a != b,
                             'XOR')
-"""BooleanOperator: tt's implementation of a Boolean XOR."""
+"""tt's operator implementation of a Boolean XOR.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 TT_XNOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
                              lambda a, b: a == b,
                              'XNOR')
-"""BooleanOperator: tt's implementation of a Boolean XNOR."""
+"""tt's operator implementation of a Boolean XNOR.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 TT_AND_OP = BooleanOperator(_PRECEDENCE['LOW'],
                             lambda a, b: a and b,
                             'AND')
-"""BooleanOperator: tt's implementation of a Boolean AND."""
+"""tt's operator implementation of a Boolean AND.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 TT_NAND_OP = BooleanOperator(_PRECEDENCE['LOW'],
                              lambda a, b: not(a and b),
                              'NAND')
-"""BooleanOperator: tt's implementation of a Boolean NAND."""
+"""tt's operator implementation of a Boolean NAND.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 TT_OR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
                            lambda a, b: a or b,
                            'OR')
-"""BooleanOperator: tt's implementation of a Boolean OR."""
+"""tt's operator implementation of a Boolean OR.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 TT_NOR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
                             lambda a, b: not(a or b),
                             'NOR')
-"""BooleanOperator: tt's implementation of a Boolean NOR."""
+"""tt's operator implementation of a Boolean NOR.
+
+:type: :class:`BooleanOperator`
+
+"""
 
 
 OPERATOR_MAPPING = {
@@ -98,13 +167,19 @@ OPERATOR_MAPPING = {
     'nor': TT_NOR_OP,
     'NOR': TT_NOR_OP
 }
-"""Dict: A mapping of Boolean operators.
+"""A mapping of Boolean operators.
 
 This mapping serves to define all valid operator strings and maps them to the
-appropriate ``BooleanOperator`` object defining the operator behavior.
+appropriate :class:`BooleanOperator` object defining the operator behavior.
+
+:type: Dict{:class:`str <python:str>`: :class:`BooleanOperator`}
 
 """
 
 
 MAX_OPERATOR_STR_LEN = max(len(k) for k in OPERATOR_MAPPING.keys())
-"""int: The length of the longest operator from ``OPERATOR_MAPPING``."""
+"""The length of the longest operator from :data:`OPERATOR_MAPPING`.
+
+:type: :class:`int <python:int>`
+
+"""

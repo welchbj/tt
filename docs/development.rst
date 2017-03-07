@@ -23,13 +23,13 @@ Testing is done with Python's `unittest`_ module. All tests can be run using the
 
     python ttasks.py test
 
-Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against Python 3.5 and 3.6 as well as run the source through `Flake8`_. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_ due to the way its images install different Python versions.
+Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against the CPython 2.7, 3.3, 3.4, 3.5, and 3.6 runtimes. Additionally, the source is run through the `Flake8`_ linter. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_, which tests on Linux and also adds the ability to test on the `PyPy`_ runtime.
 
 
 Style
 -----
 
-tt aims to be strictly `PEP8`_ compliant, enforcing this compliance via `Flake8`_. This project includes an `editorconfig`_ file to help with formatting issues, as well. `Google style docstrings`_ are used in the source code code documentation and processed via `napoleon`_.
+tt aims to be strictly `PEP8`_ compliant, enforcing this compliance via `Flake8`_. This project includes an `editorconfig`_ file to help with formatting issues, as well.
 
 
 Long Term Development Goals
@@ -60,5 +60,3 @@ Below are features I'd like to add eventually, roughly ordered in anticipated sc
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _Flake8: http://flake8.pycqa.org/en/latest/
 .. _editorconfig: http://editorconfig.org/
-.. _Google style docstrings: https://google.github.io/styleguide/pyguide.html
-.. _napoleon: http://www.sphinx-doc.org/en/latest/ext/napoleon.html

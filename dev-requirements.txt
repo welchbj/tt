@@ -8,7 +8,6 @@ imagesize==0.7.1
 Jinja2==2.9.5
 MarkupSafe==0.23
 mccabe==0.6.1
-mypy==0.501
 packaging==16.8
 pep8==1.7.0
 pluggy==0.4.0
@@ -22,7 +21,5 @@ requests==2.13.0
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3
-sphinx-autodoc-typehints==1.1.0
 tox==2.6.0
-typed-ast==1.0.2
 virtualenv==15.1.0
