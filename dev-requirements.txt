@@ -22,6 +22,7 @@ requests==2.13.0
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3
+sphinx-autodoc-typehints==1.1.0
 tox==2.6.0
 typed-ast==1.0.2
 virtualenv==15.1.0
