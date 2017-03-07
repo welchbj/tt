@@ -32,8 +32,8 @@ Style
 tt aims to be strictly `PEP8`_ compliant, enforcing this compliance via `Flake8`_. This project includes an `editorconfig`_ file to help with formatting issues, as well. `Google style docstrings`_ are used in the source code code documentation and processed via `napoleon`_.
 
 
-The Todo List
--------------
+Long Term Development Goals
+---------------------------
 
 Below are features I'd like to add eventually, roughly ordered in anticipated schedule of completion. A new release will be cut every so often down the list.
 
@@ -46,12 +46,10 @@ Below are features I'd like to add eventually, roughly ordered in anticipated sc
 
 * For the project as a whole
 
-    * A *Getting Started* section with a tutorial-style guide to the library and CLI
-    * Clean up API documentation (with valid cross-references)
+    * A *Getting Started* section for the docs, with a tutorial-style guide to the library and CLI
     * Karnaugh map support
-    * Optimizations in tree evaluation
     * Interface for substituting/transforming expression symbols
-    * Functionality for optimizing/simplifying expressions
+    * Functionality for optimizing/simplifying expressions (pos, sop, espresso, etc.)
 
 
 .. _unittest: https://docs.python.org/3/library/unittest.html
