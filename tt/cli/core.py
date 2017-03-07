@@ -1,5 +1,6 @@
 """Core command-line interface for tt."""
 
+import argparse
 import sys
 
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -10,51 +11,51 @@ from ..tables import TruthTable
 from ..version import __version__
 from .utils import print_err, print_info
 
+from typing import List
 
-def _add_expression_arg(parser):
+
+def _add_expression_arg(parser: ArgumentParser) -> None:
     """Add the expression argument to a parser."""
     parser.add_argument(
         'expression',
         nargs='*',
-        help=(
-            'Boolean expression to process; surround it in quotes to\n'
-            'avoid escaping control characters in your terminal'))
+        help='Boolean expression to process; surround it in quotes to\n'
+             'avoid escaping control characters in your terminal')
 
 
-def _tokens(opts):
+def _tokens(opts: argparse.Namespace) -> None:
     """Run the `tokens` command."""
     b = BooleanExpression(opts.expression)
     print_info('\n'.join(b.tokens))
 
 
-def _postfix_tokens(opts):
+def _postfix_tokens(opts: argparse.Namespace) -> None:
     """Run the `postfix-tokens` command."""
     b = BooleanExpression(opts.expression)
     print_info('\n'.join(b.postfix_tokens))
 
 
-def _tree(opts):
+def _tree(opts: argparse.Namespace) -> None:
     """Run the `tree` command."""
     b = BooleanExpression(opts.expression)
     print_info(b.tree)
 
 
-def _table(opts):
+def _table(opts: argparse.Namespace) -> None:
     """Run the `table` command."""
     t = TruthTable(opts.expression)
     print_info(t)
 
 
-def get_parsed_args(args=None):
+def get_parsed_args(args: List[str]=None) -> argparse.Namespace:
     """Get the parsed command line arguments.
 
     Args:
-        args (List[str], optional): The list of command line args to parse;
-            if left as None, sys.argv will be used.
+        args: The command line args to parse; if ommitted, ``sys.argv``
+            will be used.
 
     Returns:
-        argparse.Namespace: The Namespace object returned by the
-            ``ArgumentParser.parse_args`` function.
+        The ``Namespace`` object indicating the parsed arguments.
 
     """
     parser = ArgumentParser(
@@ -108,15 +109,14 @@ def get_parsed_args(args=None):
     return parser.parse_args(args)
 
 
-def main(args=None):
+def main(args: List[str]=None) -> int:
     """The main routine to run the tt command-line interface.
 
     Args:
-        args (List[str], optional): The ``args`` argument to be passed to the
-            ``get_parsed_args`` function.
+        args: The command-line arguments.
 
     Returns:
-        int: The exit code of the program.
+        The exit code of the program.
 
     """
     try:
@@ -129,7 +129,8 @@ def main(args=None):
             print_err('No command specified; use `tt --help` for options.')
             return 2
 
-        opts.expression = ' '.join(opts.expression)
+        expr = opts.expression
+        setattr(opts, 'expression', ' '.join(expr))
         func(opts)
 
         return 0
