@@ -17,7 +17,7 @@ class EvaluationError(TtError):
 class DuplicateSymbolError(EvaluationError):
     """An exception type for user-specified duplicate symbols.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import TruthTable
         >>> try:
@@ -33,7 +33,7 @@ class DuplicateSymbolError(EvaluationError):
 class ExtraSymbolError(EvaluationError):
     """An exception for a passed token that is not a parsed symbol.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import TruthTable
         >>> try:
@@ -49,7 +49,7 @@ class ExtraSymbolError(EvaluationError):
 class InvalidBooleanValueError(EvaluationError):
     """An exception for an invalid truth value passed in evaluation.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import BooleanExpression
         >>> try:
@@ -66,7 +66,7 @@ class InvalidBooleanValueError(EvaluationError):
 class MissingSymbolError(EvaluationError):
     """An exception type for a missing token value in evaluation.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import BooleanExpression
         >>> try:
@@ -83,7 +83,7 @@ class MissingSymbolError(EvaluationError):
 class NoEvaluationVariationError(EvaluationError):
     """An exception type for when evaluation of an expression will not vary.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import TruthTable
         >>> try:

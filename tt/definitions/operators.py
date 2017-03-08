@@ -19,7 +19,7 @@ class BooleanOperator(object):
 
         :type: :class:`int <python:int>`
 
-        For example::
+        .. code-block:: python
 
             >>> from tt.definitions import TT_AND_OP, TT_OR_OP
             >>> TT_AND_OP.precedence > TT_OR_OP.precedence
@@ -34,7 +34,7 @@ class BooleanOperator(object):
 
         :type: :data:`Callable <python:typing.Callable>`
 
-        For example::
+        .. code-block:: python
 
             >>> from tt.definitions import TT_XOR_OP
             >>> TT_XOR_OP.eval_func(0, 0)
@@ -49,15 +49,15 @@ class BooleanOperator(object):
     def name(self):
         """The human-readable name of this operator.
 
-        Some examples::
+        :type: :class:`str <python:str>`
+
+        .. code-block:: python
 
             >>> from tt.definitions import TT_NOT_OP, TT_XOR_OP
             >>> TT_NOT_OP.name
             'NOT'
             >>> TT_XOR_OP.name
             'XOR'
-
-        :type: :class:`str <python:str>`
 
         """
         return self._name

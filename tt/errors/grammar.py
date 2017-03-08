@@ -51,7 +51,7 @@ class GrammarError(TtError):
 class BadParenPositionError(GrammarError):
     """An exception type for unexpected parentheses.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import BooleanExpression
         >>> try:
@@ -67,7 +67,7 @@ class BadParenPositionError(GrammarError):
 class EmptyExpressionError(GrammarError):
     """An exception type for when an empty expression is received.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import BooleanExpression
         >>> try:
@@ -83,7 +83,7 @@ class EmptyExpressionError(GrammarError):
 class ExpressionOrderError(GrammarError):
     """An exception type for unexpected operands or operators.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import BooleanExpression
         >>> try:
@@ -99,7 +99,7 @@ class ExpressionOrderError(GrammarError):
 class UnbalancedParenError(GrammarError):
     """An exception type for unbalanced parentheses.
 
-    An example::
+    .. code-block:: python
 
         >>> from tt import BooleanExpression
         >>> try:
