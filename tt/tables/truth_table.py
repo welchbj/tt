@@ -17,38 +17,53 @@ class TruthTable(object):
 
     """A class representing a truth table.
 
-    Attributes:
-        expr: The ``BooleanExpression`` object or a string from which to create
-            the ``BooleanExpression`` object represented by this truth table.
-        ordering (List[str], optional): An optional list of symbol names in the
-            passed expression, specifying the order in which they should
-            appear in the truth table (from left to right). If omitted, the
-            ordering of the symbols will be consistent with the symbol's first
-            occurrence in the passed expression.
-        results (List[bool]): A list of ``int`` s representing the resultant
-            evaluations for each combination of possible inputs.
+    :param expr: The expression with which to populate this truth table.
+    :type expr: :class:`str <python:str>` or :class:`BooleanExpression\
+        <tt.expressions.bexpr.BooleanExpression>`
 
-    Raises:
-        DuplicateSymbolError
-        ExtraSymbolError
-        MissingSymbolError
+    :param fill_all: A flag indicating whether the entirety of the table should
+        be filled on initialization; defaults to ``True``.
+    :type fill_all: :class:`bool <python:bool>`, optional
+
+    :param ordering: An input that maps to this class's :attr:`ordering`
+        property. If omitted, the ordering of symbols in the table will match
+        that of the symbols' appearance in the original expression.
+    :type ordering: List[:class:`str <python:str>`], optional
+
+    :raises DuplicateSymbolError: If multiple symbols of the same name are
+        passed into the ``ordering`` list.
+    :raises ExtraSymbolError: If a symbol not present in the expression is
+        passed into the ``ordering`` list.
+    :raises MissingSymbolError: If a symbol present in the expression is
+        omitted from the ``ordering`` list.
+    :raises InvalidArgumentTypeError: If an unexpected parameter type is
+        encountered.
+    :raises NoEvaluationVariationError: If an expression without any unqiue
+        symbols (i.e., one merely composed of constant operators) is specified.
+
+    .. note::
+
+        See :func:`assert_iterable_contains_all_expr_symbols\
+        <tt.utils.assertions.assert_iterable_contains_all_expr_symbols>`
+        for more information about the exceptions raised by this class's
+        initializer.
 
     """
 
     def __init__(self, expr, fill_all=True, ordering=None):
         if isinstance(expr, str):
-            self.expr = BooleanExpression(expr)
+            self._expr = BooleanExpression(expr)
         elif isinstance(expr, BooleanExpression):
-            self.expr = expr
+            self._expr = expr
         else:
             raise InvalidArgumentTypeError(
                 'Arg `expr` must be of type `str` or `BooleanExpression`')
 
         if ordering is None:
-            self._ordering = self.expr.symbols
+            self._ordering = self._expr.symbols
         else:
             assert_iterable_contains_all_expr_symbols(ordering,
-                                                      set(self.expr.symbols))
+                                                      set(self._expr.symbols))
             self._ordering = ordering
 
         if not self._ordering:
@@ -57,10 +72,83 @@ class TruthTable(object):
 
         self._symbol_position_dict = {symbol: i for i, symbol in
                                       enumerate(self._ordering)}
-        self.results = [None for _ in range(2**len(self._ordering))]
+        self._results = [None for _ in range(2**len(self._ordering))]
 
         if fill_all:
             self.fill()
+
+    @property
+    def expr(self):
+        """The ``BooleanExpression`` object represented by this table.
+
+        :type: :class:`BooleanExpression\
+                       <tt.expressions.bexpr.BooleanExpression>`
+
+        """
+        return self._expr
+
+    @property
+    def ordering(self):
+        """The order in which the symbols should appear in the truth table.
+
+        :type: List[:class:`str <python:str>`]
+
+        Here's a short example of alternative orderings of a partially-filled,
+        three-symbol table::
+
+            >>> from tt import TruthTable
+            >>> t = TruthTable('(A or B) and C', fill_all=False)
+            >>> t.fill(A=0, B=0)
+            >>> print(t)
+            +---+---+---+---+
+            | A | B | C |   |
+            +---+---+---+---+
+            | 0 | 0 | 0 | 0 |
+            +---+---+---+---+
+            | 0 | 0 | 1 | 0 |
+            +---+---+---+---+
+            >>> t = TruthTable('(A or B) and C',
+            ...                fill_all=False, ordering=['C', 'B', 'A'])
+            >>> t.fill(A=0, B=0)
+            >>> print(t)
+            +---+---+---+---+
+            | C | B | A |   |
+            +---+---+---+---+
+            | 0 | 0 | 0 | 0 |
+            +---+---+---+---+
+            | 1 | 0 | 0 | 0 |
+            +---+---+---+---+
+
+        """
+        return self._ordering
+
+    @property
+    def results(self):
+        """A list containing the results of each possible set of inputs.
+
+        :type: List[:class:`bool <python:bool>`]
+
+        In the case that the table is not completely filled, spots in this list
+        that do not yet have a computed result will hold the ``None`` value.
+
+        Regardless of the filled status of this table, all
+        positions in the ``results`` list are allocated at initialization and
+        subsequently filled as computed. This is illustrated in the below
+        example::
+
+            >>> from tt import TruthTable
+            >>> t = TruthTable('A or B', fill_all=False)
+            >>> t.results
+            [None, None, None, None]
+            >>> t.fill(A=0)
+            >>> t.results
+            [False, True, None, None]
+            >>> t.fill()
+            >>> t.results
+            [False, True, True, True]
+
+        """
+        return self._results
 
     def __str__(self):
         col_widths = self._get_col_widths()
@@ -73,7 +161,7 @@ class TruthTable(object):
         rows.append(row_sep)
 
         for i, inputs in enumerate(self.input_combos()):
-            result = self.results[i]
+            result = self._results[i]
             if result is None:
                 continue
 
@@ -91,14 +179,48 @@ class TruthTable(object):
     def fill(self, **kwargs):
         """Fill the table with results, based on values specified by kwargs.
 
-        Args:
-            **kwargs: Filter which entries in the table are filled by
-                specifying symbol values through the keyword args.
+        :param kwargs: Filter which entries in the table are filled by
+            specifying symbol values through the keyword args.
 
-        Raises:
-            ExtraSymbolError
-            InvalidBooleanValueError
-            MissingSymbolError
+        :raises ExtraSymbolError: If a symbol not in the expression is passed
+            as a keyword arg.
+        :raises InvalidBooleanValueError: If a non-Boolean value is passed
+            as a value for one of the keyword args.
+
+        .. note::
+
+            See :func:`assert_all_valid_keys\
+            <tt.utils.assertions.assert_all_valid_keys>`
+            for more information about the exceptions raised by this method.
+
+        An example of iteratively filling a table::
+
+            >>> from tt import TruthTable
+            >>> t = TruthTable('A or B', fill_all=False)
+            >>> print(t)
+            Empty!
+            >>> t.fill(A=0)
+            >>> print(t)
+            +---+---+---+
+            | A | B |   |
+            +---+---+---+
+            | 0 | 0 | 0 |
+            +---+---+---+
+            | 0 | 1 | 1 |
+            +---+---+---+
+            >>> t.fill(A=1)
+            >>> print(t)
+            +---+---+---+
+            | A | B |   |
+            +---+---+---+
+            | 0 | 0 | 0 |
+            +---+---+---+
+            | 0 | 1 | 1 |
+            +---+---+---+
+            | 1 | 0 | 1 |
+            +---+---+---+
+            | 1 | 1 | 1 |
+            +---+---+---+
 
         """
         assert_all_valid_keys(kwargs, set(self._ordering))
@@ -120,26 +242,39 @@ class TruthTable(object):
                     break
 
             if not skip:
-                self.results[i] = self.expr.evaluate_unchecked(**input_dict)
+                self._results[i] = self._expr.evaluate_unchecked(**input_dict)
 
     def input_combos(self, combo_len=None):
-        """Get a generator of Boolean input combinations for this expression.
+        """Get an iterator of Boolean input combinations for this expression.
 
-        The length of each tuple of combinations is the same as the
-        number of symbols in this expression if no ``combo_len`` value is
-        specified; otherwise, the specified value is used.
+        :param combo_len: The length of each combination in the returned
+            iterator. If omitted, this defaults to the number of symbols in the
+            expression.
+        :type combo_len: :class:`int <python:int>`, optional
 
-        Iterating through the returned generator, without fiddling with the
+        :returns: An iterator of tuples containing permutations of Boolean
+            inputs.
+        :rtype: :func:`itertools.product <python:itertools.product>`
+
+        The length of each tuple of combinations is the same as the number of
+        symbols in this expression if no ``combo_len`` value is specified;
+        otherwise, the specified value is used.
+
+        Iterating through the returned value, without fiddling with the
         ``combo_len`` input, will yield every combination of inputs for this
         expression.
 
-        Args:
-            combo_len (int, optional): The number of values required in each
-                set of combinations; by default, the number of symbols in this
-                expression will be used.
+        A simple example::
 
-        Returns:
-            A generator of tuples containing permutations of Boolean inputs.
+            >>> from tt import TruthTable
+            >>> t = TruthTable('A and B')
+            >>> for tup in t.input_combos():
+            ...     print(tup)
+            ...
+            (False, False)
+            (False, True)
+            (True, False)
+            (True, True)
 
         """
         repeat = len(self._ordering) if combo_len is None else combo_len
@@ -148,13 +283,15 @@ class TruthTable(object):
     def _get_as_table_row(self, items, col_widths):
         """Convert an iterable to a row in the table ``__str__``.
 
-        Args:
-            items (Iterable[str]): The items to convert to a table row.
-            col_widths (List[int]): A list of integers specifying the column
-                widths for each column of the table.
+        :param items: The items to convert to a table row.
+        :type items: Iterable[:class:`str <python:str>`]
 
-        Returns:
-            str: The string representation of the table row.
+        :param col_widths: A list of integers specifying the column widths for
+            each column of the table.
+        :type col_widths: List[:class:`int <python:int>`]
+
+        :returns: The string representation of the table row.
+        :rtype: :class:`str <python:str>`
 
         """
         row = '|'
@@ -172,13 +309,13 @@ class TruthTable(object):
     def _get_col_widths(self, padding=_DEFAULT_CELL_PADDING):
         """Get a list of integers, representing the column widths of the table.
 
-        Args:
-            padding (int): The additional padding to add to both the left and
-                right of the contents of each cell.
+        :param padding: The additional padding to add to both the left and
+            right of the contents of each cell.
+        :type padding: :class:`int <python:int>`
 
-        Returns:
-            List[int]: A list of integers representing the width of each
-                column of the table.
+        :returns: A list of ints representing the width of each column of the
+            table.
+        :rtype: List[:class:`int <python:int>`]
 
         """
         tot_padding = 2 * padding
@@ -189,12 +326,12 @@ class TruthTable(object):
     def _get_row_sep(self, col_widths):
         """Get the string separator for truth table rows.
 
-        Args:
-            col_widths (List[int]): A list of integers representing the width
-                of each column in the table.
+        :param col_widths: A list of integers representing the width of each
+            column in the table.
+        :type col_widths: List[:class:`int <python:int>`]
 
-        Returns:
-            str: The row separator, of the style ``+---+---+---+``.
+        :returns: The row separator, of the style ``+---+---+---+``.
+        :rtype: :class:`str <python:str>`
 
         """
         return '+' + '+'.join('-' * i for i in col_widths) + '+'
