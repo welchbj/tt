@@ -13,60 +13,153 @@ from ..utils import (assert_all_valid_keys,
 
 class BooleanExpression(object):
 
-    """A class for parsing and holding information about a Boolean expression.
+    """An interface for interacting with a Boolean expression.
 
-    Attributes:
-        raw_expr (str): The raw string expression, to be parsed upon
-            initialization.
-        symbols (List[str]): The list of unique symbols present in
-            this expression, in the order of their first appearance in the
-            expression.
-        tokens (List[str]): A list of strings, each element indicating
-                     a different token of the parsed expression.
-        postfix_tokens (List[str]): A list of strings, representing the
-            ``tokens`` list converted to postfix form.
-        tree (tt.trees.BooleanExpressionTree): The expression tree
-            representing the expression wrapped in this class, derived from
-            the tokens parsed by this class.
+    Instances of ``BooleanExpression`` are meant to be immutable.
 
     """
 
     def __init__(self, raw_expr):
-        self.raw_expr = raw_expr
+        self._raw_expr = raw_expr
 
-        self.symbols = []
+        self._symbols = []
         self._symbol_set = set()
 
-        self.tokens = []
-        self.postfix_tokens = []
+        self._tokens = []
+        self._postfix_tokens = []
 
         self._tokenize()
         self._to_postfix()
 
-        self.tree = BooleanExpressionTree(self.postfix_tokens)
+        self._tree = BooleanExpressionTree(self._postfix_tokens)
+
+    @property
+    def raw_expr(self):
+        """The raw string expression, parsed upon initialization.
+
+        This is what you pass into the ``BooleanExpression`` constructor; it is
+        kept on the object as an attribute for convenience.
+
+        :type: :class:`str <python:str>`
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A nand B')
+            >>> b.raw_expr
+            'A nand B'
+
+        """
+        return self._raw_expr
+
+    @property
+    def symbols(self):
+        """The list of unique symbols present in this expression.
+
+        The order of the symbols in this list matches the order of symbol
+        appearance in the original expression.
+
+        :type: List[:class:`str <python:str>`]
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A xor (B or C)')
+            >>> b.symbols
+            ['A', 'B', 'C']
+
+        """
+        return self._symbols
+
+    @property
+    def tokens(self):
+        """The parsed, non-whitespace tokens of an expression.
+
+        :type: List[:class:`str <python:str>`]
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A xor (B or C)')
+            >>> b.tokens
+            ['A', 'xor', '(', 'B', 'or', 'C', ')']
+
+        """
+        return self._tokens
+
+    @property
+    def postfix_tokens(self):
+        """Similar to the ``tokens`` attribute, but in postfix order.
+
+        :type: List[:class:`str <python:str>`]
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A xor (B or C)')
+            >>> b.postfix_tokens
+            ['A', 'B', 'C', 'or', 'xor']
+
+        """
+        return self._postfix_tokens
+
+    @property
+    def tree(self):
+        """The expression tree representing this Boolean expression.
+
+        :type: :class:`BooleanExpressionTree
+                       <tt.trees.expr_tree.BooleanExpressionTree>`
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A xor (B or C)')
+            >>> print(b.tree)
+            xor
+            `----A
+            `----or
+                `----B
+                `----C
+
+        """
+        return self._tree
 
     def evaluate(self, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
 
-        This is a checked wrapper around the ``evaluate_unchecked`` function.
+        This is a checked wrapper around the :func:`evaluate_unchecked`
+        function.
 
-        Args:
-            kwargs: Keys are names of symbols in this expression; the specified
-                value for each of these keys will be substituted into the
-                expression for evaluation.
+        :param kwargs: Keys are names of symbols in this expression; the
+            specified value for each of these keys will be substituted into the
+            expression for evaluation.
 
-        Returns:
-            bool: The Boolean result of evaluating the expression.
+        :returns: The result of evaluating the expression.
+        :rtype: :class:`bool <python:bool>`
 
-        Raises:
-            ExtraSymbolError
-            InvalidBooleanValueError
-            MissingSymbolError
+        :raises ExtraSymbolError: If a symbol not in this expression is passed
+            through ``kwargs``.
+        :raises MissingSymbolError: If any symbols in this expression are not
+            passed through ``kwargs``.
+        :raises InvalidBooleanValueError: If any values from ``kwargs`` are not
+            valid Boolean inputs.
 
-        Note:
-            See ``tt.utils.assertions.assert_all_valid_keys`` and
-            ``tt.utils.assertions.assert_iterable_contains_all_expr_symbols``
+        .. note::
+
+            See :func:`assert_all_valid_keys\
+            <tt.utils.assertions.assert_all_valid_keys>` and
+            :func:`assert_iterable_contains_all_expr_symbols\
+            <tt.utils.assertions.assert_iterable_contains_all_expr_symbols>`
             for more information about the exceptions raised by this method.
+
+        Usage::
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A or B')
+            >>> b.evaluate(A=0, B=0)
+            False
+            >>> b.evaluate(A=1, B=0)
+            True
 
         """
         assert_all_valid_keys(kwargs, self._symbol_set)
@@ -78,16 +171,18 @@ class BooleanExpression(object):
     def evaluate_unchecked(self, **kwargs):
         """Evaluate the Boolean expression without checking the input.
 
-        Args:
-            kwargs: Keys are names of symbols in this expression; the specified
-                value for each of these keys will be substituted into the
-                expression for evaluation.
+        This is used for evaluation by the :func:`evaluate` method, which
+        validates the input ``kwargs`` before passing them to this method.
 
-        Returns:
-            bool: The Boolean result of evaluating the expression.
+        :param kwargs: Keys are names of symbols in this expression; the
+            specified value for each of these keys will be substituted into the
+            expression for evaluation.
+
+        :returns: The Boolean result of evaluating the expression.
+        :rtype: :class:`bool <python:bool>`
 
         """
-        truthy = self.tree.evaluate(kwargs)
+        truthy = self._tree.evaluate(kwargs)
         return bool(truthy)
 
     def _tokenize(self):
@@ -96,8 +191,7 @@ class BooleanExpression(object):
         This method will populate the ``symbols`` and ``tokens`` attributes,
         and is the first step in the expression-processing pipeline.
 
-        Raises:
-            GrammarError: If a malformed expression is received.
+        :raises GrammarError: If a malformed expression is received.
 
         """
         operator_strs = [k for k in OPERATOR_MAPPING.keys()]
@@ -125,7 +219,7 @@ class BooleanExpression(object):
                                                 self.raw_expr, idx)
 
                 open_paren_count += 1
-                self.tokens.append(c)
+                self._tokens.append(c)
                 idx += 1
             elif c == ')':
                 if grammar_state != EXPECTING_OPERATOR:
@@ -136,7 +230,7 @@ class BooleanExpression(object):
                                                self.raw_expr, idx)
 
                 open_paren_count -= 1
-                self.tokens.append(c)
+                self._tokens.append(c)
                 idx += 1
             else:
                 is_operator = False
@@ -174,7 +268,7 @@ class BooleanExpression(object):
                             grammar_state = EXPECTING_OPERAND
 
                         is_operator = True
-                        self.tokens.append(match)
+                        self._tokens.append(match)
                         idx += match_length
 
                 if not is_operator:
@@ -188,9 +282,9 @@ class BooleanExpression(object):
                         operand_end_idx += 1
 
                     operand = self.raw_expr[idx:operand_end_idx]
-                    self.tokens.append(operand)
+                    self._tokens.append(operand)
                     if operand not in (self._symbol_set | CONSTANT_VALUES):
-                        self.symbols.append(operand)
+                        self._symbols.append(operand)
                         self._symbol_set.add(operand)
 
                     idx = operand_end_idx
@@ -203,7 +297,7 @@ class BooleanExpression(object):
                 'Unbalanced left parenthesis', self.raw_expr,
                 left_paren_positions[open_paren_count-1])
 
-        if not self.tokens:
+        if not self._tokens:
             raise EmptyExpressionError('Empty expression is invalid')
 
     def _to_postfix(self):
@@ -211,9 +305,9 @@ class BooleanExpression(object):
         operand_set = self._symbol_set | CONSTANT_VALUES
         stack = []
 
-        for token in self.tokens:
+        for token in self._tokens:
             if token in operand_set:
-                self.postfix_tokens.append(token)
+                self._postfix_tokens.append(token)
             elif token == '(':
                 stack.append(token)
             elif token in OPERATOR_MAPPING.keys():
@@ -223,12 +317,12 @@ class BooleanExpression(object):
                     while (stack and stack[-1] != '(' and
                             OPERATOR_MAPPING[stack[-1]].precedence >
                             OPERATOR_MAPPING[token].precedence):
-                        self.postfix_tokens.append(stack.pop())
+                        self._postfix_tokens.append(stack.pop())
                     stack.append(token)
             elif token == ')':
                 while stack and stack[-1] != '(':
-                    self.postfix_tokens.append(stack.pop())
+                    self._postfix_tokens.append(stack.pop())
                 stack.pop()
 
         for token in reversed(stack):
-            self.postfix_tokens.append(token)
+            self._postfix_tokens.append(token)
