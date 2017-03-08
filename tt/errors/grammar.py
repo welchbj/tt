@@ -7,40 +7,106 @@ class GrammarError(TtError):
 
     """Base type for errors that occur in the handling of expression.
 
-    Attributes:
-        message (str): An additional helpful message that could be displayed
-            to the user to better explain the error.
-        expr_str (str, optional): The expression in which the grammar error
-            occured; can be left as ``None`` if the error position will not
-            be specified.
-        error_pos (int, optional): The index indicating at which position int
-            ``expr_str`` the troublesome spot began; can be left as ``None``
-            for errors without a specific troublesome position.
+    .. note::
 
-    Warning:
         This exception type should be sub-classed and is not meant to be raised
         explicitly.
 
     """
 
     def __init__(self, message, expr_str=None, error_pos=None, *args):
-        self.message = message
-        self.expr_str = expr_str
-        self.error_pos = error_pos
-        super(GrammarError, self).__init__(self.message, *args)
+        self._expr_str = expr_str
+        self._error_pos = error_pos
+        super(GrammarError, self).__init__(message, *args)
+
+    @property
+    def expr_str(self):
+        """The expression in which the exception occurred.
+
+        .. note::
+
+            This may be left as ``None``, in which case the expression will not
+            be propagated with the exception.
+
+        :type: :class:`str <python:str>`
+
+        """
+        return self._expr_str
+
+    @property
+    def error_pos(self):
+        """The position in the expression where the error occurred.
+
+        .. note::
+
+            This may be left as ``None``, in which case there is no specific
+            location in the expression causing the exception.
+
+        :type: :class:`int <python:int>`
+
+        """
+        return self._error_pos
 
 
 class BadParenPositionError(GrammarError):
-    """An exception type for unexpected parentheses."""
+    """An exception type for unexpected parentheses.
+
+    An example::
+
+        >>> from tt import BooleanExpression
+        >>> try:
+        ...     b = BooleanExpression(') A or B')
+        ... except Exception as e:
+        ...     print(type(e))
+        ...
+        <class 'tt.errors.grammar.BadParenPositionError'>
+
+    """
 
 
 class EmptyExpressionError(GrammarError):
-    """An exception type for when an empty expression is received."""
+    """An exception type for when an empty expression is received.
+
+    An example::
+
+        >>> from tt import BooleanExpression
+        >>> try:
+        ...     b = BooleanExpression('')
+        ... except Exception as e:
+        ...     print(type(e))
+        ...
+        <class 'tt.errors.grammar.EmptyExpressionError'>
+
+    """
 
 
 class ExpressionOrderError(GrammarError):
-    """An exception type for unexpected operands or operators."""
+    """An exception type for unexpected operands or operators.
+
+    An example::
+
+        >>> from tt import BooleanExpression
+        >>> try:
+        ...     b = BooleanExpression('A or or B')
+        ... except Exception as e:
+        ...     print(type(e))
+        ...
+        <class 'tt.errors.grammar.ExpressionOrderError'>
+
+    """
 
 
 class UnbalancedParenError(GrammarError):
-    """An exception type for unbalanced parentheses."""
+    """An exception type for unbalanced parentheses.
+
+    An example::
+
+        >>> from tt import BooleanExpression
+        >>> try:
+        ...     b = BooleanExpression('A or ((B)')
+        ... except Exception as e:
+        ...     print(type(e))
+        ...
+        <class 'tt.errors.grammar.UnbalancedParenError'>
+
+    """
