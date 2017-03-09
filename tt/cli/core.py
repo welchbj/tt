@@ -4,7 +4,7 @@ import sys
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-from ..errors import GrammarError
+from ..errors import EmptyExpressionError, GrammarError
 from ..expressions import BooleanExpression
 from ..tables import TruthTable
 from ..version import __version__
@@ -131,6 +131,9 @@ def main(args=None):
         func(opts)
 
         return 0
+    except EmptyExpressionError as e:
+        print_err('Empty expressions are invalid!')
+        return 1
     except GrammarError as e:
         print_err('Error! ', e.message, ':', sep='')
         print_err(e.expr_str)
