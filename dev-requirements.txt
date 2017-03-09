@@ -6,6 +6,7 @@ docutils==0.13.1
 flake8==3.3.0
 imagesize==0.7.1
 Jinja2==2.9.5
+livereload==2.5.1
 MarkupSafe==0.23
 mccabe==0.6.1
 packaging==16.8
@@ -21,5 +22,6 @@ requests==2.13.0
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3
+tornado==4.4.2
 tox==2.6.0
 virtualenv==15.1.0

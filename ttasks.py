@@ -4,11 +4,14 @@ from __future__ import print_function
 
 import doctest
 import os
+import subprocess
 import sys
 import tt
 import unittest
 
 from argparse import ArgumentParser, RawTextHelpFormatter
+from contextlib import contextmanager
+from livereload import Server
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -17,8 +20,21 @@ TT_DIR = os.path.join(HERE, 'tt')
 TESTS_DIR = os.path.join(TT_DIR, 'tests')
 
 
+class SubprocessFailureError(Exception):
+    """An exception type for a subprocess exiting with a non-zero exit code."""
+
+
 class TestFailureError(Exception):
     """An exception type for failed tests."""
+
+
+@contextmanager
+def _cwd(new_cwd):
+    """Context manager for temporarily changing the cwd."""
+    old_cwd = os.getcwd()
+    os.chdir(new_cwd)
+    yield
+    os.chdir(old_cwd)
 
 
 def _print_py_version():
@@ -36,6 +52,27 @@ def _print_py_version():
     print(info_str)
     print(box_top)
     print()
+
+
+def build_docs():
+    """Build the documentation from source into HTML."""
+    with _cwd(DOCS_DIR):
+        exit_code = subprocess.call('make html', shell=True)
+
+    if exit_code:
+        print('Something went wrong building the docs', file=sys.stderr)
+        raise SubprocessFailureError
+
+
+def serve_docs():
+    """Serve the documentation on a local livereload server."""
+    server = Server()
+
+    watch_patterns = ['docs/**/*.rst', 'tt/**/*.py']
+    for pattern in watch_patterns:
+        server.watch(pattern, build_docs)
+
+    server.serve(root='docs/_build/html', host='127.0.0.1', port=5000)
 
 
 def test():
@@ -69,6 +106,8 @@ def test():
 
 
 TASKS = {
+    'build-docs': build_docs,
+    'serve-docs': serve_docs,
     'test': test
 }
 
@@ -120,7 +159,7 @@ def main(args=None):
         task = TASKS[opts.task]
         task()
         return 0
-    except TestFailureError:
+    except (SubprocessFailureError, TestFailureError):
         return 1
     except Exception as e:
         print('Received unexpected exception; re-raising it.', file=sys.stderr)
