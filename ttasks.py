@@ -11,7 +11,6 @@ import unittest
 
 from argparse import ArgumentParser, RawTextHelpFormatter
 from contextlib import contextmanager
-from livereload import Server
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -66,6 +65,7 @@ def build_docs():
 
 def serve_docs():
     """Serve the documentation on a local livereload server."""
+    from livereload import Server
     server = Server()
 
     watch_patterns = ['docs/**/*.rst', 'tt/**/*.py']
