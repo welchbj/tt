@@ -48,6 +48,8 @@ html_theme_options = {
     'sidebar_includehidden': True,
     'fixed_sidebar': True,
 
+    'warn_bg': '#f9e3ed',
+    'warn_border': '#ffa5ce',
     'note_bg': '#e8f0fc',
     'note_border': '#c4daff',
 
