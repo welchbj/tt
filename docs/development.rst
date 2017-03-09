@@ -34,6 +34,14 @@ Style
 tt aims to be strictly `PEP8`_ compliant, enforcing this compliance via `Flake8`_. This project includes an `editorconfig`_ file to help with formatting issues, as well.
 
 
+Releases
+--------
+
+Work for each release is done in a branch off of develop following the naming convention v{major}.{minor}.{micro}. When work for a version is complete, its branch is merged back into develop, which is subsequently merged into master. The master branch is then tagged with the release version number, following the scheme {major}.{minor}.{micro}.
+
+After these steps, make sure you update the release notes, publish on Read the Docs, and publish on PyPI.
+
+
 Long Term Development Goals
 ---------------------------
 
