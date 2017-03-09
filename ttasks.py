@@ -91,8 +91,8 @@ def test():
         tt.errors.generic,
         tt.errors.grammar,
         tt.tables.truth_table,
-        tt.trees.expr_tree,  # TODO: doctests for this module
-        tt.trees.tree_node,  # TODO: doctests for this module
+        tt.trees.expr_tree,
+        tt.trees.tree_node,
         tt.utils.assertions  # TODO: doctests for this module
     ]
 
