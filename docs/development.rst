@@ -25,7 +25,7 @@ Testing is done with Python's `unittest`_ and `doctest`_ modules. All tests can 
 
 Note that while doc tests are used, this is mostly just to make sure the documentation examples are valid. The true behavior of the library and public contract is enforced through unit tests.
 
-Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against the CPython 2.7, 3.3, 3.4, 3.5, and 3.6 runtimes. Additionally, the source is run through the `Flake8`_ linter. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_, which tests on Linux and also adds the ability to test on the `PyPy`_ runtime.
+Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against the compatible CPython runtimes. Additionally, the source is run through the `Flake8`_ linter. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_, which tests on Linux and also adds the ability to test on the `PyPy`_ runtime.
 
 
 Style
