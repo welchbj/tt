@@ -5,7 +5,8 @@ import unittest
 
 from ...definitions import OPERATOR_MAPPING, TT_NOT_OP
 from ...errors import (BadParenPositionError, EmptyExpressionError,
-                       ExpressionOrderError, UnbalancedParenError)
+                       ExpressionOrderError, InvalidArgumentTypeError,
+                       UnbalancedParenError)
 from ...expressions import BooleanExpression
 
 
@@ -293,6 +294,12 @@ class TestExpressions(unittest.TestCase):
                 '|    `----op1',
                 '|    `----op2',
                 '`----1')))
+
+    def test_non_str(self):
+        """Test passing something other than a str to __init__"""
+        self.helper_test_tokenization_raises(
+            float(),
+            expected_exc_type=InvalidArgumentTypeError)
 
     def test_empty(self):
         """Test an empty expression."""

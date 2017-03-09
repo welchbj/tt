@@ -5,7 +5,8 @@ import re
 from ..definitions import (CONSTANT_VALUES, DELIMITERS, OPERATOR_MAPPING,
                            TT_NOT_OP)
 from ..errors import (BadParenPositionError, EmptyExpressionError,
-                      ExpressionOrderError, UnbalancedParenError)
+                      ExpressionOrderError, InvalidArgumentTypeError,
+                      UnbalancedParenError)
 from ..trees import BooleanExpressionTree
 from ..utils import (assert_all_valid_keys,
                      assert_iterable_contains_all_expr_symbols)
@@ -20,6 +21,9 @@ class BooleanExpression(object):
     """
 
     def __init__(self, raw_expr):
+        if not isinstance(raw_expr, str):
+            raise InvalidArgumentTypeError('raw_expr must be of type str')
+
         self._raw_expr = raw_expr
 
         self._symbols = []
