@@ -93,7 +93,7 @@ def test():
         tt.tables.truth_table,
         tt.trees.expr_tree,
         tt.trees.tree_node,
-        tt.utils.assertions  # TODO: doctests for this module
+        tt.utils.assertions
     ]
 
     for module in doctest_modules:
