@@ -48,6 +48,9 @@ html_theme_options = {
     'sidebar_includehidden': True,
     'fixed_sidebar': True,
 
+    'note_bg': '#e8f0fc',
+    'note_border': '#c4daff',
+
     'font_family': "'PT Sans Caption', sans-serif",
     'font_size': '0.9em',
     'head_font_family': "'Cabin', sans-serif"
