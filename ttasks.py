@@ -115,13 +115,13 @@ TASKS = {
 def get_parsed_args(args=None):
     """Get the parsed command line arguments.
 
-    Args:
-        args (List[str], optional): The list of command line args to parse;
-            if left as None, sys.argv will be used.
+    :param args: The command-line args to parse; if omitted,
+        :data:`sys.argv <python:sys.argv>` will be used.
+    :type args: List[:class:`str <python:str>`], optional
 
-    Returns:
-        argparse.Namespace: The Namespace object returned by the
-            ``ArgumentParser.parse_args`` function.
+    :return: The :class:`Namespace <python:argparse.Namespace>` object holding
+        the parsed args.
+    :rtype: :class:`argparse.Namespace <python:argparse.Namespace>`
 
     """
     parser = ArgumentParser(
@@ -146,12 +146,11 @@ def get_parsed_args(args=None):
 def main(args=None):
     """Main routine for running this script.
 
-    Args:
-        args (List[str], optional): The ``args`` argument to be passed to the
-            ``get_parsed_args`` function.
+    :param args: The command-line arguments.
+    :type args: List[:class:`str <python:str>`], optional
 
-    Returns:
-        int: The exit code of the program.
+    :returns: The exit code of the program.
+    :rtype: :class:`int <python:int>`
 
     """
     try:
