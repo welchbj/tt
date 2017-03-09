@@ -2,8 +2,10 @@
 
 from __future__ import print_function
 
+import doctest
 import os
 import sys
+import tt
 import unittest
 
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -44,6 +46,21 @@ def test():
         TESTS_DIR,
         pattern='test_*.py',
         top_level_dir=HERE)
+
+    doctest_modules = [
+        tt.definitions.operators,
+        tt.expressions.bexpr,
+        tt.errors.evaluation,
+        tt.errors.generic,
+        tt.errors.grammar,
+        tt.tables.truth_table,
+        tt.trees.expr_tree,  # TODO: doctests for this module
+        tt.trees.tree_node,  # TODO: doctests for this module
+        tt.utils.assertions  # TODO: doctests for this module
+    ]
+
+    for module in doctest_modules:
+        suite.addTests(doctest.DocTestSuite(module))
 
     runner = unittest.TextTestRunner()
     result = runner.run(suite)
