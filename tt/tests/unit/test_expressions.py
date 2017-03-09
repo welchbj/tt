@@ -19,18 +19,25 @@ class TestExpressions(unittest.TestCase):
                                  expected_tree_str=None):
         """Helper for testing tokenization on valid expressions.
 
-        Args:
-            expr (str): The expression for which to create a new
-                ``BooleanExpression`` object, which should be of a valid
-                form.
-            expected_tokens (List[str]): The list of expected tokens for the
-                passed expression.
-            expected_postfix_tokens (List[str]): The list of expected postfix
-                tokens for the passed expression.
-            expected_symbols (List[str]): The list of expected symbols for the
-                passed expression.
-            expected_tree_str (str): The expected string representation of the
-                constructed expression tree.
+        :param expr: The expression for which to create a new
+            ``BooleanExpression`` object, which should be of a valid form.
+        :type expr: BooleanExpression
+
+        :param expected_tokens: The list of expected tokens for the passed
+            expression.
+        :type expected_tokens: List[str]
+
+        :param expected_postfix_tokens: The list of expected postfix tokens for
+            the passed expression.
+        :type expected_postfix_tokens: List[str]
+
+        :param expected_symbols: The list of expected symbols for the passed
+            expression.
+        :type expected_symbols: List[str]
+
+        :param expected_tree_str: The expected string representation of the
+            constructed expression tree.
+        :type expected_tree_str: str
 
         """
         b = BooleanExpression(expr)
@@ -44,15 +51,18 @@ class TestExpressions(unittest.TestCase):
                                         expected_error_pos=None):
         """Helper for testing tokenization on invalid expressions.
 
-        Args:
-            expr (str): The expression for which to create a new
-                ``BooleanExpression`` object, which should be of a valid
-                form.
-            expected_exc_type (Exception): The type of exception expected to be
-                thrown during processing of the expression.
-            expected_error_pos (int, optional): The position within the
-                expression where the troublesome area began; if omitted, this
-                optional argument will not be checked on the caught exception.
+        :param expr: The expression for which to create a new
+            ``BooleanExpression`` object, which should be of a valid form.
+        :type expr: str
+
+        :param expected_exc_type: The type of exception expected to be thrown
+            during processing of the expression.
+        :type expected_exc_type: Exception
+
+        :param expected_error_pos: The position within the expression where the
+            troublesome area began; if omitted, this optional argument will not
+            be checked on the caught exception.
+        :type expected_error_pos: int, optional
 
         """
         did_catch = False

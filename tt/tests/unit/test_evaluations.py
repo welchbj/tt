@@ -14,11 +14,15 @@ class TestEvaluations(unittest.TestCase):
     def helper_test_evaluate(self, expr, expected_result=None, **kwargs):
         """Helper for testing the evaluation of expressions.
 
-        Args:
-            expr (str): The expression to attempt to evaluate.
-            expected_result (int): The binary int (0 or 1) expected to be the
-                result of evaluation the expression.
-            **kwargs: The values to pass to the ``evaluate`` function.
+        :param expr: The expression to attempt to evaluate.
+        :type expr: :class:`str <python:str>`
+
+        :param expected_result: The truthy value expected to be the result of
+            evaluation the expression.
+        :type expected_result: :class:`bool <python:bool>` or
+            :class:`int <python:int>`
+
+        :param kwargs: The values to pass to the ``evaluate`` function.
 
         """
         b = BooleanExpression(expr)
@@ -29,11 +33,14 @@ class TestEvaluations(unittest.TestCase):
                                     **kwargs):
         """Helper for testing the improper use of the ``evaluate`` function.
 
-        Args:
-            expr (str): The expression to attempt to evaluate.
-            expected_exc_type (Exception): The exception type expected to be
-                raised.
-            **kwargs: The values to pass to the ``evaluate`` function.
+
+        :param expr: The expression to attempt to evaluate.
+        :type expr: :class:`str <python:str>`
+
+        :param expected_exc_type: The exception type expected to be raised.
+        :type expected_exc_type: Exception
+
+        :param kwargs: The values to pass to the ``evaluate`` function.
 
         """
         did_catch = False

@@ -18,11 +18,14 @@ class TestTruthTable(unittest.TestCase):
         This helper will fill up a table completely and compare its ``__str__``
         representation with the passed expected string.
 
-        Args:
-            expr: The value to pass to the ``TruthTable`` constructor.
-            expected_table_str (str): The expected string representation of the
-                table.
-            **kwargs: Keyword args to pass to the ``TruthTable`` constructor.
+        :param expr: The value to pass to the ``TruthTable`` constructor.
+        :type expr: BooleanExpression or str
+
+        :param expected_table_str: The expected string representation of the
+            table.
+        :type expected_table_str: str
+
+        :param kwargs: Keyword args to pass to the ``TruthTable`` constructor.
 
         """
         t = TruthTable(expr, **kwargs)
@@ -32,13 +35,18 @@ class TestTruthTable(unittest.TestCase):
                                      init_kwargs={}, **kwargs):
         """Helper to test filling a truth table.
 
-        Args:
-            expr: The value to pass to the ``TruthTable`` constructor.
-            expected_table_str (str): The expected string representation of the
-                table.
-            init_kwargs (dict): A dict to pass as the kwargs to the
-                ``TruthTable`` constructor.
-            **kwargs: Keyword args to pass to the fill method.
+        :param expr: The value to pass to the ``TruthTable`` constructor.
+        :type expr: BooleanExpression or str
+
+        :param expected_table_str: The expected string representation of the
+            table.
+        :type expected_table_str: str
+
+        :param init_kwargs: A dict to pass as the kwargs to the ``TruthTable``
+            constructor.
+        :type init_kwargs: Dict
+
+        :param kwargs: Keyword args to pass to the fill method.
 
         """
         t = TruthTable(expr, fill_all=False, **init_kwargs)
@@ -49,11 +57,13 @@ class TestTruthTable(unittest.TestCase):
                                        **kwargs):
         """Helper for testing exception conditions for TruthTable.
 
-        Args:
-            expr: The value to pass to the ``TruthTable`` constructor.
-            expected_exc_type (Exception): The exception type expected to be
-                raised.
-            **kwargs: Keyword args to pass to the ``TruthTable`` constructor.
+        :param expr: The value to pass to the ``TruthTable`` constructor.
+        :type expr: BooleanExpression or str
+
+        :param expected_exc_type: The exception type expected to be raised.
+        :type expected_exc_type: Exception
+
+        :param  kwargs: Keyword args to pass to the ``TruthTable`` constructor.
 
         """
         did_catch = False
@@ -76,11 +86,13 @@ class TestTruthTable(unittest.TestCase):
                                             **kwargs):
         """Helper for testing exception conditions when filling a table.
 
-        Args:
-            expr: The value to pass to the ``TruthTable`` constructor.
-            expected_exc_type (Exception): The exception type expected to be
-                raised.
-            **kwargs: Keyword args to pass to the ``TruthTable`` constructor.
+        :param expr: The value to pass to the ``TruthTable`` constructor.
+        :type expr: BooleanExpression or str
+
+        :param expected_exc_type: The exception type expected to be raised.
+        :type expected_exc_type: Exception
+
+        :param kwargs: Keyword args to pass to the ``TruthTable`` constructor.
 
         """
         did_catch = False
