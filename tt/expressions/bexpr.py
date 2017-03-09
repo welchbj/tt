@@ -118,8 +118,8 @@ class BooleanExpression(object):
             xor
             `----A
             `----or
-                `----B
-                `----C
+                 `----B
+                 `----C
 
         """
         return self._tree
