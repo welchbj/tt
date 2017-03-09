@@ -68,7 +68,9 @@ def serve_docs():
     from livereload import Server
     server = Server()
 
-    watch_patterns = ['docs/**/*.rst', 'tt/**/*.py']
+    watch_patterns = ['docs/**/*.rst',
+                      'docs/conf.py',
+                      'tt/**/*.py']
     for pattern in watch_patterns:
         server.watch(pattern, build_docs)
 
