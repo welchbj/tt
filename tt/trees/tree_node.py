@@ -155,8 +155,8 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
 
     def evaluate(self, input_dict):
         if self.symbol_name == '0':
-            return 0
+            return False
         elif self.symbol_name == '1':
-            return 1
+            return True
         else:
             return input_dict[self.symbol_name]
