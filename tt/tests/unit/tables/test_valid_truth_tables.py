@@ -1,5 +1,4 @@
 from ._helpers import TruthTableTestCase
-
 from ....expressions import BooleanExpression
 
 
