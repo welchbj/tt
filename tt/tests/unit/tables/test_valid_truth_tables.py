@@ -401,3 +401,96 @@ class TestValidTruthTables(TruthTableTestCase):
                 '| 1 | 1 | 0 | 0 |',
                 '+---+---+---+---+',
             )))
+
+    def test_truth_table_from_values_with_specified_ordering(self):
+        """Test creating a truth table with specified values and ordering."""
+        self.helper_test_truth_table(
+            None,
+            from_values='x1',
+            ordering=['H'],
+            expected_table_str='\n'.join((
+                '+---+---+',
+                '| H |   |',
+                '+---+---+',
+                '| 0 | x |',
+                '+---+---+',
+                '| 1 | 1 |',
+                '+---+---+',
+            )))
+
+        self.helper_test_truth_table(
+            None,
+            from_values='0xx1',
+            ordering=['C', 'B'],
+            expected_table_str='\n'.join((
+                '+---+---+---+',
+                '| C | B |   |',
+                '+---+---+---+',
+                '| 0 | 0 | 0 |',
+                '+---+---+---+',
+                '| 0 | 1 | x |',
+                '+---+---+---+',
+                '| 1 | 0 | x |',
+                '+---+---+---+',
+                '| 1 | 1 | 1 |',
+                '+---+---+---+',
+            )))
+
+    def test_auto_gen_of_symbols_from_values_small_tables(self):
+        """Test auto-generation of symbols when using from_values."""
+        self.helper_test_truth_table(
+            None,
+            from_values='10',
+            expected_table_str='\n'.join((
+                '+---+---+',
+                '| A |   |',
+                '+---+---+',
+                '| 0 | 1 |',
+                '+---+---+',
+                '| 1 | 0 |',
+                '+---+---+',
+            )))
+
+        self.helper_test_truth_table(
+            None,
+            from_values='10x1',
+            expected_table_str='\n'.join((
+                '+---+---+---+',
+                '| A | B |   |',
+                '+---+---+---+',
+                '| 0 | 0 | 1 |',
+                '+---+---+---+',
+                '| 0 | 1 | 0 |',
+                '+---+---+---+',
+                '| 1 | 0 | x |',
+                '+---+---+---+',
+                '| 1 | 1 | 1 |',
+                '+---+---+---+',
+            )))
+
+        self.helper_test_truth_table(
+            None,
+            from_values='xx10xx00',
+            expected_table_str='\n'.join((
+                '+---+---+---+---+',
+                '| A | B | C |   |',
+                '+---+---+---+---+',
+                '| 0 | 0 | 0 | x |',
+                '+---+---+---+---+',
+                '| 0 | 0 | 1 | x |',
+                '+---+---+---+---+',
+                '| 0 | 1 | 0 | 1 |',
+                '+---+---+---+---+',
+                '| 0 | 1 | 1 | 0 |',
+                '+---+---+---+---+',
+                '| 1 | 0 | 0 | x |',
+                '+---+---+---+---+',
+                '| 1 | 0 | 1 | x |',
+                '+---+---+---+---+',
+                '| 1 | 1 | 0 | 0 |',
+                '+---+---+---+---+',
+                '| 1 | 1 | 1 | 0 |',
+                '+---+---+---+---+',
+            )))
+
+    # TODO: test is_full()

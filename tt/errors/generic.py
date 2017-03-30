@@ -17,3 +17,33 @@ class InvalidArgumentTypeError(TtError):
         <class 'tt.errors.generic.InvalidArgumentTypeError'>
 
     """
+
+
+class InvalidArgumentValueError(TtError):
+    """An exception type for invalid argument values.
+
+    .. code-block:: python
+
+        TODO
+
+    """
+
+
+class ConflictingArgumentsError(TtError):
+    """An exception type for two or more conflicting arguments.
+
+    .. code-block:: python
+
+        TODO
+
+    """
+
+
+class RequiredArgumentError(TtError):
+    """An exception for when a required argument is missing.
+
+    .. code-block:: python
+
+        TODO
+
+    """

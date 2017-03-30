@@ -4,7 +4,15 @@ from __future__ import division
 
 import itertools
 
-from ..errors import InvalidArgumentTypeError, NoEvaluationVariationError
+from math import log
+from string import ascii_uppercase as ALPHABET
+
+from ..definitions import DONT_CARE_VALUE
+from ..errors import (AlreadyFullTableException, ConflictingArgumentsError,
+                      ExtraSymbolError, InvalidArgumentTypeError,
+                      InvalidArgumentValueError, InvalidBooleanValueError,
+                      MissingSymbolError, NoEvaluationVariationError,
+                      RequiredArgumentError)
 from ..expressions import BooleanExpression
 from ..utils import (assert_all_valid_keys,
                      assert_iterable_contains_all_expr_symbols)
@@ -17,9 +25,25 @@ class TruthTable(object):
 
     """A class representing a truth table.
 
-    :param expr: The expression with which to populate this truth table.
+    There are two ways to fill a table: either from an expression or by
+    specifying the values yourself.
+
+    From an expression::
+
+        TODO: example from expression
+
+    Manually specifying values::
+
+        TODO: example from values
+
+    :param expr: The expression with which to populate this truth table. If
+        this argument is omitted, then the ``from_values`` argument must be
+        properly set.
     :type expr: :class:`str <python:str>` or :class:`BooleanExpression\
         <tt.expressions.bexpr.BooleanExpression>`
+
+    :param from_values: TODO
+    :type from_values: TODO
 
     :param fill_all: A flag indicating whether the entirety of the table should
         be filled on initialization; defaults to ``True``.
@@ -30,6 +54,9 @@ class TruthTable(object):
         that of the symbols' appearance in the original expression.
     :type ordering: List[:class:`str <python:str>`], optional
 
+    TODO: update exception information
+
+    :raises ConflictingArgumentsError: TODO
     :raises DuplicateSymbolError: If multiple symbols of the same name are
         passed into the ``ordering`` list.
     :raises ExtraSymbolError: If a symbol not present in the expression is
@@ -38,19 +65,27 @@ class TruthTable(object):
         omitted from the ``ordering`` list.
     :raises InvalidArgumentTypeError: If an unexpected parameter type is
         encountered.
+    :raises InvalidArgumentValueError: TODO
     :raises NoEvaluationVariationError: If an expression without any unqiue
-        symbols (i.e., one merely composed of constant operators) is specified.
-
-    .. note::
-
-        See :func:`assert_iterable_contains_all_expr_symbols\
-        <tt.utils.assertions.assert_iterable_contains_all_expr_symbols>`
-        for more information about the exceptions raised by this class's
-        initializer.
+        symbols (i.e., one merely composed of constant operands) is specified.
+    :raises RequiredArgumentError: TODO
 
     """
 
-    def __init__(self, expr, fill_all=True, ordering=None):
+    def __init__(self, expr=None, from_values=None, fill_all=True,
+                 ordering=None):
+        if expr is not None and from_values is not None:
+            raise ConflictingArgumentsError(
+                '`expr` and `from_values` are mutually exclusive arguments')
+        elif expr is None and from_values is None:
+            raise RequiredArgumentError(
+                'Must specify either `expr` or `from_values`')
+        elif expr is not None:
+            self._init_from_expression(expr, fill_all, ordering)
+        else:
+            self._init_from_values(from_values, ordering)
+
+    def _init_from_expression(self, expr, fill_all, ordering):
         if isinstance(expr, str):
             self._expr = BooleanExpression(expr)
         elif isinstance(expr, BooleanExpression):
@@ -62,24 +97,75 @@ class TruthTable(object):
         if ordering is None:
             self._ordering = self._expr.symbols
         else:
-            assert_iterable_contains_all_expr_symbols(ordering,
-                                                      set(self._expr.symbols))
+            assert_iterable_contains_all_expr_symbols(
+                ordering, set(self._expr.symbols))
             self._ordering = ordering
 
         if not self._ordering:
             raise NoEvaluationVariationError(
                 'This expression is composed only of constant values')
 
-        self._symbol_position_dict = {symbol: i for i, symbol in
-                                      enumerate(self._ordering)}
         self._results = [None for _ in range(2**len(self._ordering))]
-
         if fill_all:
             self.fill()
+
+    def _init_from_values(self, from_values, ordering):
+        if isinstance(from_values, str):
+            valid = {'0', '1', DONT_CARE_VALUE}
+            if not from_values:
+                raise InvalidArgumentValueError(
+                    'Cannot specify an empty string')
+            elif not all(value in valid for value in from_values):
+                raise InvalidBooleanValueError(
+                    'Invalid Boolean/don\'t care value specified')
+        else:
+            raise InvalidArgumentTypeError(
+                '`from_values` must either be a string or list of strings')
+
+        num_values = len(from_values)
+        if (num_values & (num_values - 1)) != 0:
+            # assert that number of input values is a power of 2
+            raise InvalidArgumentValueError(
+                'Must specify a number of input values that is a power of 2')
+
+        user_gave_symbols = ordering is not None
+        if not user_gave_symbols:
+            # user left it up to us to generate symbols
+            num_required_symbols = int(log(num_values, 2))
+            self._ordering = TruthTable.generate_symbols(num_required_symbols)
+        elif not isinstance(ordering, list):
+            raise InvalidArgumentTypeError('`ordering` must be a list')
+        elif not all(isinstance(elt, str) for elt in ordering):
+            raise InvalidArgumentTypeError(
+                '`ordering` must only contain strings')
+        else:
+            # validate user-provided ordering/symbols
+            num_symbols = len(ordering)
+            if not num_symbols:
+                raise InvalidArgumentValueError(
+                    'If specifying `ordering`, it must be non-empty')
+
+            num_expected_values = 2**num_symbols
+            if num_values < num_expected_values:
+                raise ExtraSymbolError(
+                    'Too many symbols provided for the specified values')
+            elif num_values > num_expected_values:
+                raise MissingSymbolError(
+                    'Too few symbols provided for the specified values')
+
+            self._ordering = ordering
+
+        self._expr = None
+
+        bool_dict = {'0': False, '1': True, DONT_CARE_VALUE: DONT_CARE_VALUE}
+        self._results = [bool_dict[v] for v in from_values]
 
     @property
     def expr(self):
         """The ``BooleanExpression`` object represented by this table.
+
+        This attribute will be ``None`` if this table was not derived from
+        an expression (i.e., the user provided the values).
 
         :type: :class:`BooleanExpression\
                        <tt.expressions.bexpr.BooleanExpression>`
@@ -126,6 +212,8 @@ class TruthTable(object):
     def results(self):
         """A list containing the results of each possible set of inputs.
 
+        TODO: update type of this attribute to include don't cares
+
         :type: List[:class:`bool <python:bool>`]
 
         In the case that the table is not completely filled, spots in this list
@@ -160,13 +248,18 @@ class TruthTable(object):
         rows.append(self._get_as_table_row(self._ordering + [' '], col_widths))
         rows.append(row_sep)
 
-        for i, inputs in enumerate(self.input_combos()):
+        _input_combos = TruthTable.input_combos(len(self._ordering))
+        for i, inputs in enumerate(_input_combos):
             result = self._results[i]
             if result is None:
                 continue
+            elif result == DONT_CARE_VALUE:
+                result_str = result
+            else:
+                result_str = str(int(result))
 
             item_strs = [str(int(val)) for val in inputs]
-            item_strs.append(str(int(result)))
+            item_strs.append(result_str)
             rows.append(self._get_as_table_row(item_strs, col_widths))
             rows.append(row_sep)
             filled_row_count += 1
@@ -223,6 +316,10 @@ class TruthTable(object):
             +---+---+---+
 
         """
+        if self.is_full():
+            raise AlreadyFullTableException(
+                'Cannot fill an already-full table')
+
         assert_all_valid_keys(kwargs, set(self._ordering))
 
         # convert all kwarg values to bools
@@ -231,7 +328,8 @@ class TruthTable(object):
         # I think the restriction of inputs can be greatly optimized by
         # pre-computing the ranges of indices for which the inputs will
         # be valid
-        for i, input_combo in enumerate(self.input_combos()):
+        _input_combos = TruthTable.input_combos(len(self._ordering))
+        for i, input_combo in enumerate(_input_combos):
             input_dict = {symbol: input_combo[j] for j, symbol in
                           enumerate(self._ordering)}
 
@@ -244,31 +342,27 @@ class TruthTable(object):
             if not skip:
                 self._results[i] = self._expr.evaluate_unchecked(**input_dict)
 
-    def input_combos(self, combo_len=None):
+    def is_full(self):
+        """Return whether this table has all results filled."""
+        # TODO: this can be vastly optimized
+        return all(r is not None for r in self._results)
+
+    @staticmethod
+    def input_combos(combo_len):
         """Get an iterator of Boolean input combinations for this expression.
 
         :param combo_len: The length of each combination in the returned
-            iterator. If omitted, this defaults to the number of symbols in the
-            expression.
+            iterator.
         :type combo_len: :class:`int <python:int>`, optional
 
         :returns: An iterator of tuples containing permutations of Boolean
             inputs.
         :rtype: :func:`itertools.product <python:itertools.product>`
 
-        The length of each tuple of combinations is the same as the number of
-        symbols in this expression if no ``combo_len`` value is specified;
-        otherwise, the specified value is used.
-
-        Iterating through the returned value, without fiddling with the
-        ``combo_len`` input, will yield every combination of inputs for this
-        expression.
-
         A simple example::
 
             >>> from tt import TruthTable
-            >>> t = TruthTable('A and B')
-            >>> for tup in t.input_combos():
+            >>> for tup in TruthTable.input_combos(2):
             ...     print(tup)
             ...
             (False, False)
@@ -277,8 +371,40 @@ class TruthTable(object):
             (True, True)
 
         """
-        repeat = len(self._ordering) if combo_len is None else combo_len
-        return itertools.product((False, True), repeat=repeat)
+        return itertools.product((False, True), repeat=combo_len)
+
+    @staticmethod
+    def generate_symbols(num_symbols):
+        """Generate a list of symbols for a specified number of symbols.
+
+        Generated symbol names are permutations of a properly-sized number
+        of uppercase alphabet letters.
+
+        :param num_symbols: The number of symbols to generate.
+        :type num_symbols: :class:`int <python:int>`
+
+        :returns: A list of strings of length ``num_symbols``, containing
+            auto-generated symbols.
+        :rtype: List[:class:`str <python:str>`]
+
+        A simple example::
+
+            >>> from tt import TruthTable
+            >>> TruthTable.generate_symbols(3)
+            ['A', 'B', 'C']
+            >>> TruthTable.generate_symbols(7)
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+
+        """
+        num_repeats = 1
+
+        while num_symbols > len(ALPHABET)**num_repeats:
+            num_repeats += 1
+
+        # generate symbols for the user based on the uppercase alphabet
+        symbol_product = itertools.product(ALPHABET, repeat=num_repeats)
+        symbol_pool = (''.join(elts) for elts in symbol_product)
+        return list(itertools.islice(symbol_pool, num_symbols))
 
     def _get_as_table_row(self, items, col_widths):
         """Convert an iterable to a row in the table ``__str__``.

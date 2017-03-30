@@ -47,7 +47,7 @@ class ExtraSymbolError(EvaluationError):
 
 
 class InvalidBooleanValueError(EvaluationError):
-    """An exception for an invalid truth value passed in evaluation.
+    """An exception for an invalid truth or don't care value passed.
 
     .. code-block:: python
 
