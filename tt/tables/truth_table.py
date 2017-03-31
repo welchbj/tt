@@ -80,10 +80,13 @@ class TruthTable(object):
         elif expr is None and from_values is None:
             raise RequiredArgumentError(
                 'Must specify either `expr` or `from_values`')
-        elif expr is not None:
-            self._init_from_expression(expr, fill_all, ordering)
         else:
-            self._init_from_values(from_values, ordering)
+            self._num_filled_slots = 0
+
+            if expr is not None:
+                self._init_from_expression(expr, fill_all, ordering)
+            else:
+                self._init_from_values(from_values, ordering)
 
     def _init_from_expression(self, expr, fill_all, ordering):
         if isinstance(expr, str):
@@ -159,6 +162,7 @@ class TruthTable(object):
 
         bool_dict = {'0': False, '1': True, DONT_CARE_VALUE: DONT_CARE_VALUE}
         self._results = [bool_dict[v] for v in from_values]
+        self._num_filled_slots = len(self._results)
 
     @property
     def expr(self):
@@ -207,6 +211,33 @@ class TruthTable(object):
 
         """
         return self._ordering
+
+    @property
+    def is_full(self):
+        """A Boolean flag indicating whether this table is full or not.
+
+        :type: `class bool <python:bool>`
+
+        Attempting to further fill an already-full table will raise an
+        :exc:`AlreadyFullTableException\
+        <tt.errors.state.AlreadyFullTableException>`::
+
+            >>> from tt import TruthTable
+            >>> t = TruthTable('A or B', fill_all=False)
+            >>> t.is_full
+            False
+            >>> t.fill()
+            >>> t.is_full
+            True
+            >>> try:
+            ...     t.fill()
+            ... except Exception as e:
+            ...     print(type(e))
+            ...
+            <class 'tt.errors.state.AlreadyFullTableException'>
+
+        """
+        return self._num_filled_slots == len(self._results)
 
     @property
     def results(self):
@@ -316,7 +347,7 @@ class TruthTable(object):
             +---+---+---+
 
         """
-        if self.is_full():
+        if self.is_full:
             raise AlreadyFullTableException(
                 'Cannot fill an already-full table')
 
@@ -339,13 +370,9 @@ class TruthTable(object):
                     skip = True
                     break
 
-            if not skip:
+            if not skip and self._results[i] is None:
                 self._results[i] = self._expr.evaluate_unchecked(**input_dict)
-
-    def is_full(self):
-        """Return whether this table has all results filled."""
-        # TODO: this can be vastly optimized
-        return all(r is not None for r in self._results)
+                self._num_filled_slots += 1
 
     @staticmethod
     def input_combos(combo_len):
