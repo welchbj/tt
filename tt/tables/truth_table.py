@@ -315,7 +315,7 @@ class TruthTable(object):
             [False, True, True, True]
 
         If the table is filled upon initialization via the ``from_values``
-        parameter, don't care strings will be present in the result list::
+        parameter, don't care strings could be present in the result list::
 
             >>> from tt import TruthTable
             >>> t = TruthTable(from_values='1xx0')
