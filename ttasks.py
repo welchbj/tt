@@ -89,9 +89,11 @@ def test():
     doctest_modules = [
         tt.definitions.operators,
         tt.expressions.bexpr,
+        tt.errors.arguments,
         tt.errors.evaluation,
-        tt.errors.generic,
         tt.errors.grammar,
+        tt.errors.state,
+        tt.errors.symbols,
         tt.tables.truth_table,
         tt.trees.expr_tree,
         tt.trees.tree_node,

@@ -46,7 +46,7 @@ def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):
         All good!
 
     Producing a :exc:`DuplicateSymbolError\
-    <tt.errors.evaluation.DuplicateSymbolError>`::
+    <tt.errors.symbols.DuplicateSymbolError>`::
 
         >>> from tt.utils.assertions import (
         ...     assert_iterable_contains_all_expr_symbols)
@@ -58,10 +58,10 @@ def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):
         ... except Exception as e:
         ...     print(type(e))
         ...
-        <class 'tt.errors.evaluation.DuplicateSymbolError'>
+        <class 'tt.errors.symbols.DuplicateSymbolError'>
 
     Producing an :exc:`ExtraSymbolError\
-    <tt.errors.evaluation.ExtraSymbolError>`::
+    <tt.errors.symbols.ExtraSymbolError>`::
 
         >>> from tt.utils.assertions import (
         ...     assert_iterable_contains_all_expr_symbols)
@@ -73,10 +73,10 @@ def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):
         ... except Exception as e:
         ...     print(type(e))
         ...
-        <class 'tt.errors.evaluation.ExtraSymbolError'>
+        <class 'tt.errors.symbols.ExtraSymbolError'>
 
     Producing a :exc:`MissingSymbolError\
-    <tt.errors.evaluation.MissingSymbolError>`::
+    <tt.errors.symbols.MissingSymbolError>`::
 
         >>> from tt.utils.assertions import (
         ...     assert_iterable_contains_all_expr_symbols)
@@ -88,7 +88,7 @@ def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):
         ... except Exception as e:
         ...     print(type(e))
         ...
-        <class 'tt.errors.evaluation.MissingSymbolError'>
+        <class 'tt.errors.symbols.MissingSymbolError'>
 
     """
     passed_symbol_list = list(iter_of_strs)
@@ -147,7 +147,7 @@ def assert_all_valid_keys(symbol_input_dict, symbol_set):
         All good!
 
     Producing an :exc:`ExtraSymbolError\
-    <tt.errors.evaluation.ExtraSymbolError>`::
+    <tt.errors.symbols.ExtraSymbolError>`::
 
         >>> from tt.utils.assertions import assert_all_valid_keys
         >>> try:
@@ -155,7 +155,7 @@ def assert_all_valid_keys(symbol_input_dict, symbol_set):
         ... except Exception as e:
         ...     print(type(e))
         ...
-        <class 'tt.errors.evaluation.ExtraSymbolError'>
+        <class 'tt.errors.symbols.ExtraSymbolError'>
 
     Producing an :exc:`InvalidBooleanValueError\
     <tt.errors.evaluation.InvalidBooleanValueError>`::

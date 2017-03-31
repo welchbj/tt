@@ -1,19 +1,18 @@
 """tt error types."""
 
 # import base exception types
+from .arguments import ArgumentError  # noqa
 from .base import TtError  # noqa
 from .evaluation import EvaluationError  # noqa
-# from .generic import TODO
 from .grammar import GrammarError  # noqa
 from .state import StateError  # noqa
-# TODO: refactor error types and base errors
+from .symbols import SymbolError  # noqa
 
 # import specific exception types
-from .evaluation import (DuplicateSymbolError, ExtraSymbolError,  # noqa
-                         InvalidBooleanValueError, MissingSymbolError,
-                         NoEvaluationVariationError)
-from .generic import (ConflictingArgumentsError, InvalidArgumentTypeError,  # noqa
-                      InvalidArgumentValueError, RequiredArgumentError)
+from .arguments import (ConflictingArgumentsError, InvalidArgumentTypeError,  # noqa
+                        InvalidArgumentValueError, RequiredArgumentError)
+from .evaluation import InvalidBooleanValueError, NoEvaluationVariationError  # noqa
 from .grammar import (BadParenPositionError, EmptyExpressionError,  # noqa
                       ExpressionOrderError, UnbalancedParenError)
-from .state import AlreadyFullTableException  # noqa
+from .state import AlreadyFullTableError  # noqa
+from .symbols import DuplicateSymbolError, ExtraSymbolError, MissingSymbolError  # noqa

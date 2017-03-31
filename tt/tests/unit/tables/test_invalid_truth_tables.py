@@ -1,5 +1,5 @@
 from ._helpers import TruthTableTestCase
-from ....errors import (AlreadyFullTableException, ConflictingArgumentsError,
+from ....errors import (AlreadyFullTableError, ConflictingArgumentsError,
                         DuplicateSymbolError, ExtraSymbolError,
                         InvalidArgumentValueError, InvalidBooleanValueError,
                         InvalidArgumentTypeError, MissingSymbolError,
@@ -140,13 +140,13 @@ class TestInvalidTruthTables(TruthTableTestCase):
     def test_attempt_to_fill_table_already_filled_from_values(self):
         """Ensure that we cannot fill() a table built from specified values."""
         t = TruthTable(from_values='xxxx', ordering=['A', 'B'])
-        with self.assertRaises(AlreadyFullTableException):
+        with self.assertRaises(AlreadyFullTableError):
             t.fill(A=1)
 
     def test_attempt_to_fill_table_already_filled_on_init_from_expr(self):
         """Ensure that we cannot fill a table already filled from an expr."""
         t = TruthTable('A or B')
-        with self.assertRaises(AlreadyFullTableException):
+        with self.assertRaises(AlreadyFullTableError):
             t.fill(A=0)
 
     def test_attempt_to_fill_table_already_iteratively_filled(self):
@@ -154,5 +154,5 @@ class TestInvalidTruthTables(TruthTableTestCase):
         t = TruthTable('A nand B', fill_all=False)
         t.fill(A=0)
         t.fill(A=1)
-        with self.assertRaises(AlreadyFullTableException):
+        with self.assertRaises(AlreadyFullTableError):
             t.fill(A=0)

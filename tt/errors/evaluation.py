@@ -14,38 +14,6 @@ class EvaluationError(TtError):
     """
 
 
-class DuplicateSymbolError(EvaluationError):
-    """An exception type for user-specified duplicate symbols.
-
-    .. code-block:: python
-
-        >>> from tt import TruthTable
-        >>> try:
-        ...     t = TruthTable('A or B', ordering=['A', 'A', 'B'])
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.evaluation.DuplicateSymbolError'>
-
-    """
-
-
-class ExtraSymbolError(EvaluationError):
-    """An exception for a passed token that is not a parsed symbol.
-
-    .. code-block:: python
-
-        >>> from tt import TruthTable
-        >>> try:
-        ...     t = TruthTable('A or B', ordering=['A', 'B', 'C'])
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.evaluation.ExtraSymbolError'>
-
-    """
-
-
 class InvalidBooleanValueError(EvaluationError):
     """An exception for an invalid truth or don't care value passed.
 
@@ -59,23 +27,6 @@ class InvalidBooleanValueError(EvaluationError):
         ...     print(type(e))
         ...
         <class 'tt.errors.evaluation.InvalidBooleanValueError'>
-
-    """
-
-
-class MissingSymbolError(EvaluationError):
-    """An exception type for a missing token value in evaluation.
-
-    .. code-block:: python
-
-        >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression('A and B')
-        ...     b.evaluate(A=1)
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.evaluation.MissingSymbolError'>
 
     """
 

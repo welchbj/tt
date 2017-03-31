@@ -8,7 +8,7 @@ from math import log
 from string import ascii_uppercase as ALPHABET
 
 from ..definitions import DONT_CARE_VALUE
-from ..errors import (AlreadyFullTableException, ConflictingArgumentsError,
+from ..errors import (AlreadyFullTableError, ConflictingArgumentsError,
                       ExtraSymbolError, InvalidArgumentTypeError,
                       InvalidArgumentValueError, InvalidBooleanValueError,
                       MissingSymbolError, NoEvaluationVariationError,
@@ -219,8 +219,8 @@ class TruthTable(object):
         :type: `class bool <python:bool>`
 
         Attempting to further fill an already-full table will raise an
-        :exc:`AlreadyFullTableException\
-        <tt.errors.state.AlreadyFullTableException>`::
+        :exc:`AlreadyFullTableError\
+        <tt.errors.state.AlreadyFullTableError>`::
 
             >>> from tt import TruthTable
             >>> t = TruthTable('A or B', fill_all=False)
@@ -234,7 +234,7 @@ class TruthTable(object):
             ... except Exception as e:
             ...     print(type(e))
             ...
-            <class 'tt.errors.state.AlreadyFullTableException'>
+            <class 'tt.errors.state.AlreadyFullTableError'>
 
         """
         return self._num_filled_slots == len(self._results)
@@ -348,8 +348,7 @@ class TruthTable(object):
 
         """
         if self.is_full:
-            raise AlreadyFullTableException(
-                'Cannot fill an already-full table')
+            raise AlreadyFullTableError('Cannot fill an already-full table')
 
         assert_all_valid_keys(kwargs, set(self._ordering))
 
