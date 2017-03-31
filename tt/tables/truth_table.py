@@ -25,16 +25,60 @@ class TruthTable(object):
 
     """A class representing a truth table.
 
-    There are two ways to fill a table: either from an expression or by
-    specifying the values yourself.
+    There are two ways to fill a table: either populated from an expression or
+    by specifying the values yourself.
 
-    From an expression::
+    An existing :class:`BooleanExpression <tt.expressions.BooleanExpression>`
+    expression can be used, or you can just pass in a string::
 
-        TODO: example from expression
+        >>> from tt import TruthTable
+        >>> t = TruthTable('A xor B')
+        >>> print(t)
+        +---+---+---+
+        | A | B |   |
+        +---+---+---+
+        | 0 | 0 | 0 |
+        +---+---+---+
+        | 0 | 1 | 1 |
+        +---+---+---+
+        | 1 | 0 | 1 |
+        +---+---+---+
+        | 1 | 1 | 0 |
+        +---+---+---+
 
-    Manually specifying values::
+    When manually specifying the values tt can generate the symbols for you::
 
-        TODO: example from values
+        >>> from tt import TruthTable
+        >>> t = TruthTable(from_values='0110')
+        >>> print(t)
+        +---+---+---+
+        | A | B |   |
+        +---+---+---+
+        | 0 | 0 | 0 |
+        +---+---+---+
+        | 0 | 1 | 1 |
+        +---+---+---+
+        | 1 | 0 | 1 |
+        +---+---+---+
+        | 1 | 1 | 0 |
+        +---+---+---+
+
+    You can also specify the symbol names yourself, if you'd like::
+
+        >>> from tt import TruthTable
+        >>> t = TruthTable(from_values='0110', ordering=['tt', 'rocks'])
+        >>> print(t)
+        +----+-------+---+
+        | tt | rocks |   |
+        +----+-------+---+
+        | 0  |   0   | 0 |
+        +----+-------+---+
+        | 0  |   1   | 1 |
+        +----+-------+---+
+        | 1  |   0   | 1 |
+        +----+-------+---+
+        | 1  |   1   | 0 |
+        +----+-------+---+
 
     :param expr: The expression with which to populate this truth table. If
         this argument is omitted, then the ``from_values`` argument must be
@@ -42,8 +86,11 @@ class TruthTable(object):
     :type expr: :class:`str <python:str>` or :class:`BooleanExpression\
         <tt.expressions.bexpr.BooleanExpression>`
 
-    :param from_values: TODO
-    :type from_values: TODO
+    :param from_values: A string of 1's, 0's, and x's representing the values
+        to be stored in the table; the length of this string must be a power
+        of 2 and is the complete set of values (in sequential order) to be
+        stored in table.
+    :type from_values: :class:`str <python:str>`
 
     :param fill_all: A flag indicating whether the entirety of the table should
         be filled on initialization; defaults to ``True``.
@@ -54,9 +101,9 @@ class TruthTable(object):
         that of the symbols' appearance in the original expression.
     :type ordering: List[:class:`str <python:str>`], optional
 
-    TODO: update exception information
-
-    :raises ConflictingArgumentsError: TODO
+    :raises ConflictingArgumentsError: If both ``expr`` and ``from_values`` are
+        specified in the initalization; a table can only be instantiated from
+        one or the other.
     :raises DuplicateSymbolError: If multiple symbols of the same name are
         passed into the ``ordering`` list.
     :raises ExtraSymbolError: If a symbol not present in the expression is
@@ -65,10 +112,13 @@ class TruthTable(object):
         omitted from the ``ordering`` list.
     :raises InvalidArgumentTypeError: If an unexpected parameter type is
         encountered.
-    :raises InvalidArgumentValueError: TODO
+    :raises InvalidArgumentValueError: If the number of values specified via
+        ``from_values`` is not a power of 2 or the ``ordering`` list (when
+        filling the table using ``from_values``) is empty.
     :raises NoEvaluationVariationError: If an expression without any unqiue
         symbols (i.e., one merely composed of constant operands) is specified.
-    :raises RequiredArgumentError: TODO
+    :raises RequiredArgumentError: If neither the ``expr`` or ``from_values``
+        arguments are specified.
 
     """
 
@@ -243,9 +293,7 @@ class TruthTable(object):
     def results(self):
         """A list containing the results of each possible set of inputs.
 
-        TODO: update type of this attribute to include don't cares
-
-        :type: List[:class:`bool <python:bool>`]
+        :type: List[:class:`bool <python:bool>`, :class:`str <python:str>`]
 
         In the case that the table is not completely filled, spots in this list
         that do not yet have a computed result will hold the ``None`` value.
@@ -265,6 +313,14 @@ class TruthTable(object):
             >>> t.fill()
             >>> t.results
             [False, True, True, True]
+
+        If the table is filled upon initialization via the ``from_values``
+        parameter, don't care strings will be present in the result list::
+
+            >>> from tt import TruthTable
+            >>> t = TruthTable(from_values='1xx0')
+            >>> t.results
+            [True, 'x', 'x', False]
 
         """
         return self._results
