@@ -523,3 +523,29 @@ class TestValidTruthTables(TruthTableTestCase):
         self.assertFalse(t.is_full)
         t.fill(B=0)
         self.assertTrue(t.is_full)
+
+    def test_truth_table_iter(self):
+        """Test iterating through a table's rows."""
+        t = TruthTable('A or B', fill_all=False)
+
+        count = 0
+        for inputs, result in t:
+            count += 1
+        self.assertEqual(count, 0)
+
+        t.fill()
+        expected = [
+            ((False, False,), False),
+            ((False, True,), True),
+            ((True, False,), True),
+            ((True, True,), True),
+        ]
+
+        count = 0
+        for inputs, result in t:
+            expected_inputs, expected_result = expected[count]
+            self.assertEqual(expected_inputs, inputs)
+            self.assertEqual(expected_result, result)
+            count += 1
+
+        self.assertEqual(len(expected), count)

@@ -356,6 +356,13 @@ class TruthTable(object):
         else:
             return '\n'.join(rows)
 
+    def __iter__(self):
+        _input_combos = TruthTable.input_combos(len(self._ordering))
+        for i, combo in enumerate(_input_combos):
+            result = self._results[i]
+            if result is not None:
+                yield combo, result
+
     def fill(self, **kwargs):
         """Fill the table with results, based on values specified by kwargs.
 
