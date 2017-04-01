@@ -363,6 +363,9 @@ class TruthTable(object):
             if result is not None:
                 yield combo, result
 
+    def __getitem__(self, i):
+        return self._results[i]
+
     def fill(self, **kwargs):
         """Fill the table with results, based on values specified by kwargs.
 
