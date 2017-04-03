@@ -128,6 +128,9 @@ class BooleanExpression(object):
         """
         return self._tree
 
+    def __str__(self):
+        return '<BooleanExpression "{}">'.format(self._raw_expr)
+
     def evaluate(self, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
 
