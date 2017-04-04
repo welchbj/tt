@@ -380,7 +380,7 @@ class TruthTable(object):
 
         :raises InvalidArgumentTypeError: If the ``other`` argument is not one
             of the acceptable types.
-        :raises RequiredFullTableError: If either the calling table or other
+        :raises RequiresFullTableError: If either the calling table or other
             source of truth represents an unfilled table.
 
         It is important to note that the concept of equivalence employed here
