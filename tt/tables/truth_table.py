@@ -398,7 +398,7 @@ class TruthTable(object):
 
         Another area of possible ambiguity here is the role of the don't care
         value in equivalence. When comparing tables, don't cares in the caller
-        will allow for any corrsponding value in ``other``, but the reverse is
+        will allow for any corresponding value in ``other``, but the reverse is
         not true. For example::
 
             >>> from tt import TruthTable
