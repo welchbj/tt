@@ -1,12 +1,12 @@
+"""Tests for handling malformed expressions on initialization."""
+
 from ._helpers import ExpressionTestCase
 from ....errors import (BadParenPositionError, EmptyExpressionError,
                         ExpressionOrderError, InvalidArgumentTypeError,
                         UnbalancedParenError)
 
 
-class TestInvalidTokenization(ExpressionTestCase):
-
-    """Tests for malformed expressions."""
+class TestBooleanExpressionInitExceptions(ExpressionTestCase):
 
     def test_non_str(self):
         """Test passing something other than a str to __init__"""

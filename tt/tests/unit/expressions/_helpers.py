@@ -1,3 +1,5 @@
+"""Helpers for testing expressions."""
+
 import traceback
 import unittest
 

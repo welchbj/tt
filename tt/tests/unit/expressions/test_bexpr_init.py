@@ -1,10 +1,10 @@
+"""Tests for parsing/tokenization of well-formed expressions."""
+
 from ._helpers import ExpressionTestCase
 from ....definitions import OPERATOR_MAPPING, TT_NOT_OP
 
 
-class TestValidTokenization(ExpressionTestCase):
-
-    """Tests for parsing/tokenization of well-formed expressions."""
+class TestBooleanExpressionInit(ExpressionTestCase):
 
     def test_all_binary_operators(self):
         """Basic test for all binary operators, to ensure correct parsing."""

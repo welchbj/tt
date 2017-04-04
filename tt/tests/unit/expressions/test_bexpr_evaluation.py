@@ -1,8 +1,10 @@
+"""Tests for expression evaluation."""
+
 from ._helpers import ExpressionTestCase
 from ....definitions import BOOLEAN_VALUES
 
 
-class TestValidEvaluations(ExpressionTestCase):
+class TestBooleanExpressionEvaluation(ExpressionTestCase):
 
     def test_single_operand(self):
         """Test evaluating an expression of a single operand."""

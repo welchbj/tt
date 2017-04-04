@@ -1,10 +1,12 @@
+"""Tests for expression evaluation exceptions."""
+
 from ._helpers import ExpressionTestCase
 
 from ....errors import (ExtraSymbolError, InvalidBooleanValueError,
                         MissingSymbolError)
 
 
-class TestInvalidEvaluations(ExpressionTestCase):
+class TestBooleanExpressionEvaluationExceptions(ExpressionTestCase):
 
     def test_missing_single_token(self):
         """Test attempting to evaluate without passing a token value."""
