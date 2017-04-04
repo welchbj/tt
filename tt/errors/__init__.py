@@ -14,5 +14,5 @@ from .arguments import (ConflictingArgumentsError, InvalidArgumentTypeError,  # 
 from .evaluation import InvalidBooleanValueError, NoEvaluationVariationError  # noqa
 from .grammar import (BadParenPositionError, EmptyExpressionError,  # noqa
                       ExpressionOrderError, UnbalancedParenError)
-from .state import AlreadyFullTableError  # noqa
+from .state import AlreadyFullTableError, RequiresFullTableError  # noqa
 from .symbols import DuplicateSymbolError, ExtraSymbolError, MissingSymbolError  # noqa

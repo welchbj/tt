@@ -12,7 +12,7 @@ from ..errors import (AlreadyFullTableError, ConflictingArgumentsError,
                       ExtraSymbolError, InvalidArgumentTypeError,
                       InvalidArgumentValueError, InvalidBooleanValueError,
                       MissingSymbolError, NoEvaluationVariationError,
-                      RequiredArgumentError)
+                      RequiredArgumentError, RequiresFullTableError)
 from ..expressions import BooleanExpression
 from ..utils import (assert_all_valid_keys,
                      assert_iterable_contains_all_expr_symbols)
@@ -365,6 +365,89 @@ class TruthTable(object):
 
     def __getitem__(self, i):
         return self._results[i]
+
+    def equivalent_to(self, other):
+        """Return whether this table is equivalent to another source of truth.
+
+        :param other: The other source of truth with which to compare logical
+            equivalence.
+        :type other: :class:`TruthTable`, :class:`str <python:str>`, or
+            :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+        :returns: True if the other expression is logically equivalent to this
+            one, otherwise False.
+        :rtype: :class:`bool <python:bool>`
+
+        :raises InvalidArgumentTypeError: If the ``other`` argument is not one
+            of the acceptable types.
+        :raises RequiredFullTableError: If either the calling table or other
+            source of truth represents an unfilled table.
+
+        It is important to note that the concept of equivalence employed here
+        is only concerned with the corresponding outputs between this table
+        and the other provided source of truth. For example, the ordering of
+        symbols is not taken into consideration when computing equivalence::
+
+            >>> from tt import TruthTable
+            >>> t1 = TruthTable('op1 or op2')
+            >>> t2 = TruthTable('A or B')
+            >>> t1.equivalent_to(t2)
+            True
+            >>> t2.equivalent_to(t1)
+            True
+
+        Another area of possible ambiguity here is the role of the don't care
+        value in equivalence. When comparing tables, don't cares in the caller
+        will allow for any corrsponding value in ``other``, but the reverse is
+        not true. For example::
+
+            >>> from tt import TruthTable
+            >>> t1 = TruthTable(from_values='0x11')
+            >>> t2 = TruthTable(from_values='0011')
+            >>> t1.equivalent_to(t2)
+            True
+            >>> t2.equivalent_to(t1)
+            False
+
+        Additionally, only full tables are valid for equivalence checks. The
+        appropriate error will be raised if you attempt to check the
+        equivalence of partially filled tables::
+
+            >>> from tt import TruthTable
+            >>> t = TruthTable('A or B', fill_all=False)
+            >>> t.fill(A=0)
+            >>> try:
+            ...     t.equivalent_to('A or B')
+            ... except Exception as e:
+            ...     print(type(e))
+            ...
+            <class 'tt.errors.state.RequiresFullTableError'>
+
+        """
+        if isinstance(other, TruthTable):
+            other_table = other
+        elif isinstance(other, (str, BooleanExpression)):
+            other_table = TruthTable(other)
+        else:
+            raise InvalidArgumentTypeError(
+                'other must be a BooleanExpression, TruthTable, or str')
+
+        if not self.is_full or not other_table.is_full:
+            raise RequiresFullTableError(
+                'Equivalence can only be checked on full truth tables')
+
+        if other is self:
+            return True
+        elif len(other_table.results) != len(self._results):
+            return False
+
+        for i, result in enumerate(self._results):
+            if result == DONT_CARE_VALUE:
+                continue
+            elif other_table[i] != result:
+                return False
+
+        return True
 
     def fill(self, **kwargs):
         """Fill the table with results, based on values specified by kwargs.
