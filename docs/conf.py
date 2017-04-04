@@ -52,7 +52,7 @@ html_theme_options = {
     'warn_border': '#ffa5ce',
     'note_bg': '#e8f0fc',
     'note_border': '#c4daff',
-    'pre_bg': '#f7f2ff',
+    'pre_bg': '#f9f4fc',
 
     'font_family': "'PT Sans Caption', sans-serif",
     'font_size': '0.9em',
