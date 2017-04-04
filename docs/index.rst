@@ -4,8 +4,6 @@ tt - the Boolean expression toolbox
 
 Welcome to the documentation site for tt.
 
-|pypi| |nixbuild| |winbuild|
-
 -----
 
 .. warning::
@@ -35,16 +33,3 @@ Feel free to peruse through the source, or take a look through the auto-generate
     :glob:
 
     api/*
-
-
-.. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
-    :target: https://pypi.python.org/pypi/ttable
-    :alt: tt's PyPI page
-
-.. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
-    :target: https://travis-ci.org/welchbj/tt
-    :alt: Mac/Linux build on Travis CI
-
-.. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
-    :target: https://ci.appveyor.com/project/welchbj/tt
-    :alt: Windows build on AppVeyor

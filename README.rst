@@ -1,3 +1,5 @@
+|pypi| |nixbuild| |winbuild|
+
 Synopsis
 --------
 
@@ -13,11 +15,6 @@ tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6 as well as PyPy. tt is writt
 Basic Usage
 -----------
 
-Below are a couple of examples to show you the kind of things tt can do. For more examples and further documentation, take a look at the `project site`_.
-
-As a Library
-````````````
-
 tt aims to provide a Pythonic interface for working with Boolean expressions. Here are some simple examples from the REPL::
 
     >>> from tt import BooleanExpression, TruthTable
@@ -30,8 +27,8 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     xor
     `----A
     `----and
-         `----B
-         `----1
+        `----B
+        `----1
     >>> b.evaluate(A=True, B=False)
     True
     >>> t = TruthTable(b)
@@ -47,63 +44,16 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     +---+---+---+
     | 1 | 1 | 0 |
     +---+---+---+
-    >>> t = TruthTable('A or B', fill_all=False)
-    >>> print(t)
-    Empty!
-    >>> t.fill(A=0)
-    >>> print(t)
-    +---+---+---+
-    | A | B |   |
-    +---+---+---+
-    | 0 | 0 | 0 |
-    +---+---+---+
-    | 0 | 1 | 1 |
-    +---+---+---+
-    >>> t.fill(A=1)
-    >>> print(t)
-    +---+---+---+
-    | A | B |   |
-    +---+---+---+
-    | 0 | 0 | 0 |
-    +---+---+---+
-    | 0 | 1 | 1 |
-    +---+---+---+
-    | 1 | 0 | 1 |
-    +---+---+---+
-    | 1 | 1 | 1 |
-    +---+---+---+
-
-From the Command Line
-`````````````````````
-
-tt also provides a command-line interface for working with expressions. Here are a couple of examples::
-
-    $ tt tokens "(op1 nand op2) xnor op3"
-    (
-    op1
-    nand
-    op2
-    )
-    xnor
-    op3
-
-    $ tt table A or B
-    +---+---+---+
-    | A | B |   |
-    +---+---+---+
-    | 0 | 0 | 0 |
-    +---+---+---+
-    | 0 | 1 | 1 |
-    +---+---+---+
-    | 1 | 0 | 1 |
-    +---+---+---+
-    | 1 | 1 | 1 |
-    +---+---+---+
-
-    $ tt tree A or or B
-    Error! Unexpected binary operator "or":
-    A or or B
-         ^
+    >>> t = TruthTable(from_values='01xx')
+    >>> for inputs, result in t:
+    ...     print(inputs, '->', result)
+    ...
+    (False, False) -> False
+    (False, True) -> True
+    (True, False) -> x
+    (True, True) -> x
+    >>> t.equivalent_to(b)
+    True
 
 
 License
@@ -114,3 +64,16 @@ tt uses the `MIT License`_.
 
 .. _MIT License: https://opensource.org/licenses/MIT
 .. _project site: http://tt.bwel.ch
+
+.. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
+    :target: https://pypi.python.org/pypi/ttable
+    :alt: tt's PyPI page
+
+.. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
+    :target: https://travis-ci.org/welchbj/tt
+    :alt: Mac/Linux build on Travis CI
+
+.. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
+    :target: https://ci.appveyor.com/project/welchbj/tt
+    :alt: Windows build on AppVeyor
+
