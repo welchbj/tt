@@ -1,13 +1,14 @@
+"""Tests for truth table exceptions on initialization."""
+
 from ._helpers import TruthTableTestCase
-from ....errors import (AlreadyFullTableError, ConflictingArgumentsError,
-                        DuplicateSymbolError, ExtraSymbolError,
+from ....errors import (ConflictingArgumentsError, DuplicateSymbolError,
+                        ExtraSymbolError, InvalidArgumentTypeError,
                         InvalidArgumentValueError, InvalidBooleanValueError,
-                        InvalidArgumentTypeError, MissingSymbolError,
-                        NoEvaluationVariationError, RequiredArgumentError)
-from ....tables import TruthTable
+                        MissingSymbolError, NoEvaluationVariationError,
+                        RequiredArgumentError)
 
 
-class TestInvalidTruthTables(TruthTableTestCase):
+class TestTruthTableInitExceptions(TruthTableTestCase):
 
     def test_invalid_expr_type(self):
         """Test passing an invalid expression type to TruthTable."""
@@ -41,20 +42,6 @@ class TestInvalidTruthTables(TruthTableTestCase):
             '(A nand B) or C',
             ordering=['A', 'B', 'B', 'C'],
             expected_exc_type=DuplicateSymbolError)
-
-    def test_fill_invalid_symbol(self):
-        """Test passing an non-existent symbol in the fill method."""
-        self.helper_test_truth_table_fill_raises(
-            '(op1 xor op2) and op3',
-            op4=True,
-            expected_exc_type=ExtraSymbolError)
-
-    def test_fill_invalid_boolean_value(self):
-        """Test passing an invalid Boolean value to the fill method."""
-        self.helper_test_truth_table_fill_raises(
-            'A or B',
-            A=-1,
-            expected_exc_type=InvalidBooleanValueError)
 
     def test_specify_both_expr_and_from_values(self):
         """Test specifying both an expression and starting values."""
@@ -136,23 +123,3 @@ class TestInvalidTruthTables(TruthTableTestCase):
             from_values='1010',
             ordering=['A', 'B', 'C'],
             expected_exc_type=ExtraSymbolError)
-
-    def test_attempt_to_fill_table_already_filled_from_values(self):
-        """Ensure that we cannot fill() a table built from specified values."""
-        t = TruthTable(from_values='xxxx', ordering=['A', 'B'])
-        with self.assertRaises(AlreadyFullTableError):
-            t.fill(A=1)
-
-    def test_attempt_to_fill_table_already_filled_on_init_from_expr(self):
-        """Ensure that we cannot fill a table already filled from an expr."""
-        t = TruthTable('A or B')
-        with self.assertRaises(AlreadyFullTableError):
-            t.fill(A=0)
-
-    def test_attempt_to_fill_table_already_iteratively_filled(self):
-        """Ensure that we cannot fill a table already iteratively filled."""
-        t = TruthTable('A nand B', fill_all=False)
-        t.fill(A=0)
-        t.fill(A=1)
-        with self.assertRaises(AlreadyFullTableError):
-            t.fill(A=0)

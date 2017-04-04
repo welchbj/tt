@@ -1,3 +1,5 @@
+"""Tests for the TruthTable class's static methods."""
+
 from ._helpers import TruthTableTestCase
 from ....tables import TruthTable
 
