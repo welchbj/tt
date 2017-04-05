@@ -101,8 +101,16 @@ def test():
         tt.utils.assertions
     ]
 
+    doctest_files = [
+        os.path.join(HERE, 'README.rst'),
+        os.path.join(DOCS_DIR, 'user_guide.rst'),
+    ]
+
     for module in doctest_modules:
         suite.addTests(doctest.DocTestSuite(module))
+
+    for file in doctest_files:
+        suite.addTests(doctest.DocFileSuite(file, module_relative=False))
 
     runner = unittest.TextTestRunner()
     result = runner.run(suite)
