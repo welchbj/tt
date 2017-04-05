@@ -55,7 +55,6 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     >>> t.equivalent_to(b)
     True
 
-
 License
 -------
 
@@ -76,4 +75,3 @@ tt uses the `MIT License`_.
 .. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
     :target: https://ci.appveyor.com/project/welchbj/tt
     :alt: Windows build on AppVeyor
-
