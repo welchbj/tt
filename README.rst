@@ -27,8 +27,8 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     xor
     `----A
     `----and
-        `----B
-        `----1
+         `----B
+         `----1
     >>> b.evaluate(A=True, B=False)
     True
     >>> t = TruthTable(b)
