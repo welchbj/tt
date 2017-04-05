@@ -266,7 +266,7 @@ class TruthTable(object):
     def is_full(self):
         """A Boolean flag indicating whether this table is full or not.
 
-        :type: `class bool <python:bool>`
+        :type: :class:`bool <python:bool>`
 
         Attempting to further fill an already-full table will raise an
         :exc:`AlreadyFullTableError\
