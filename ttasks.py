@@ -110,7 +110,11 @@ def test():
         suite.addTests(doctest.DocTestSuite(module))
 
     for file in doctest_files:
-        suite.addTests(doctest.DocFileSuite(file, module_relative=False))
+        suite.addTests(
+            doctest.DocFileSuite(
+                file,
+                module_relative=False,
+                optionflags=doctest.IGNORE_EXCEPTION_DETAIL))
 
     runner = unittest.TextTestRunner()
     result = runner.run(suite)
