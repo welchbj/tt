@@ -46,12 +46,12 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     +---+---+---+
     >>> t = TruthTable(from_values='01xx')
     >>> for inputs, result in t:
-    ...     print(inputs, '->', result)
+    ...     inputs, result
     ...
-    (False, False) -> False
-    (False, True) -> True
-    (True, False) -> x
-    (True, True) -> x
+    ((False, False), False)
+    ((False, True), True)
+    ((True, False), 'x')
+    ((True, True), 'x')
     >>> t.equivalent_to(b)
     True
 
