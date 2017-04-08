@@ -7,7 +7,7 @@ Check below for new features added in each release. Please note that release not
 0.5.x
 -----
 
-Features in the 0.5.x series of releases were focused on expanding the top-level interface. See below for specific features and fixes.
+Features in the 0.5.x series of releases were focused on expanding the top-level interfacing and imporving optimizations under the hood. See below for specific features and fixes.
 
 0.5.1
 `````
