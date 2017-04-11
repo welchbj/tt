@@ -88,6 +88,7 @@ def test():
         top_level_dir=HERE)
 
     doctest_modules = [
+        tt.definitions.operands,
         tt.definitions.operators,
         tt.expressions.bexpr,
         tt.errors.arguments,

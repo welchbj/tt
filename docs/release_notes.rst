@@ -4,10 +4,19 @@ Release Notes
 
 Check below for new features added in each release. Please note that release notes were not recorded before version 0.5.0.
 
+0.6.x
+-----
+
+Features in the 0.6.x series of releases are focused on expanding functionality to include expression optimization, satisfiability, and transformations.
+
+0.6.0
+`````
+    * Add :func:`is_valid_identifier <tt.definitions.operands.is_valid_identifier>` helper method for checking if symbol names are valid
+
 0.5.x
 -----
 
-Features in the 0.5.x series of releases were focused on expanding the top-level interfacing and imporving optimizations under the hood. See below for specific features and fixes.
+Features in the 0.5.x series of releases were focused on expanding the top-level interface and improving optimizations under the hood. See below for specific features and fixes.
 
 0.5.1
 `````
