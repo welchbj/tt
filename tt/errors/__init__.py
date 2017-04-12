@@ -13,6 +13,7 @@ from .arguments import (ConflictingArgumentsError, InvalidArgumentTypeError,  # 
                         InvalidArgumentValueError, RequiredArgumentError)
 from .evaluation import InvalidBooleanValueError, NoEvaluationVariationError  # noqa
 from .grammar import (BadParenPositionError, EmptyExpressionError,  # noqa
-                      ExpressionOrderError, UnbalancedParenError)
+                      ExpressionOrderError, InvalidIdentifierError,
+                      UnbalancedParenError)
 from .state import AlreadyFullTableError, RequiresFullTableError  # noqa
 from .symbols import DuplicateSymbolError, ExtraSymbolError, MissingSymbolError  # noqa

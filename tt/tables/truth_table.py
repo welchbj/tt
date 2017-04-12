@@ -7,12 +7,13 @@ import itertools
 from math import log
 from string import ascii_uppercase as ALPHABET
 
-from ..definitions import DONT_CARE_VALUE
+from ..definitions import DONT_CARE_VALUE, is_valid_identifier
 from ..errors import (AlreadyFullTableError, ConflictingArgumentsError,
                       ExtraSymbolError, InvalidArgumentTypeError,
                       InvalidArgumentValueError, InvalidBooleanValueError,
-                      MissingSymbolError, NoEvaluationVariationError,
-                      RequiredArgumentError, RequiresFullTableError)
+                      InvalidIdentifierError, MissingSymbolError,
+                      NoEvaluationVariationError, RequiredArgumentError,
+                      RequiresFullTableError)
 from ..expressions import BooleanExpression
 from ..utils import (assert_all_valid_keys,
                      assert_iterable_contains_all_expr_symbols)
@@ -115,6 +116,8 @@ class TruthTable(object):
     :raises InvalidArgumentValueError: If the number of values specified via
         ``from_values`` is not a power of 2 or the ``ordering`` list (when
         filling the table using ``from_values``) is empty.
+    :raises InvalidIdentifierError: If any symbol names specified in
+        ``ordering`` are not valid identifiers.
     :raises NoEvaluationVariationError: If an expression without any unqiue
         symbols (i.e., one merely composed of constant operands) is specified.
     :raises RequiredArgumentError: If neither the ``expr`` or ``from_values``
@@ -205,6 +208,14 @@ class TruthTable(object):
             elif num_values > num_expected_values:
                 raise MissingSymbolError(
                     'Too few symbols provided for the specified values')
+
+            # verify all symbols are valid identifiers
+            for symbol_name in ordering:
+                if not is_valid_identifier(symbol_name):
+                    raise InvalidIdentifierError(
+                        '"{}" in ordering is not a valid symbol name'.format(
+                            symbol_name),
+                        None, None)
 
             self._ordering = ordering
 

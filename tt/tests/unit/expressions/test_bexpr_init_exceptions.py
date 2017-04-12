@@ -3,7 +3,7 @@
 from ._helpers import ExpressionTestCase
 from ....errors import (BadParenPositionError, EmptyExpressionError,
                         ExpressionOrderError, InvalidArgumentTypeError,
-                        UnbalancedParenError)
+                        InvalidIdentifierError, UnbalancedParenError)
 
 
 class TestBooleanExpressionInitExceptions(ExpressionTestCase):
@@ -192,3 +192,30 @@ class TestBooleanExpressionInitExceptions(ExpressionTestCase):
             '()',
             expected_exc_type=BadParenPositionError,
             expected_error_pos=1)
+
+    def test_invalid_symbol_names(self):
+        """Test invalid symbol names (invalid chars, keywords, etc.)."""
+        self.helper_test_tokenization_raises(
+            '$var1 and var2',
+            expected_exc_type=InvalidIdentifierError,
+            expected_error_pos=0)
+
+        self.helper_test_tokenization_raises(
+            'var1 and ^var2',
+            expected_exc_type=InvalidIdentifierError,
+            expected_error_pos=9)
+
+        self.helper_test_tokenization_raises(
+            'for or i',
+            expected_exc_type=InvalidIdentifierError,
+            expected_error_pos=0)
+
+        self.helper_test_tokenization_raises(
+            'A xor (B or while)',
+            expected_exc_type=InvalidIdentifierError,
+            expected_error_pos=12)
+
+        self.helper_test_tokenization_raises(
+            'op1 xor op2 xor False xor 0',
+            expected_exc_type=InvalidIdentifierError,
+            expected_error_pos=16)

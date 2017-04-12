@@ -96,6 +96,25 @@ class ExpressionOrderError(GrammarError):
     """
 
 
+class InvalidIdentifierError(GrammarError):
+    """An exception type for invalid operand names.
+
+    .. code-block:: python
+
+        >>> from tt import BooleanExpression, TruthTable
+        >>> b = BooleanExpression('%A or B')
+        Traceback (most recent call last):
+            ...
+        tt.errors.grammar.InvalidIdentifierError: Invalid operand name "%A"
+        >>> t = TruthTable(from_values='0x11', ordering=['A', 'while'])
+        Traceback (most recent call last):
+            ...
+        tt.errors.grammar.InvalidIdentifierError: "while" in ordering is not \
+a valid symbol name
+
+    """
+
+
 class UnbalancedParenError(GrammarError):
     """An exception type for unbalanced parentheses.
 

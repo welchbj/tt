@@ -4,8 +4,8 @@ from ._helpers import TruthTableTestCase
 from ....errors import (ConflictingArgumentsError, DuplicateSymbolError,
                         ExtraSymbolError, InvalidArgumentTypeError,
                         InvalidArgumentValueError, InvalidBooleanValueError,
-                        MissingSymbolError, NoEvaluationVariationError,
-                        RequiredArgumentError)
+                        InvalidIdentifierError, MissingSymbolError,
+                        NoEvaluationVariationError, RequiredArgumentError)
 
 
 class TestTruthTableInitExceptions(TruthTableTestCase):
@@ -123,3 +123,39 @@ class TestTruthTableInitExceptions(TruthTableTestCase):
             from_values='1010',
             ordering=['A', 'B', 'C'],
             expected_exc_type=ExtraSymbolError)
+
+    def test_invalid_symbol_from_expression(self):
+        """Test passing expressions containing invalid symbols."""
+        self.helper_test_truth_table_raises(
+            'A$ or B',
+            expected_exc_type=InvalidIdentifierError)
+
+        self.helper_test_truth_table_raises(
+            'A$ or B',
+            expected_exc_type=InvalidIdentifierError)
+
+    def test_invalid_symbols_in_ordering_from_expression(self):
+        """Ensure proper exception is raised when combining ordering/expr."""
+        self.helper_test_truth_table_raises(
+            'A or B',
+            ordering=['A', 'B', 'B$'],
+            expected_exc_type=ExtraSymbolError)
+
+        self.helper_test_truth_table_raises(
+            'A nand B',
+            ordering=['A', '@B'],
+            expected_exc_type=MissingSymbolError)
+
+    def test_invalid_symbol_in_ordering_from_values(self):
+        """Test passing invalid symbols in table ordering list."""
+        self.helper_test_truth_table_raises(
+            None,
+            from_values='10xx1xx10xx01x10',
+            ordering=['A', 'B', '%C', 'D'],
+            expected_exc_type=InvalidIdentifierError)
+
+        self.helper_test_truth_table_raises(
+            None,
+            from_values='0xx1xx1x',
+            ordering=['A', 'for', 'B'],
+            expected_exc_type=InvalidIdentifierError)

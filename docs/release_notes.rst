@@ -12,6 +12,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 0.6.0
 `````
     * Add :func:`is_valid_identifier <tt.definitions.operands.is_valid_identifier>` helper method for checking if symbol names are valid
+    * Add checking of valid symbol names to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` and :class:`TruthTable <tt.tables.truth_table.TruthTable>` initalization logic, with corresponding new exception type :exc:`InvalidIdentifierError <tt.errors.grammar.InvalidIdentifierError>`
 
 0.5.x
 -----

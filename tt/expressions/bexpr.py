@@ -2,11 +2,11 @@
 
 import re
 
-from ..definitions import (CONSTANT_VALUES, DELIMITERS, OPERATOR_MAPPING,
-                           TT_NOT_OP)
+from ..definitions import (CONSTANT_VALUES, DELIMITERS, is_valid_identifier,
+                           OPERATOR_MAPPING, TT_NOT_OP)
 from ..errors import (BadParenPositionError, EmptyExpressionError,
                       ExpressionOrderError, InvalidArgumentTypeError,
-                      UnbalancedParenError)
+                      InvalidIdentifierError, UnbalancedParenError)
 from ..trees import BooleanExpressionTree
 from ..utils import (assert_all_valid_keys,
                      assert_iterable_contains_all_expr_symbols)
@@ -150,6 +150,8 @@ class BooleanExpression(object):
             passed through ``kwargs``.
         :raises InvalidBooleanValueError: If any values from ``kwargs`` are not
             valid Boolean inputs.
+        :raises InvalidIdentifierError: If any symbol names are invalid
+            identifier.
 
         .. note::
 
@@ -289,6 +291,12 @@ class BooleanExpression(object):
                         operand_end_idx += 1
 
                     operand = self.raw_expr[idx:operand_end_idx]
+                    if (operand not in CONSTANT_VALUES and
+                            not is_valid_identifier(operand)):
+                        raise InvalidIdentifierError(
+                            'Invalid operand name "{}"'.format(operand),
+                            self.raw_expr, idx)
+
                     self._tokens.append(operand)
                     if operand not in (self._symbol_set | CONSTANT_VALUES):
                         self._symbols.append(operand)
