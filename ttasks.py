@@ -108,7 +108,10 @@ def test():
     ]
 
     for module in doctest_modules:
-        suite.addTests(doctest.DocTestSuite(module))
+        suite.addTests(
+            doctest.DocTestSuite(
+                module,
+                optionflags=doctest.IGNORE_EXCEPTION_DETAIL))
 
     for file in doctest_files:
         suite.addTests(
