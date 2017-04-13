@@ -2,6 +2,7 @@
 
 import unittest
 
+from ....errors import InvalidArgumentTypeError, InvalidArgumentValueError
 from ....definitions import is_valid_identifier
 
 
@@ -31,8 +32,26 @@ class TestIsValidIdentifier(unittest.TestCase):
         self.assertFalse(is_valid_identifier('v(a)r'))
         self.assertFalse(is_valid_identifier('v``ar'))
 
+    def test_underscores(self):
+        """Test identifiers with underscores."""
+        self.assertFalse(is_valid_identifier('_var'))
+        self.assertFalse(is_valid_identifier('___var'))
+
+        self.assertTrue(is_valid_identifier('va_r'))
+        self.assertTrue(is_valid_identifier('var_'))
+
     def test_valid_identifiers(self):
         """Test a few valid identifiers."""
-        self.assertTrue(is_valid_identifier('_____var'))
+        self.assertTrue(is_valid_identifier('var11'))
         self.assertTrue(is_valid_identifier('var_20'))
         self.assertTrue(is_valid_identifier('variable'))
+
+    def test_empty_str(self):
+        """Test that an empty string raises an error."""
+        with self.assertRaises(InvalidArgumentValueError):
+            is_valid_identifier('')
+
+    def test_non_str(self):
+        """Test that a non-string argument raises an error."""
+        with self.assertRaises(InvalidArgumentTypeError):
+            is_valid_identifier(None)
