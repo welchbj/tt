@@ -13,7 +13,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 `````
     * Add :func:`is_valid_identifier <tt.definitions.operands.is_valid_identifier>` helper method for checking if symbol names are valid
     * Add checking of valid symbol names to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` and :class:`TruthTable <tt.tables.truth_table.TruthTable>` initalization logic, with corresponding new exception type :exc:`InvalidIdentifierError <tt.errors.grammar.InvalidIdentifierError>`
-    * Add :func:`boolean_variable_factory :class:`boolean_variable_factory <tt.definitions.operands.boolean_variable_factory>` helper for generating more intuitive collections of symbol inputs
+    * Add :func:`boolean_variables_factory <tt.definitions.operands.boolean_variables_factory>` helper for generating more intuitive collections of symbol inputs
 
 0.5.x
 -----
