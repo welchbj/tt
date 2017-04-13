@@ -7,7 +7,8 @@ import itertools
 from math import log
 from string import ascii_uppercase as ALPHABET
 
-from ..definitions import DONT_CARE_VALUE, is_valid_identifier
+from ..definitions import (boolean_variables_factory, DONT_CARE_VALUE,
+                           is_valid_identifier)
 from ..errors import (AlreadyFullTableError, ConflictingArgumentsError,
                       ExtraSymbolError, InvalidArgumentTypeError,
                       InvalidArgumentValueError, InvalidBooleanValueError,
@@ -133,13 +134,15 @@ class TruthTable(object):
         elif expr is None and from_values is None:
             raise RequiredArgumentError(
                 'Must specify either `expr` or `from_values`')
-        else:
-            self._num_filled_slots = 0
 
-            if expr is not None:
-                self._init_from_expression(expr, fill_all, ordering)
-            else:
-                self._init_from_values(from_values, ordering)
+        self._num_filled_slots = 0
+
+        if expr is not None:
+            self._init_from_expression(expr, fill_all, ordering)
+        else:
+            self._init_from_values(from_values, ordering)
+
+        self._symbol_vals_factory = boolean_variables_factory(self._ordering)
 
     def _init_from_expression(self, expr, fill_all, ordering):
         if isinstance(expr, str):
@@ -372,7 +375,7 @@ class TruthTable(object):
         for i, combo in enumerate(_input_combos):
             result = self._results[i]
             if result is not None:
-                yield combo, result
+                yield self._symbol_vals_factory._make(combo), result
 
     def __getitem__(self, i):
         return self._results[i]

@@ -6,31 +6,62 @@ from ....tables import TruthTable
 
 class TestTruthTableAccessMethods(TruthTableTestCase):
 
-    def test_table_iter(self):
-        """Test iterating through a table's rows."""
+    def test_table_iter_unfilled(self):
+        """Test iterating through a table that has not been filled."""
         t = TruthTable('A or B', fill_all=False)
-
         count = 0
+
         for inputs, result in t:
             count += 1
+
         self.assertEqual(count, 0)
 
-        t.fill()
-        expected = [
-            ((False, False,), False),
-            ((False, True,), True),
-            ((True, False,), True),
-            ((True, True,), True),
-        ]
-
+    def test_table_iter_partially_filled(self):
+        """Test iterating through a table that is partially filled."""
+        t = TruthTable('A xor C', fill_all=False)
+        t.fill(C=1)
         count = 0
+
         for inputs, result in t:
-            expected_inputs, expected_result = expected[count]
-            self.assertEqual(expected_inputs, inputs)
-            self.assertEqual(expected_result, result)
+            if count == 0:
+                self.assertEqual(inputs.A, False)
+                self.assertEqual(inputs.C, True)
+                self.assertEqual(result, True)
+            elif count == 1:
+                self.assertEqual(inputs.A, True)
+                self.assertEqual(inputs.C, True)
+                self.assertEqual(result, False)
+
             count += 1
 
-        self.assertEqual(len(expected), count)
+        self.assertEqual(count, 2)
+
+    def test_table_iter_completely_filled(self):
+        """Test iterating through a table that is completely full."""
+        t = TruthTable('B nand D')
+        count = 0
+
+        for inputs, result in t:
+            if count == 0:
+                self.assertEqual(inputs.B, False)
+                self.assertEqual(inputs.D, False)
+                self.assertEqual(result, True)
+            elif count == 1:
+                self.assertEqual(inputs.B, False)
+                self.assertEqual(inputs.D, True)
+                self.assertEqual(result, True)
+            elif count == 2:
+                self.assertEqual(inputs.B, True)
+                self.assertEqual(inputs.D, False)
+                self.assertEqual(result, True)
+            elif count == 3:
+                self.assertEqual(inputs.B, True)
+                self.assertEqual(inputs.D, True)
+                self.assertEqual(result, False)
+
+            count += 1
+
+        self.assertEqual(count, 4)
 
     def test_table_getitem(self):
         """Test indexing the table to get its results."""

@@ -166,12 +166,12 @@ So far, we've only been able to examine the results stored in our tables by prin
     >>> t.results
     [False, True, False, False]
     >>> for inputs, result in t:
-    ...     inputs, result
+    ...     str(inputs), result
     ...
-    ((False, False), False)
-    ((False, True), True)
-    ((True, False), False)
-    ((True, True), False)
+    ('A=0, B=0', False)
+    ('A=0, B=1', True)
+    ('A=1, B=0', False)
+    ('A=1, B=1', False)
     >>> t[0], t[1], t[2], t[3]
     (False, True, False, False)
 

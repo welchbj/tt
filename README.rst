@@ -45,13 +45,15 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     | 1 | 1 | 0 |
     +---+---+---+
     >>> t = TruthTable(from_values='01xx')
+    >>> t.ordering
+    ['A', 'B']
     >>> for inputs, result in t:
-    ...     inputs, result
+    ...     inputs.A, inputs.B, result
     ...
-    ((False, False), False)
-    ((False, True), True)
-    ((True, False), 'x')
-    ((True, True), 'x')
+    (False, False, False)
+    (False, True, True)
+    (True, False, 'x')
+    (True, True, 'x')
     >>> t.equivalent_to(b)
     True
 
