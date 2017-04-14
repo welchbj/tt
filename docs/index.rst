@@ -17,8 +17,8 @@ Welcome to the documentation site for tt.
     :hidden:
 
     user_guide
-    development
     release_notes
+    development
     prior_art
     special_thanks
     author
