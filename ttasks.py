@@ -16,6 +16,7 @@ from contextlib import contextmanager
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DOCS_DIR = os.path.join(HERE, 'docs')
+USER_GUIDE_DIR = os.path.join(DOCS_DIR, 'user_guide')
 TT_DIR = os.path.join(HERE, 'tt')
 TESTS_DIR = os.path.join(TT_DIR, 'tests')
 
@@ -104,7 +105,8 @@ def test():
 
     doctest_files = [
         os.path.join(HERE, 'README.rst'),
-        os.path.join(DOCS_DIR, 'user_guide.rst'),
+        os.path.join(USER_GUIDE_DIR, 'expression_basics.rst'),
+        os.path.join(USER_GUIDE_DIR, 'table_basics.rst')
     ]
 
     for module in doctest_modules:

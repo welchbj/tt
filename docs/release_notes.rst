@@ -15,6 +15,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add checking of valid symbol names to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` and :class:`TruthTable <tt.tables.truth_table.TruthTable>` initalization logic, with corresponding new exception type :exc:`InvalidIdentifierError <tt.errors.grammar.InvalidIdentifierError>`
     * Add :func:`boolean_variables_factory <tt.definitions.operands.boolean_variables_factory>` helper for generating more intuitive collections of symbol inputs
     * Update ``__iter__`` in  :class:`TruthTable <tt.tables.truth_table.TruthTable>` to yield inputs as a :func:`namedtuple <python:collections.namedtuple>`-like object rather than a plain :class:`tuple <python:tuple>`
+    * Re-organize :doc:`User Guide </user_guide>` into different sections instead of one long page
 
 0.5.x
 -----
