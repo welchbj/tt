@@ -46,7 +46,7 @@ html_theme_options = {
 
     'extra_nav_links': {},
     'sidebar_includehidden': True,
-    'fixed_sidebar': True,
+    'fixed_sidebar': False,
 
     'warn_bg': '#f9e3ed',
     'warn_border': '#ffa5ce',
