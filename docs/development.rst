@@ -28,7 +28,7 @@ Testing is done with Python's `unittest`_ and `doctest`_ modules. All tests can 
 
 Note that while doc tests are used, this is mostly just to make sure the documentation examples are valid. The true behavior of the library and its public contract are enforced through the unit tests.
 
-Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against the compatible CPython runtimes. Additionally, the source is run through the `Flake8`_ linter. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_, which tests on Linux and also adds the ability to test on the `PyPy`_ runtime.
+Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against the compatible CPython runtimes. Additionally, the source is run through the `Flake8`_ linter. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_, which tests on Linux.
 
 
 Coding Style
@@ -62,7 +62,6 @@ After these steps, make sure you update the release notes, publish on Read the D
 .. _tox: https://tox.readthedocs.org/en/latest/
 .. _Travis CI: https://travis-ci.org/welchbj/tt/
 .. _AppVeyor: https://ci.appveyor.com/project/welchbj/tt
-.. _PyPy: https://pypy.org/
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _Flake8: http://flake8.pycqa.org/en/latest/
 .. _editorconfig: http://editorconfig.org/

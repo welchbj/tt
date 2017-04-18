@@ -8,7 +8,7 @@ tt is a Python library and command-line tool for working with Boolean expression
 Installation
 ------------
 
-tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6 as well as PyPy. tt is written in pure Python with no dependencies, so it only requires a compatible Python installation to run. You can get the latest release from PyPI with::
+tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. tt is written in pure Python with no dependencies, so it only requires a compatible Python installation to run. You can get the latest release from PyPI with::
 
     pip install ttable
 

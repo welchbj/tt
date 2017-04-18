@@ -16,6 +16,8 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add :func:`boolean_variables_factory <tt.definitions.operands.boolean_variables_factory>` helper for generating more intuitive collections of symbol inputs
     * Update ``__iter__`` in  :class:`TruthTable <tt.tables.truth_table.TruthTable>` to yield inputs as a :func:`namedtuple <python:collections.namedtuple>`-like object rather than a plain :class:`tuple <python:tuple>`
     * Re-organize :doc:`User Guide </user_guide>` into different sections instead of one long page
+    * Remove PyPy support, due to addition of C-extensions
+
 
 0.5.x
 -----
