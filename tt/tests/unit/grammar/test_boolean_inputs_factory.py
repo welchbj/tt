@@ -7,11 +7,13 @@ from ....definitions import boolean_variables_factory
 
 class TestBooleanInputsFactory(unittest.TestCase):
 
-    def test_str(self):
-        """Test converting to string."""
+    def test_str_methods(self):
+        """Test converting to string via __str__ and __repr__."""
         factory = boolean_variables_factory(['A', 'B', 'C', 'D'])
         instance = factory(A=1, B=False, C=True, D=0)
         self.assertEqual(str(instance), 'A=1, B=0, C=1, D=0')
+        self.assertEqual(repr(instance),
+                         '<BooleanValues [A=1, B=0, C=1, D=0]>')
 
     def test_attr_access(self):
         """Test attribute access."""

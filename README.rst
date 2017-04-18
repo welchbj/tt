@@ -48,12 +48,12 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
     >>> t.ordering
     ['A', 'B']
     >>> for inputs, result in t:
-    ...     inputs.A, inputs.B, result
+    ...     inputs, result
     ...
-    (False, False, False)
-    (False, True, True)
-    (True, False, 'x')
-    (True, True, 'x')
+    (<BooleanValues [A=0, B=0]>, False)
+    (<BooleanValues [A=0, B=1]>, True)
+    (<BooleanValues [A=1, B=0]>, 'x')
+    (<BooleanValues [A=1, B=1]>, 'x')
     >>> t.equivalent_to(b)
     True
 

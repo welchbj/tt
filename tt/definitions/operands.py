@@ -145,4 +145,8 @@ def boolean_variables_factory(symbols):
                 val = int(val) if isinstance(val, bool) else val
                 pairs.append(field + '=' + str(val))
             return ', '.join(pairs)
+
+        def __repr__(self):
+            return '<BooleanValues [{}]>'.format(str(self))
+
     return _bvf
