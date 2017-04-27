@@ -97,6 +97,7 @@ def test():
         tt.errors.grammar,
         tt.errors.state,
         tt.errors.symbols,
+        tt.satisfiability.picosat,
         tt.tables.truth_table,
         tt.trees.expr_tree,
         tt.trees.tree_node,

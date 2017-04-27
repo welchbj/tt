@@ -5,18 +5,22 @@ import os
 import sys
 
 try:
-    from setuptools import setup, find_packages
+    from setuptools import Extension, find_packages, setup
 except ImportError:
     print('setuptools is required for tt installation.\n'
           'You can install it using pip.', file=sys.stderr)
     sys.exit(1)
 
+# directories/files
 here = os.path.abspath(os.path.dirname(__file__))
+readme_file = os.path.join(here, 'README.rst')
 tt_dir = os.path.join(here, 'tt')
+
+clibs_dir = os.path.join(tt_dir, '_clibs')
 cli_dir = os.path.join(tt_dir, 'cli')
 version_file = os.path.join(tt_dir, 'version.py')
-readme_file = os.path.join(here, 'README.rst')
 
+# setup kwarg values
 tt_pypi_name = 'ttable'
 tt_description = ('A library and command-line tool for working with Boolean '
                   'expressions')
@@ -52,6 +56,34 @@ tt_classifiers = [
     'Topic :: Utilities'
 ]
 
+# C-extension config
+picosat_ext_config = dict(
+    define_macros=[
+        ('NDEBUG', None)
+    ],
+    include_dirs=[
+        os.path.join(clibs_dir, 'picosat')
+    ],
+    sources=[
+        os.path.join(clibs_dir, 'picosat', 'picosat.c'),
+        os.path.join(clibs_dir, 'picosatmodule.c')
+    ]
+)
+
+if sys.platform == 'win32':
+    picosat_ext_config['define_macros'] += [
+        ('NGETRUSAGE', None),
+        ('inline', '__inline')
+    ]
+
+picosat = Extension('tt._clibs.picosat', **picosat_ext_config)
+
+if os.environ.get('READTHEDOCS') == 'True':
+    # don't build C-extensions on ReadTheDocs
+    tt_extensions = []
+else:
+    tt_extensions = [picosat]
+
 setup(
     name=tt_pypi_name,
     version=tt_version,
@@ -64,5 +96,6 @@ setup(
     install_requires=tt_install_requires,
     packages=find_packages(exclude=['tests', '*.tests', '*.tests.*']),
     entry_points=tt_entry_points,
-    classifiers=tt_classifiers
+    classifiers=tt_classifiers,
+    ext_modules=tt_extensions
 )

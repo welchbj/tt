@@ -3,4 +3,4 @@ include README.rst
 
 graft docs
 
-global-exclude *.py[co]
+global-exclude *.py[cod]

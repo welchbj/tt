@@ -8,7 +8,7 @@ tt is a Python library and command-line tool for working with Boolean expression
 Installation
 ------------
 
-tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. tt is written in pure Python with no dependencies, so it only requires a compatible Python installation to run. You can get the latest release from PyPI with::
+tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. You can get the latest release from PyPI with::
 
     pip install ttable
 
@@ -60,7 +60,7 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
 License
 -------
 
-tt uses the `MIT License`_.
+tt uses the `MIT License`_. Included external libaries are distributed under their respective licenses.
 
 
 .. _MIT License: https://opensource.org/licenses/MIT
