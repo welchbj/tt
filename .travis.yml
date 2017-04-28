@@ -5,41 +5,66 @@ matrix:
         # 32-bit Linux builds
         - os: linux
           python: 2.7
-          env: TT_SETUP_FLAGS="CFLAGS=-m32 LDFLAGS=-m32"
+          env:
+            - CFLAGS=-m32
+            - LDFLAGS=-m32
         - os: linux
           python: 3.3
-          env: TT_SETUP_FLAGS="CFLAGS=-m32 LDFLAGS=-m32"
+          env:
+            - CFLAGS=-m32
+            - LDFLAGS=-m32
         - os: linux
           python: 3.4
-          env: TT_SETUP_FLAGS="CFLAGS=-m32 LDFLAGS=-m32"
+          env:
+            - CFLAGS=-m32
+            - LDFLAGS=-m32
         - os: linux
           python: 3.5
-          env: TT_SETUP_FLAGS="CFLAGS=-m32 LDFLAGS=-m32"
+          env:
+            - CFLAGS=-m32
+            - LDFLAGS=-m32
         - os: linux
           python: 3.6
-          env: TT_SETUP_FLAGS="CFLAGS=-m32 LDFLAGS=-m32"
+          env:
+            - CFLAGS=-m32
+            - LDFLAGS=-m32
 
         # 64-bit Linux builds
         - os: linux
           python: 2.7
+          env:
+            - CFLAGS=-m64
+            - LDFLAGS=-m64
         - os: linux
           python: 3.3
+          env:
+            - CFLAGS=-m64
+            - LDFLAGS=-m64
         - os: linux
           python: 3.4
+          env:
+            - CFLAGS=-m64
+            - LDFLAGS=-m64
         - os: linux
           python: 3.5
+          env:
+            - CFLAGS=-m64
+            - LDFLAGS=-m64
         - os: linux
           python: 3.6
-          env: RUN_FLAKE=1
+          env:
+            - CFLAGS=-m64
+            - LDFLAGS=-m64
+            - RUN_FLAKE=1
 
 install:
     - if [[ $RUN_FLAKE ]]; then python -m pip install flake8; fi
     - python -m pip install wheel
-    - $TT_SETUP_FLAGS python setup.py develop
+    - python setup.py develop
 
 script:
     - python ttasks.py test
     - if [[ $RUN_FLAKE ]]; then flake8 .; fi
 
 after_success:
-    - $TT_SETUP_FLAGS python setup.py bdist_wheel
+    - python setup.py bdist_wheel
