@@ -12,7 +12,7 @@
 #include <Python.h>
 
 #include "picosat.h"
-#include "tt_cpython_compat.h"
+#include "_compat/tt_cpython_compat.h"
 
 
 //
