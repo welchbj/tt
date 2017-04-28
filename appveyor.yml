@@ -3,11 +3,11 @@ environment:
         - PYTHON: "C:\\Python27"
         - PYTHON: "C:\\Python27-x64"
         - PYTHON: "C:\\Python33"
-          DISTUTILS_USE_SDK: "1"
         - PYTHON: "C:\\Python33-x64"
-        - PYTHON: "C:\\Python34"
           DISTUTILS_USE_SDK: "1"
+        - PYTHON: "C:\\Python34"
         - PYTHON: "C:\\Python34-x64"
+          DISTUTILS_USE_SDK: "1"
         - PYTHON: "C:\\Python35"
         - PYTHON: "C:\\Python35-x64"
         - PYTHON: "C:\\Python36"
@@ -15,18 +15,18 @@ environment:
           RUN_FLAKE: "1"
 
 install:
-    - if "%RUN_FLAKE%"=="1" "%PYTHON%\\python.exe" -m pip install flake8
-    - "%PYTHON%\\python.exe" -m pip install wheel
-    - "%PYTHON%\\python.exe" setup.py develop
+    - "if \"%RUN_FLAKE%\"==\"1\" %PYTHON%\\python.exe -m pip install flake8"
+    - "%PYTHON%\\python.exe -m pip install wheel"
+    - "ci\\build.cmd %PYTHON%\\python.exe setup.py develop"
 
 build: off
 
 test_script:
-    - "%PYTHON%\\python.exe" ttasks.py test
-    - if "%RUN_FLAKE%"=="1" "%PYTHON%\\python.exe" flake8 .
+    - "%PYTHON%\\python.exe ttasks.py test"
+    - "if \"%RUN_FLAKE%\"==\"1\" %PYTHON%\\python.exe flake8 ."
 
 after_test:
-    - "%PYTHON%\\python.exe" setup.py bdist_wheel
+    - "%PYTHON%\\python.exe setup.py bdist_wheel"
 
 artifacts:
     - path: dist\*
