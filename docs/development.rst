@@ -64,6 +64,7 @@ from the project's top-level directory. There are some dependencies required for
 
 For reference, check out this `comprehensive list of Windows compilers`_ necessary for building Python and C-extensions. You may have some trouble installing the 7.1 SDK (which contains Visual C++ 10.0). `This stackoverflow answer`_ provides some possible solutions.
 
+
 Releases
 --------
 
