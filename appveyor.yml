@@ -1,12 +1,32 @@
-version: '{branch}, build {build}'
-os: Windows Server 2012 R2
+environment:
+    matrix:
+        - PYTHON: "C:\\Python27"
+        - PYTHON: "C:\\Python27-x64"
+        - PYTHON: "C:\\Python33"
+          DISTUTILS_USE_SDK: "1"
+        - PYTHON: "C:\\Python33-x64"
+          DISTUTILS_USE_SDK: "1"
+        - PYTHON: "C:\\Python34"
+          DISTUTILS_USE_SDK: "1"
+        - PYTHON: "C:\\Python34-x64"
+          DISTUTILS_USE_SDK: "1"
+        - PYTHON: "C:\\Python35"
+        - PYTHON: "C:\\Python35-x64"
+        - PYTHON: "C:\\Python36"
+        - PYTHON: "C:\\Python36-x64"
+          RUN_FLAKE: "1"
+
 install:
-- cmd: >-
-    set BASE_PY=C:\Python36
+    - "%PYTHON%\python.exe -m pip install wheel"
+    - "%PYTHON%\python.exe setup.py develop"
 
-    set PATH=%BASE_PY%;%BASE_PY%\Scripts;%PATH%
+build: off
 
-    pip install tox
-build_script:
-- cmd: tox
-test: off
+test_script:
+    - "%PYTHON%\python.exe ttasks.py test"
+
+after_build:
+    - "%PYTHON\python.exe setup.py bdist_wheel"
+
+artifacts:
+    - path: dist\*
