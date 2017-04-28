@@ -17,16 +17,16 @@ environment:
           RUN_FLAKE: "1"
 
 install:
-    - "%PYTHON%\python.exe -m pip install wheel"
-    - "%PYTHON%\python.exe setup.py develop"
+    - "%PYTHON%\\python.exe -m pip install wheel"
+    - "%PYTHON%\\python.exe setup.py develop"
 
 build: off
 
 test_script:
-    - "%PYTHON%\python.exe ttasks.py test"
+    - "%PYTHON%\\python.exe ttasks.py test"
 
 after_build:
-    - "%PYTHON\python.exe setup.py bdist_wheel"
+    - "%PYTHON%\\python.exe setup.py bdist_wheel"
 
 artifacts:
     - path: dist\*
