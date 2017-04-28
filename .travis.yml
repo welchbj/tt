@@ -37,6 +37,9 @@ matrix:
           python: 3.6
           env: RUN_FLAKE=1
 
+before_install:
+    - chmod a+x ./ci/travis_install.sh
+
 install:
     - ./ci/travis_install.sh
 
