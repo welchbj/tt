@@ -52,8 +52,17 @@ If you're going to be working for a little bit, it's usually more convenient to 
 Building C-extensions
 ---------------------
 
-TODO
+tt contains some C-extensions that need to be built before the library is fully usable. They can be built in a development environment by running::
 
+    python setup.py develop
+
+from the project's top-level directory. There are some dependencies required for compiling these extensions. Let's start with what to do on Windows. You will need to install several different compilers:
+
+    * `Microsoft Visual C++ 9.0`_ (for Python 2.7)
+    * `Microsoft Visual C++ 10.0`_ (for Python 3.3 and 3.4)
+    * `Microsoft Visual C++ 14.0`_ (for Python 3.5 and 3.6)
+
+For reference, check out this `comprehensive list of Windows compilers`_ necessary for building Python and C-extensions. You may have some trouble installing the 7.1 SDK (which contains Visual C++ 10.0). `This stackoverflow answer`_ provides some possible solutions.
 
 Releases
 --------
@@ -71,3 +80,8 @@ After these steps, make sure you update the release notes, publish on Read the D
 .. _PEP8: https://www.python.org/dev/peps/pep-0008/
 .. _Flake8: http://flake8.pycqa.org/en/latest/
 .. _editorconfig: http://editorconfig.org/
+.. _Microsoft Visual C++ 9.0: http://aka.ms/vcpython27
+.. _Microsoft Visual C++ 10.0: http://www.microsoft.com/download/details.aspx?id=8279
+.. _Microsoft Visual C++ 14.0: https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017
+.. _comprehensive list of Windows compilers: https://wiki.python.org/moin/WindowsCompilers
+.. _This stackoverflow answer: http://stackoverflow.com/a/32534158/2225145
