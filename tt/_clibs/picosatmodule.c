@@ -39,8 +39,181 @@ _cpython_free(void * mmgr, void * ptr, size_t bytes)
 
 
 //
-// PicoSAT interfacing methods
+// PicoSAT functionality methods
 //
+
+/**
+ * Add a clause to a PicoSAT instance. A clause is a list of non-zero ints.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+_tt_add_picosat_clause(PicoSAT * picosat, PyObject * clause)
+{
+    PyObject * clause_iterator;  // clause is an iterable of ints
+    PyObject * literal;          // each literal is an int
+    int l;
+
+    if (!PyList_Check(clause))
+    {
+        PyErr_SetString(PyExc_TypeError, "clause must be a list of non-zero ints");
+        return -1;
+    }
+
+    if (PyList_Size(clause) < 1)
+    {
+        PyErr_SetString(PyExc_ValueError, "clause must be non-empty");
+        return -1;
+    }
+
+    clause_iterator = PyObject_GetIter(clause);
+    if (clause_iterator == NULL)
+        return -1;
+
+    while ((literal = PyIter_Next(clause_iterator)) != NULL)
+    {
+        if (!IS_INT(literal))
+        {
+            Py_DECREF(literal);
+            Py_DECREF(clause_iterator);
+            PyErr_SetString(PyExc_TypeError, "All literals expected to be ints");
+            return -1;
+        }
+
+        l = PyLong_AsLong(literal);
+        Py_DECREF(literal);
+
+        if (l == 0)
+        {
+            Py_DECREF(clause_iterator);
+            PyErr_SetString(PyExc_ValueError, "All literals must be non-zero");
+            return -1;
+        }
+
+        picosat_add(picosat, l);
+    }
+
+    Py_DECREF(clause_iterator);
+    if (PyErr_Occurred())
+        return -1;
+
+    picosat_add(picosat, 0);  // terminate clause
+    return 0;
+}
+
+/**
+ * Add clauses to a PicoSAT instance. Clauses are a Python iterator of
+ * iterators of non-zero ints.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+_tt_add_picosat_clauses(PicoSAT * picosat, PyObject * clauses)
+{
+    PyObject * clauses_iterator;  // clauses is iterable of iterable of ints
+    PyObject * clause;            // each clause is iterable of ints
+
+    if (!PyList_Check(clauses))
+    {
+        PyErr_SetString(PyExc_TypeError, "clauses must be a list of lists of non-zero ints");
+        return -1;
+    }
+
+    if (PyList_Size(clauses) < 1)
+    {
+        PyErr_SetString(PyExc_ValueError, "clause musts be non-empty");
+        return -1;
+    }
+
+    clauses_iterator = PyObject_GetIter(clauses);
+    if (clauses_iterator == NULL)
+        return -1;
+
+    while ((clause = PyIter_Next(clauses_iterator)) != NULL)
+    {
+        if (_tt_add_picosat_clause(picosat, clause) < 0)
+        {
+            Py_DECREF(clause);
+            Py_DECREF(clauses_iterator);
+            return -1;
+        }
+
+        Py_DECREF(clause);
+    }
+
+    Py_DECREF(clauses_iterator);
+    if (PyErr_Occurred())
+        return -1;
+
+    return 0;
+}
+
+/**
+ * Add assumptions to a PicoSAT instance. assumptions is an iterable of
+ * non-zero ints.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+_tt_add_picosat_assumptions(PicoSAT * picosat, PyObject * assumptions)
+{
+    PyObject * assumptions_iterator;
+    PyObject * assumption;
+    int a;
+
+    if (assumptions == NULL || assumptions == Py_None)
+    {
+        // no assumptions provided
+        return 0;
+    }
+
+    if (!PyList_Check(assumptions))
+    {
+        PyErr_SetString(PyExc_TypeError, "assumptions must be a list of non-zero ints");
+        return -1;
+    }
+
+    if (PyList_Size(assumptions) < 1)
+    {
+        PyErr_SetString(PyExc_ValueError, "assumptions must be non-empty");
+        return -1;
+    }
+
+    assumptions_iterator = PyObject_GetIter(assumptions);
+
+    if (assumptions_iterator == NULL)
+        return -1;
+
+    while ((assumption = PyIter_Next(assumptions_iterator)) != 0)
+    {
+        if (!IS_INT(assumption))
+        {
+            PyErr_SetString(PyExc_TypeError, "All assumption literals expected to be ints");
+            Py_DECREF(assumption);
+            Py_DECREF(assumptions_iterator);
+            return -1;
+        }
+
+        a = PyLong_AsLong(assumption);
+        Py_DECREF(assumption);
+
+        if (a == 0)
+        {
+            PyErr_SetString(PyExc_ValueError, "All assumption literals must be non-zero");
+            Py_DECREF(assumptions_iterator);
+            return -1;
+        }
+
+        picosat_assume(picosat, a);
+    }
+
+    Py_DECREF(assumptions_iterator);
+
+    if (PyErr_Occurred())
+        return -1;
+
+    return 0;
+}
 
 /**
  * Ensures the validity of Python args object, inits PicoSAT object, and adds
@@ -78,182 +251,6 @@ _tt_setup_picosat(PyObject * args, PyObject * kwds)
 
     // all good
     return picosat;
-}
-
-
-//
-// PicoSAT functionality methods
-//
-
-/**
- * Add a clause to a PicoSAT instance. A clause is a list of non-zero ints.
- *
- * Returns 0 on success, -1 on error.
- */
-static int
-_tt_add_picosat_clause(PicoSAT * picosat, PyObject * clause)
-{
-    if (!PyList_Check(clause))
-    {
-        PyErr_SetString(PyExc_TypeError, "clause must be a list of non-zero ints");
-        return -1;
-    }
-
-    if (PyList_Size(clause) < 1)
-    {
-        PyErr_SetString(PyExc_ValueError, "clause must be non-empty");
-        return -1;
-    }
-
-    PyObject * clause_iterator;  // clause is an iterable of ints
-    PyObject * literal;          // each literal is an int
-
-    clause_iterator = PyObject_GetIter(clause);
-    if (clause_iterator == NULL)
-        return -1;
-
-    while ((literal = PyIter_Next(clause_iterator)) != NULL)
-    {
-        if (!IS_INT(literal))
-        {
-            Py_DECREF(literal);
-            Py_DECREF(clause_iterator);
-            PyErr_SetString(PyExc_TypeError, "All literals expected to be ints");
-            return -1;
-        }
-
-        int l = PyLong_AsLong(literal);
-        Py_DECREF(literal);
-
-        if (l == 0)
-        {
-            Py_DECREF(clause_iterator);
-            PyErr_SetString(PyExc_ValueError, "All literals must be non-zero");
-            return -1;
-        }
-
-        picosat_add(picosat, l);
-    }
-
-    Py_DECREF(clause_iterator);
-    if (PyErr_Occurred())
-        return -1;
-
-    picosat_add(picosat, 0);  // terminate clause
-    return 0;
-}
-
-/**
- * Add clauses to a PicoSAT instance. Clauses are a Python iterator of
- * iterators of non-zero ints.
- *
- * Returns 0 on success, -1 on error.
- */
-static int
-_tt_add_picosat_clauses(PicoSAT * picosat, PyObject * clauses)
-{
-    if (!PyList_Check(clauses))
-    {
-        PyErr_SetString(PyExc_TypeError, "clauses must be a list of lists of non-zero ints");
-        return -1;
-    }
-
-    if (PyList_Size(clauses) < 1)
-    {
-        PyErr_SetString(PyExc_ValueError, "clause musts be non-empty");
-        return -1;
-    }
-
-    PyObject * clauses_iterator;  // clauses is iterable of iterable of ints
-    PyObject * clause;            // each clause is iterable of ints
-
-    clauses_iterator = PyObject_GetIter(clauses);
-    if (clauses_iterator == NULL)
-        return -1;
-
-    while ((clause = PyIter_Next(clauses_iterator)) != NULL)
-    {
-        if (_tt_add_picosat_clause(picosat, clause) < 0)
-        {
-            Py_DECREF(clause);
-            Py_DECREF(clauses_iterator);
-            return -1;
-        }
-
-        Py_DECREF(clause);
-    }
-
-    Py_DECREF(clauses_iterator);
-    if (PyErr_Occurred())
-        return -1;
-
-    return 0;
-}
-
-/**
- * Add assumptions to a PicoSAT instance. assumptions is an iterable of
- * non-zero ints.
- *
- * Returns 0 on success, -1 on error.
- */
-static int
-_tt_add_picosat_assumptions(PicoSAT * picosat, PyObject * assumptions)
-{
-    if (assumptions == NULL || assumptions == Py_None)
-    {
-        // no assumptions provided
-        return 0;
-    }
-
-    if (!PyList_Check(assumptions))
-    {
-        PyErr_SetString(PyExc_TypeError, "assumptions must be a list of non-zero ints");
-        return -1;
-    }
-
-    if (PyList_Size(assumptions) < 1)
-    {
-        PyErr_SetString(PyExc_ValueError, "assumptions must be non-empty");
-        return -1;
-    }
-
-    PyObject * assumptions_iterator;
-    PyObject * assumption;
-
-    assumptions_iterator = PyObject_GetIter(assumptions);
-
-    if (assumptions_iterator == NULL)
-        return -1;
-
-    while ((assumption = PyIter_Next(assumptions_iterator)) != 0)
-    {
-        if (!IS_INT(assumption))
-        {
-            PyErr_SetString(PyExc_TypeError, "All assumption literals expected to be ints");
-            Py_DECREF(assumption);
-            Py_DECREF(assumptions_iterator);
-            return -1;
-        }
-
-        int a = PyLong_AsLong(assumption);
-        Py_DECREF(assumption);
-
-        if (a == 0)
-        {
-            PyErr_SetString(PyExc_ValueError, "All assumption literals must be non-zero");
-            Py_DECREF(assumptions_iterator);
-            return -1;
-        }
-
-        picosat_assume(picosat, a);
-    }
-
-    Py_DECREF(assumptions_iterator);
-
-    if (PyErr_Occurred())
-        return -1;
-
-    return 0;
 }
 
 /**
@@ -310,6 +307,7 @@ static PyObject *
 sat_one(PyObject * self, PyObject * args, PyObject * kwds)
 {
     PicoSAT * picosat;
+    PyObject * ret;
     int picosat_result;
 
     picosat = _tt_setup_picosat(args, kwds);
@@ -324,7 +322,7 @@ sat_one(PyObject * self, PyObject * args, PyObject * kwds)
     switch (picosat_result)
     {
         case PICOSAT_SATISFIABLE:
-            PyObject * ret = _tt_picosat_sol_to_py_list(picosat);
+            ret = _tt_picosat_sol_to_py_list(picosat);
             picosat_reset(picosat);
             return ret;
 
