@@ -5,66 +5,41 @@ matrix:
         # 32-bit Linux builds
         - os: linux
           python: 2.7
-          env:
-            - CFLAGS=-m32
-            - LDFLAGS=-m32
+          sudo: required
+          env: $TT_32_BIT=1
         - os: linux
           python: 3.3
-          env:
-            - CFLAGS=-m32
-            - LDFLAGS=-m32
+          sudo: required
+          env: $TT_32_BIT=1
         - os: linux
           python: 3.4
-          env:
-            - CFLAGS=-m32
-            - LDFLAGS=-m32
+          sudo: required
+          env: $TT_32_BIT=1
         - os: linux
           python: 3.5
-          env:
-            - CFLAGS=-m32
-            - LDFLAGS=-m32
+          sudo: required
+          env: $TT_32_BIT=1
         - os: linux
           python: 3.6
-          env:
-            - CFLAGS=-m32
-            - LDFLAGS=-m32
+          sudo: required
+          env: $TT_32_BIT=1
 
         # 64-bit Linux builds
         - os: linux
           python: 2.7
-          env:
-            - CFLAGS=-m64
-            - LDFLAGS=-m64
         - os: linux
           python: 3.3
-          env:
-            - CFLAGS=-m64
-            - LDFLAGS=-m64
         - os: linux
           python: 3.4
-          env:
-            - CFLAGS=-m64
-            - LDFLAGS=-m64
         - os: linux
           python: 3.5
-          env:
-            - CFLAGS=-m64
-            - LDFLAGS=-m64
         - os: linux
           python: 3.6
-          env:
-            - CFLAGS=-m64
-            - LDFLAGS=-m64
-            - RUN_FLAKE=1
+          env: RUN_FLAKE=1
 
 install:
-    - if [[ $RUN_FLAKE ]]; then python -m pip install flake8; fi
-    - python -m pip install wheel
-    - python setup.py develop
+    - ./ci/travis_install.sh
 
 script:
     - python ttasks.py test
     - if [[ $RUN_FLAKE ]]; then flake8 .; fi
-
-after_success:
-    - python setup.py bdist_wheel
