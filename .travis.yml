@@ -18,19 +18,24 @@ matrix:
         # 64-bit Mac OS X builds
         - os: osx
           language: generic
-          env: TT_PY_VER=2.7.13
+          env: PYENV_VERSION=2.7.13
         - os: osx
           language: generic
-          env: TT_PY_VER=3.3.6
+          env: PYENV_VERSION=3.3.6
         - os: osx
           language: generic
-          env: TT_PY_VER=3.4.6
+          env: PYENV_VERSION=3.4.6
         - os: osx
           language: generic
-          env: TT_PY_VER=3.5.3
+          env: PYENV_VERSION=3.5.3
         - os: osx
           language: generic
-          env: TT_PY_VER=3.6.1
+          env: PYENV_VERSION=3.6.1
+
+cache:
+    - pip
+    - directories:
+        - $HOME/.pyenv_cache
 
 before_install:
     - chmod a+x ./ci/travis_install.sh
