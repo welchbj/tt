@@ -36,6 +36,7 @@ cache:
     - pip
     - directories:
         - $HOME/.pyenv_cache
+        - $HOME/Library/Caches/Homebrew
 
 before_install:
     - chmod a+x ./ci/travis_install.sh
