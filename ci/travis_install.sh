@@ -2,7 +2,7 @@
 
 if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
     brew update
-    brew install openssl readline xz
+    brew install openssl readline xz python python3
     brew outdated pyenv || brew upgrade pyenv
     brew install pyenv-virtualenv
 
