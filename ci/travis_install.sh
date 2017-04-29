@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
-    export LDFLAGS="-undefined dynamic_lookup"
+    export LDFLAGS="-Wl,-export_dynamic"
     export PYENV_VERSION_STRING="Python ${PYENV_VERSION}"
     wget https://github.com/praekeltfoundation/travis-pyenv/releases/download/0.3.0/setup-pyenv.sh
     source setup-pyenv.sh
