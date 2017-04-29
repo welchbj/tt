@@ -2,28 +2,6 @@ language: python
 
 matrix:
     include:
-        # 32-bit Linux builds
-        - os: linux
-          python: 2.7
-          sudo: required
-          env: $TT_32_BIT=1
-        - os: linux
-          python: 3.3
-          sudo: required
-          env: $TT_32_BIT=1
-        - os: linux
-          python: 3.4
-          sudo: required
-          env: $TT_32_BIT=1
-        - os: linux
-          python: 3.5
-          sudo: required
-          env: $TT_32_BIT=1
-        - os: linux
-          python: 3.6
-          sudo: required
-          env: $TT_32_BIT=1
-
         # 64-bit Linux builds
         - os: linux
           python: 2.7
@@ -36,6 +14,23 @@ matrix:
         - os: linux
           python: 3.6
           env: RUN_FLAKE=1
+
+        # 64-bit Mac OS X builds
+        - os: osx
+          language: generic
+          env: TT_PY_VER=2.7.13
+        - os: osx
+          language: generic
+          env: TT_PY_VER=3.3.6
+        - os: osx
+          language: generic
+          env: TT_PY_VER=3.4.6
+        - os: osx
+          language: generic
+          env: TT_PY_VER=3.5.3
+        - os: osx
+          language: generic
+          env: TT_PY_VER=3.6.1
 
 before_install:
     - chmod a+x ./ci/travis_install.sh
