@@ -369,6 +369,15 @@ PyInit_picosat(void)
 {
     PyObject * m;
     m = PyModule_Create(&moduleDef);
+
+    if (m == NULL)
+        return NULL;
+
+    if(PyModule_AddIntConstant(m, "VERSION", 965) < 0)
+        return NULL;
+
+    return m;
+}
 #else
 //
 // Python 2 module boilerplate
@@ -378,15 +387,6 @@ initpicosat(void)
 {
     PyObject * m;
     m = Py_InitModule3("picosat", PicosatMethods, "");
-#endif
-//
-// Module definition main body
-//
-    if (m == NULL)
-        return NULL;
-
-    if(PyModule_AddIntConstant(m, "VERSION", 965) < 0)
-        return NULL;
-
-    return m;
+    PyModule_AddIntConstant(m, "VERSION", 965);
 }
+#endif
