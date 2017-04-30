@@ -72,6 +72,7 @@ def serve_docs():
     watch_patterns = ['docs/*.rst',
                       'docs/**/*.rst',
                       'docs/conf.py',
+                      'README.rst',
                       'tt/**/*.py']
     for pattern in watch_patterns:
         server.watch(pattern, build_docs)
