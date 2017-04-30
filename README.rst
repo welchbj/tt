@@ -60,7 +60,7 @@ tt aims to provide a Pythonic interface for working with Boolean expressions. He
 License
 -------
 
-tt uses the `MIT License`_. Included external libaries are distributed under their respective licenses.
+tt uses the `MIT License`_.
 
 
 .. _MIT License: https://opensource.org/licenses/MIT
