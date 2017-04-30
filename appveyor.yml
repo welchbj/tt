@@ -29,9 +29,6 @@ test_script:
     - "%PYTHON%\\python.exe ttasks.py test"
     - "if \"%RUN_FLAKE%\"==\"1\" %PYTHON%\\Scripts\\flake8.exe ."
 
-after_test:
-    - "%PYTHON%\\python.exe setup.py bdist_wheel"
-
 on_success:
     - echo [distutils]                              > %USERPROFILE%\\.pypirc
     - echo index-servers =                         >> %USERPROFILE%\\.pypirc
@@ -43,4 +40,4 @@ on_success:
 
     - set HOME=%USERPROFILE%
 
-    - "if \"%APPVEYOR_REPO_TAG\"==\"true\" ( ci\\win_build.cmd %PYTHON%\\python.exe setup.py sdist bdist_wheel upload )"
+    - "if \"%APPVEYOR_REPO_TAG%\"==\"true\" ( ci\\win_build.cmd %PYTHON%\\python.exe setup.py sdist bdist_wheel upload )"
