@@ -20,6 +20,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add OS X builds to Travis
     * Include both 32-bit and 64-bit builds on AppVeyor
     * Add initial wrapper around `PicoSAT`_ library for future satisfiability interface; namely, the :func:`sat_one <tt.satisfiability.picosat.sat_one>` method
+    * Add automated deployment to PyPI on tagged commits from CI services
 
 0.5.x
 -----

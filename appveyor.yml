@@ -1,4 +1,7 @@
 environment:
+    PYPI_PW:
+        secure: MMD+XFYORERejvD2Wb6/u9UDLQwOnm9ASdQf2AqRtWk=
+
     matrix:
         - PYTHON: "C:\\Python27"
         - PYTHON: "C:\\Python27-x64"
@@ -29,5 +32,15 @@ test_script:
 after_test:
     - "%PYTHON%\\python.exe setup.py bdist_wheel"
 
-artifacts:
-    - path: dist\*
+on_success:
+    - echo [distutils]                              > %USERPROFILE%\\.pypirc
+    - echo index-servers =                         >> %USERPROFILE%\\.pypirc
+    - echo     pypi                                >> %USERPROFILE%\\.pypirc
+    - echo [pypi]                                  >> %USERPROFILE%\\.pypirc
+    - echo repository=https://pypi.python.org/pypi >> %USERPROFILE%\\.pypirc
+    - echo username=welchbj                        >> %USERPROFILE%\\.pypirc
+    - echo password=%PYPI_PW%                      >> %USERPROFILE%\\.pypirc
+
+    - set HOME=%USERPROFILE%
+
+    - "if \"%APPVEYOR_REPO_TAG\"==\"true\" ( ci\\win_build.cmd %PYTHON%\\python.exe setup.py sdist bdist_wheel upload )"

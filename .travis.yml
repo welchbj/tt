@@ -44,3 +44,13 @@ install:
 
 script:
     - ./ci/travis_run.sh
+
+deploy:
+    provider: pypi
+    user: "welchbj"
+    password:
+        secure:
+            "CpbeEwZekV29v2yiHOXmReZC17gAxL8zTlZiRZfqCsgX8F7ZKNoeO3zUczh8SnS2pPFnq4fL9UGG+WOybXCSjywvhuTxt357lSYld5UuW4kKvX8/XEsVqBZTeZfzMbO3rbGVZ/HU+aaUUbiVMX/gAbRAg68+o1ZXh3KwzwdjRVjbfSsNK1xk/LEpSFf8elYkO6D7EOhJnEc9GMxq5pCQnpbJ18Iot96mOhEUOXHAZvJeuVp6vDjw/vFu1Rh+fY1+Byp8Pjw8BSURLkWIU4ntSYHagrmm4fH3R7XVrOf+Q3FVCpGFPblQ09B3m78SvjOWm5r+HOF98Zr2IV8e6xpv1vn2PGIdkVhtO2Ne4PuWMOZP0AH7+Y1Lp2R4I9u4BwB2RYhERRATwbvAbVOCKrOiibo6vfC/XvOl+bD2GQlzf+OJ91hMkBo311d1npZ/MsSdjOSCiL+KfzxhzrgJTWBJOLuJhkFVqtsx+TtTlVomkImN+5DN8D3naJqmbTZ+wTjq35QMbQdMl6PnB4I/lvhHzemN+IRmjmFBjlQWoeT5Hw8RTM1fhqdAC07PEnkN4tadS8SIr37V0KR5SgdLGi6d1HKWvV9wQhdxnlv2wMFTCKHtatUz+kZ3BMqWphmskt36NmYwqujVtba63xz7nQFeHsGQJDzyFTKoLh6GD0pp2dk="
+    distributions: "sdist bdist_wheel"
+    on:
+        tags: true
