@@ -18,32 +18,29 @@ matrix:
         # 64-bit Mac OS X builds
         - os: osx
           language: generic
-          env: PYENV_VERSION=2.7.13
+          env: TT_PY_VER=py27
         - os: osx
           language: generic
-          env: PYENV_VERSION=3.3.6
+          env: TT_PY_VER=py33
         - os: osx
           language: generic
-          env: PYENV_VERSION=3.4.6
+          env: TT_PY_VER=py34
         - os: osx
           language: generic
-          env: PYENV_VERSION=3.5.3
+          env: TT_PY_VER=py35
         - os: osx
           language: generic
-          env: PYENV_VERSION=3.6.1
+          env: TT_PY_VER=py36
 
 cache:
     - pip
-    - directories:
-        - $HOME/.pyenv_cache
-        - $HOME/Library/Caches/Homebrew
 
 before_install:
     - chmod a+x ./ci/travis_install.sh
+    - chmod a+x ./ci/travis_run.sh
 
 install:
     - ./ci/travis_install.sh
 
 script:
-    - python ttasks.py test
-    - if [[ $RUN_FLAKE ]]; then flake8 .; fi
+    - ./ci/travis_run.sh
