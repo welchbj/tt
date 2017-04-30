@@ -17,6 +17,7 @@ environment:
 install:
     - "if \"%RUN_FLAKE%\"==\"1\" %PYTHON%\\python.exe -m pip install flake8"
     - "%PYTHON%\\python.exe -m pip install wheel"
+    - "ci\\win_build.cmd %PYTHON%\\python.exe setup.py build"
     - "ci\\win_build.cmd %PYTHON%\\python.exe setup.py develop"
 
 build: off
