@@ -4,6 +4,7 @@ Special Thanks
 
 A lot of free services and open source libraries have helped this project become possible. This page aims to give credit where its due; if you were left out, I'm sorry! Please let me know!
 
+
 Services
 --------
 
@@ -13,6 +14,20 @@ Thank you to the free hosting provided by these services!
     * `Travis CI`_
     * `AppVeyor`_
     * `Read the Docs`_
+
+
+Design Resources
+----------------
+
+Thank you to Matthew Beckler, who designed the `logic gate SVGs`_ present in tt's logo.
+
+
+Third Party Libraries Shipped with tt
+-------------------------------------
+
+Thank you to the developers of the following third party libraries that are wrapped in and shipped with tt. Your hard work drives some of the most powerful functionality of tt.
+
+    * `PicoSAT`_
 
 
 Open Source Projects & Libraries
@@ -32,6 +47,7 @@ tt relies on some well-written and well-documented projects and libraries for it
     * `pep8`_
     * `pluggy`_
     * `py`_
+    * `pyenv`_
     * `pyflakes`_
     * `Pygments`_
     * `Python`_
@@ -49,6 +65,10 @@ tt relies on some well-written and well-documented projects and libraries for it
 .. _AppVeyor: https://www.appveyor.com/
 .. _Read the Docs: https://readthedocs.org/
 
+.. _logic gate SVGs: https://www.mbeckler.org/inkscape/drawings/
+
+.. _PicoSAT: http://fmv.jku.at/picosat/
+
 .. _Alabaster: http://alabaster.readthedocs.io/en/latest/
 .. _Babel: http://babel.pocoo.org/en/latest/
 .. _Colorama: https://github.com/tartley/colorama
@@ -61,6 +81,7 @@ tt relies on some well-written and well-documented projects and libraries for it
 .. _pep8: http://pep8.readthedocs.io/
 .. _pluggy: https://github.com/pytest-dev/pluggy
 .. _py: https://github.com/pytest-dev/py
+.. _pyenv: https://github.com/pyenv/pyenv
 .. _pyflakes: https://github.com/PyCQA/pyflakes
 .. _Pygments: http://pygments.org/
 .. _Python: https://www.python.org/
