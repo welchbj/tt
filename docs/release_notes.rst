@@ -17,6 +17,9 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Update ``__iter__`` in  :class:`TruthTable <tt.tables.truth_table.TruthTable>` to yield inputs as a :func:`namedtuple <python:collections.namedtuple>`-like object rather than a plain :class:`tuple <python:tuple>`
     * Re-organize :doc:`User Guide </user_guide>` into different sections instead of one long page
     * Remove PyPy support, due to addition of C-extensions
+    * Add OS X builds to Travis
+    * Include both 32-bit and 64-bit builds on AppVeyor
+    * Add initial wrapper around `PicoSAT`_ library for future satisfiability interface; namely, the :func:`sat_one <tt.satisfiability.picosat.sat_one>` method
 
 0.5.x
 -----
@@ -57,4 +60,5 @@ Unfortunatley, release notes were not kept before the 0.5.0 release.
 
 .. _doctest: https://docs.python.org/3/library/doctest.html
 .. _Napoleon: http://www.sphinx-doc.org/en/stable/ext/napoleon.html
+.. _PicoSAT: http://fmv.jku.at/picosat/
 .. _Sphinx: http://www.sphinx-doc.org/en/stable/index.html
