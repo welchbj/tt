@@ -52,11 +52,12 @@ If you're going to be working for a little bit, it's usually more convenient to 
 Building C-extensions
 ---------------------
 
-tt contains some C-extensions that need to be built before the library is fully usable. They can be built in a development environment by running::
+tt contains some C-extensions that need to be built before the library is fully usable. They can be built and installed in a development environment by running::
 
+    python setup.py build
     python setup.py develop
 
-from the project's top-level directory. There are some dependencies required for compiling these extensions. Let's start with what to do on Windows. You will need to install several different compilers:
+from the project's top-level directory. There are some dependencies required for compiling these extensions, which can be a little difficult to get up and running on Windows. You will need to install several different compilers:
 
     * `Microsoft Visual C++ 9.0`_ (for Python 2.7)
     * `Microsoft Visual C++ 10.0`_ (for Python 3.3 and 3.4)
