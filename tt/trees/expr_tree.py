@@ -94,8 +94,9 @@ class BooleanExpressionTree(object):
                     node = UnaryOperatorExpressionTreeNode(
                         token, stack.pop())
                 else:
+                    right, left = stack.pop(), stack.pop()
                     node = BinaryOperatorExpressionTreeNode(
-                        token, stack.pop(), stack.pop())
+                        token, left, right)
             else:
                 node = OperandExpressionTreeNode(token)
 

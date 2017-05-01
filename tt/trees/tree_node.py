@@ -76,14 +76,16 @@ class ExpressionTreeNode(object):
 
         ret += '\n'
 
-        if self.r_child is not None:
-            ret += self.r_child.__str__(
-                depth=depth+1,
-                indent_size=indent_size,
-                stem_list=stem_list + ['|'])
+        l_child_stem = '|' if self._r_child is not None else ' '
 
         if self._l_child is not None:
             ret += self._l_child.__str__(
+                depth=depth+1,
+                indent_size=indent_size,
+                stem_list=stem_list + [l_child_stem])
+
+        if self.r_child is not None:
+            ret += self.r_child.__str__(
                 depth=depth+1,
                 indent_size=indent_size,
                 stem_list=stem_list + [' '])

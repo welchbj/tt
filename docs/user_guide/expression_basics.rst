@@ -80,7 +80,7 @@ While there is no explicit grammar for expressions in tt, using your best judgem
 
     >>> from tt import OPERATOR_MAPPING
     >>> print(', '.join(sorted(OPERATOR_MAPPING.keys())))
-    !, &, &&, /\, AND, NAND, NOR, NOT, NXOR, OR, XNOR, XOR, \/, and, nand, nor, not, nxor, or, xnor, xor, |, ||, ~
+    !, &, &&, ->, /\, <->, AND, IFF, IMPL, NAND, NOR, NOT, NXOR, OR, XNOR, XOR, \/, and, iff, impl, nand, nor, not, nxor, or, xnor, xor, |, ||, ~
 
 Another possible source of errors in your expressions will be invalid symbol names. Due to some functionality based on accessing symbol names from :func:`namedtuple <python:collections.namedtuple>`-like objects, symbol names must meet the following criteria:
 

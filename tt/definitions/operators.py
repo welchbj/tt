@@ -80,6 +80,15 @@ TT_NOT_OP = BooleanOperator(_PRECEDENCE['HIGH'],
 
 """
 
+TT_IMPL_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
+                             lambda a, b: (not a) or b,
+                             'IMPL')
+"""tt's operator implementation of a Boolean IMPLIES.
+
+:type: :class:`BooleanOperator`
+
+"""
+
 TT_XOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
                             lambda a, b: a != b,
                             'XOR')
@@ -143,6 +152,14 @@ OPERATOR_MAPPING = {
 
     'xor': TT_XOR_OP,
     'XOR': TT_XOR_OP,
+
+    'impl': TT_IMPL_OP,
+    'IMPL': TT_IMPL_OP,
+    '->': TT_IMPL_OP,
+
+    'iff': TT_XNOR_OP,
+    'IFF': TT_XNOR_OP,
+    '<->': TT_XNOR_OP,
 
     'xnor': TT_XNOR_OP,
     'XNOR': TT_XNOR_OP,

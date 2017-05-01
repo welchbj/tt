@@ -62,34 +62,37 @@ class TestBooleanExpressionInit(ExpressionTestCase):
     def test_only_constants_symbolic_operators(self):
         """Test an expression of only constants and symbolic operators."""
         self.helper_test_tokenization(
-            '(!0&&1||(~~0||~~1))&&((0\\/1)/\\!0)',
-            expected_tokens=['(', '!', '0', '&&', '1', '||', '(', '~', '~',
-                             '0', '||', '~', '~', '1', ')', ')', '&&', '(',
-                             '(', '0', '\\/', '1', ')', '/\\', '!', '0', ')'],
-            expected_postfix_tokens=['0', '!', '1', '&&', '0', '~', '~', '1',
-                                     '~', '~', '||', '||', '0', '1', '\\/',
-                                     '0', '!', '/\\', '&&'],
+            '1->((!0&&1||(~~0||~~1))&&((0\\/1)/\\!0))',
+            expected_tokens=[
+                '1', '->', '(', '(', '!', '0', '&&', '1', '||', '(', '~', '~',
+                '0', '||', '~', '~', '1', ')', ')', '&&', '(', '(', '0', '\\/',
+                '1', ')', '/\\', '!', '0', ')', ')'],
+            expected_postfix_tokens=[
+                '1', '0', '!', '1', '&&', '0', '~', '~', '1', '~', '~', '||',
+                '||', '0', '1', '\\/', '0', '!', '/\\', '&&', '->'],
             expected_symbols=[],
             expected_tree_str='\n'.join((
-                '&&',
-                '`----||',
-                '|    `----&&',
-                '|    |    `----!',
-                '|    |    |    `----0',
-                '|    |    `----1',
-                '|    `----||',
-                '|         `----~',
-                '|         |    `----~',
-                '|         |         `----0',
-                '|         `----~',
-                '|              `----~',
-                '|                   `----1',
-                '`----/\\',
-                '     `----\\/',
-                '     |    `----0',
-                '     |    `----1',
-                '     `----!',
-                '          `----0')))
+                '->',
+                '`----1',
+                '`----&&',
+                '     `----||',
+                '     |    `----&&',
+                '     |    |    `----!',
+                '     |    |    |    `----0',
+                '     |    |    `----1',
+                '     |    `----||',
+                '     |         `----~',
+                '     |         |    `----~',
+                '     |         |         `----0',
+                '     |         `----~',
+                '     |              `----~',
+                '     |                   `----1',
+                '     `----/\\',
+                '          `----\\/',
+                '          |    `----0',
+                '          |    `----1',
+                '          `----!',
+                '               `----0')))
 
     def test_only_constants_plain_english_operators(self):
         """Test an expression of only constants and plain English operators."""
@@ -121,6 +124,32 @@ class TestBooleanExpressionInit(ExpressionTestCase):
                 '     `----and',
                 '          `----1',
                 '          `----0')))
+
+    def test_many_symbolic_impl_iff(self):
+        """Test a combination of many <-> and -> symbolic operators."""
+        self.helper_test_tokenization(
+            'A->B<->C->(D->(E<->F))<->G',
+            expected_tokens=[
+                'A', '->', 'B', '<->', 'C', '->', '(', 'D', '->', '(', 'E',
+                '<->', 'F', ')', ')', '<->', 'G'],
+            expected_postfix_tokens=[
+                'A', 'B', 'C', 'D', 'E', 'F', '<->', '->', 'G', '<->', '->',
+                '<->', '->'],
+            expected_symbols=['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+            expected_tree_str='\n'.join((
+                '->',
+                '`----A',
+                '`----<->',
+                '     `----B',
+                '     `----->',
+                '          `----C',
+                '          `----<->',
+                '               `----->',
+                '               |    `----D',
+                '               |    `----<->',
+                '               |         `----E',
+                '               |         `----F',
+                '               `----G')))
 
     def test_superfluous_parentheses_symbolic_operators(self):
         """Test symbolic operators with unnecessary parentheses."""

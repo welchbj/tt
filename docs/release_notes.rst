@@ -9,6 +9,11 @@ Check below for new features added in each release. Please note that release not
 
 Features in the 0.6.x series of releases are focused on expanding functionality to include expression optimization, satisfiability, and transformations.
 
+0.6.1
+`````
+
+    * Add iff and implies Boolean operators
+
 0.6.0
 `````
     * Add :func:`is_valid_identifier <tt.definitions.operands.is_valid_identifier>` helper method for checking if symbol names are valid

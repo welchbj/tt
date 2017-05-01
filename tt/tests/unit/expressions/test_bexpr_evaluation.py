@@ -46,6 +46,40 @@ class TestBooleanExpressionEvaluation(ExpressionTestCase):
                 A=inputs[0],
                 B=inputs[1])
 
+    def test_basic_iff(self):
+        """Test a basic expression with the Boolean IFF operator."""
+        cases = {
+            (0, 0): 1,
+            (0, 1): 0,
+            (1, 0): 0,
+            (1, 1): 1
+        }
+
+        for inputs, output in cases.items():
+            for operator in ('iff', 'IFF', '<->'):
+                self.helper_test_evaluate(
+                    'A {} B'.format(operator),
+                    expected_result=output,
+                    A=inputs[0],
+                    B=inputs[1])
+
+    def test_basic_implies(self):
+        """Test a basic expression with the Boolean IMPLIES operator."""
+        cases = {
+            (0, 0): 1,
+            (0, 1): 1,
+            (1, 0): 0,
+            (1, 1): 1
+        }
+
+        for inputs, output in cases.items():
+            for operator in ('impl', 'IMPL', '->'):
+                self.helper_test_evaluate(
+                    'A {} B'.format(operator),
+                    expected_result=output,
+                    A=inputs[0],
+                    B=inputs[1])
+
     def test_basic_xnor(self):
         """Test a basic expression with the Boolean XNOR operator."""
         cases = {
