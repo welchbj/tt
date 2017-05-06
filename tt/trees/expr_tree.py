@@ -87,7 +87,6 @@ class BooleanExpressionTree(object):
         Here are a few examples::
 
             >>> from tt import BooleanExpressionTree as bet
-            >>> from tt import BooleanExpressionTree as bet
             >>> b = bet(['A', 'B', 'xor'])
             >>> print(b)
             xor
