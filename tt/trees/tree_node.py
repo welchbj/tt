@@ -1,6 +1,7 @@
 """A node, and related classes, for use in expression trees."""
 
-from ..definitions import MAX_OPERATOR_STR_LEN, OPERATOR_MAPPING
+from ..definitions import (MAX_OPERATOR_STR_LEN, OPERATOR_MAPPING, TT_AND_OP,
+                           TT_OR_OP)
 
 
 _DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
@@ -8,7 +9,13 @@ _DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
 
 class ExpressionTreeNode(object):
 
-    """A base class for expression tree nodes."""
+    """A base class for expression tree nodes.
+
+    This class is extended within tt and is not meant to be used
+    directly. If you plan to extend it, note that descendants of this class
+    must compute the ``_is_cnf`` boolean attribute within their initialization.
+
+    """
 
     def __init__(self, symbol_name, l_child=None, r_child=None):
         self._symbol_name = symbol_name
@@ -26,7 +33,7 @@ class ExpressionTreeNode(object):
 
     @property
     def l_child(self):
-        """ This node's left child; ``None`` indicates the absence of a child.
+        """This node's left child; ``None`` indicates the absence of a child.
 
         :type: :class:`ExpressionTreeNode`, optional
 
@@ -35,26 +42,32 @@ class ExpressionTreeNode(object):
 
     @property
     def r_child(self):
-        """ This node's left child; ``None`` indicates the absence of a child.
+        """This node's left child; ``None`` indicates the absence of a child.
 
         :type: :class:`ExpressionTreeNode`, optional
 
         """
         return self._r_child
 
+    @property
+    def is_cnf(self):
+        """Whether the tree rooted at this node is in cnf form.
+
+        :type: :class:`bool <python:bool>`
+
+        """
+        return self._is_cnf
+
     def evaluate(self, input_dict):
         """Recursively evaluate this node.
 
-        This is an interface that should be defined in sub-classes.
+        This is an interface that should be defined in sub-classes. Node
+        evaluation does no checking of the validity of inputs; they should be
+        check before being passed here.
 
         :param input_dict: A dictionary mapping expression symbols to the value
             for which they should be subsituted in expression evaluation.
-        :type input_dict: Dict{:class:`str <python:str>`: truthy}
-
-        .. note::
-
-            Node evaluation does no checking of the validity of inputs; they
-            should be check before being passed here.
+        :type input_dict: Dict{:class:`str <python:str>`: truthy
 
         :returns: The evaluation of the tree rooted at this node.
         :rtype: :class:`bool <python:bool>`
@@ -102,6 +115,7 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             operator_str, l_child, r_child)
 
         self._operator = OPERATOR_MAPPING[operator_str]
+        self._is_cnf = self._cnf_status()
 
     @property
     def operator(self):
@@ -118,6 +132,35 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.l_child.evaluate(input_dict),
             self.r_child.evaluate(input_dict))
 
+    def _cnf_status(self):
+        """Helper to determine cnf status of tree rooted at this node.
+
+        :returns: True if the tree rooted at this node is in cnf form,
+            otherwise False.
+        :rtype: :class:`bool <python:bool>`
+
+        """
+        if self._operator != TT_AND_OP and self._operator != TT_OR_OP:
+            return False
+
+        if not self.l_child.is_cnf or not self.r_child.is_cnf:
+            return False
+
+        if self._operator == TT_AND_OP:
+            if isinstance(self.l_child, BinaryOperatorExpressionTreeNode):
+                if self.l_child.operator != TT_OR_OP:
+                    return False
+
+        if self._operator == TT_OR_OP:
+            if isinstance(self.l_child, BinaryOperatorExpressionTreeNode):
+                return False
+
+            if isinstance(self.r_child, BinaryOperatorExpressionTreeNode):
+                if self.r_child.operator != TT_OR_OP:
+                    return False
+
+        return True
+
 
 class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
@@ -128,6 +171,7 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
             operator_str, l_child)
 
         self._operator = OPERATOR_MAPPING[operator_str]
+        self._is_cnf = isinstance(self.l_child, OperandExpressionTreeNode)
 
     @property
     def operator(self):
@@ -154,6 +198,7 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
 
     def __init__(self, operand_str):
         super(OperandExpressionTreeNode, self).__init__(operand_str)
+        self._is_cnf = True
 
     def evaluate(self, input_dict):
         if self.symbol_name == '0':
