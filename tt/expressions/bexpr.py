@@ -18,6 +18,10 @@ class BooleanExpression(object):
 
     Instances of ``BooleanExpression`` are meant to be immutable.
 
+    :param raw_expr: The raw string expression that this expression object
+        represents.
+    :type raw_expr: :class:`str <python:str>`
+
     """
 
     def __init__(self, raw_expr):
