@@ -60,4 +60,3 @@ class TestExpressionTreeInit(unittest.TestCase):
                              'B', 'C', 'or',
                              'E', 'F', 'G', 'or', 'or',
                              'and', 'and']).is_cnf)
-
