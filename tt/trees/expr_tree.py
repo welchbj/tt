@@ -43,6 +43,21 @@ class BooleanExpressionTree(object):
         >>> tree.is_cnf
         True
 
+    When printing trees, it is important to note that the ordering of children
+    will always be left and then right. Let's illustrate this by continuing our
+    above example::
+
+        >>> print(tree.root.l_child)
+        or
+        `----A
+        `----B
+        >>> print(tree.root.r_child)
+        or
+        `----C
+        `----or
+             `----D
+             `----E
+
     """
 
     def __init__(self, postfix_tokens):
@@ -176,4 +191,4 @@ class BooleanExpressionTree(object):
         self._root = stack.pop()
 
     def __str__(self):
-        return str(self._root)[:-1]
+        return str(self._root)

@@ -76,7 +76,12 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement `evaluate`.')
 
-    def __str__(self, depth=0, indent_size=_DEFAULT_INDENT_SIZE, stem_list=[]):
+    def __str__(self):
+        return self._str_helper()[:-1]
+
+    def _str_helper(self, depth=0, indent_size=_DEFAULT_INDENT_SIZE,
+                    stem_list=[]):
+        """Helper method for __str__."""
         ret = ''
 
         if depth > 0:
@@ -92,13 +97,13 @@ class ExpressionTreeNode(object):
         l_child_stem = '|' if self._r_child is not None else ' '
 
         if self._l_child is not None:
-            ret += self._l_child.__str__(
+            ret += self._l_child._str_helper(
                 depth=depth+1,
                 indent_size=indent_size,
                 stem_list=stem_list + [l_child_stem])
 
         if self.r_child is not None:
-            ret += self.r_child.__str__(
+            ret += self.r_child._str_helper(
                 depth=depth+1,
                 indent_size=indent_size,
                 stem_list=stem_list + [' '])
