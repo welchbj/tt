@@ -14,7 +14,7 @@ class BooleanExpressionTree(object):
     This class expects any input it receives to be well-formed; any tokenized
     lists you pass it directly (instead of from the attribute of the
     :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` class)
-    will not be checked.
+    will not be checked. Like expressions, expression trees cannot be empty.
 
     :param postfix_tokens: A list of tokens in postfix order, representing the
         structure of the tree; the validity/order of this list is not checked.
@@ -85,7 +85,7 @@ class BooleanExpressionTree(object):
 
     @property
     def root(self):
-        """The root of the tree; this is ``None`` for an empty tree.
+        """The root of the tree.
 
         :type: :class:`ExpressionTreeNode\
                        <tt.trees.tree_node.ExpressionTreeNode>`
