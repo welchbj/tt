@@ -13,6 +13,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 `````
 
     * Add iff and implies Boolean operators
+    * Add :data:`is_cnf <tt.expressions.bexpr.BooleanExpression.is_cnf>` attribute to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
 
 0.6.0
 `````

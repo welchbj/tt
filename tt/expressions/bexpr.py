@@ -42,6 +42,25 @@ class BooleanExpression(object):
         self._tree = BooleanExpressionTree(self._postfix_tokens)
 
     @property
+    def is_cnf(self):
+        """Whether this expression is in CNF form or not.
+
+        :type: :class:`bool <python:bool>`
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(A or ~B) and (~C or D or E) and F')
+            >>> b.is_cnf
+            True
+            >>> b = BooleanExpression('A nand B')
+            >>> b.is_cnf
+            False
+
+        """
+        return self._tree.is_cnf
+
+    @property
     def raw_expr(self):
         """The raw string expression, parsed upon initialization.
 
