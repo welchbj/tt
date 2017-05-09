@@ -111,18 +111,22 @@ def test():
         os.path.join(USER_GUIDE_DIR, 'table_basics.rst')
     ]
 
+    common_doctest_kwargs = dict(
+        optionflags=doctest.IGNORE_EXCEPTION_DETAIL
+    )
+
     for module in doctest_modules:
         suite.addTests(
             doctest.DocTestSuite(
                 module,
-                optionflags=doctest.IGNORE_EXCEPTION_DETAIL))
+                **common_doctest_kwargs))
 
     for file in doctest_files:
         suite.addTests(
             doctest.DocFileSuite(
                 file,
                 module_relative=False,
-                optionflags=doctest.IGNORE_EXCEPTION_DETAIL))
+                **common_doctest_kwargs))
 
     runner = unittest.TextTestRunner()
     result = runner.run(suite)
