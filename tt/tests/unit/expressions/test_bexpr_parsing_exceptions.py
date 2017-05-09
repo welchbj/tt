@@ -6,7 +6,7 @@ from ....errors import (BadParenPositionError, EmptyExpressionError,
                         InvalidIdentifierError, UnbalancedParenError)
 
 
-class TestBooleanExpressionInitExceptions(ExpressionTestCase):
+class TestBooleanExpressionParsingExceptions(ExpressionTestCase):
 
     def test_non_str(self):
         """Test passing something other than a str to __init__"""

@@ -4,7 +4,7 @@ from ._helpers import ExpressionTestCase
 from ....definitions import OPERATOR_MAPPING, TT_NOT_OP
 
 
-class TestBooleanExpressionInit(ExpressionTestCase):
+class TestBooleanExpressionParsing(ExpressionTestCase):
 
     def test_all_binary_operators(self):
         """Basic test for all binary operators, to ensure correct parsing."""
