@@ -1,11 +1,11 @@
-"""Tests for the initialization of expression trees."""
+"""Tests for CNF detection in expression trees."""
 
 import unittest
 
 from tt.trees import BooleanExpressionTree as bet
 
 
-class TestExpressionTreeInit(unittest.TestCase):
+class TestExpressionTreeIsCnf(unittest.TestCase):
 
     def test_is_cnf_single_operand(self):
         """Test cnf determination for single operand trees."""
