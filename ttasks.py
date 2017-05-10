@@ -106,10 +106,13 @@ def test():
     ]
 
     doctest_files = [
-        os.path.join(HERE, 'README.rst'),
         os.path.join(USER_GUIDE_DIR, 'expression_basics.rst'),
         os.path.join(USER_GUIDE_DIR, 'table_basics.rst')
     ]
+
+    if sys.version_info.major >= 3:
+        # only test the readme in Python 3
+        doctest_files.append(os.path.join(HERE, 'README.rst'))
 
     common_doctest_kwargs = dict(
         optionflags=doctest.IGNORE_EXCEPTION_DETAIL
