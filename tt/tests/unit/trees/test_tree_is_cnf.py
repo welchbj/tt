@@ -2,61 +2,76 @@
 
 import unittest
 
-from tt.trees import BooleanExpressionTree as bet
+from tt.trees import BooleanExpressionTree
 
 
 class TestExpressionTreeIsCnf(unittest.TestCase):
 
+    def assert_is_cnf(self, postfix_tokens):
+        """Assert the passed tokens are in conjunctive normal form."""
+        self.assertTrue(BooleanExpressionTree(postfix_tokens).is_cnf)
+
+    def assert_not_cnf(self, postfix_tokens):
+        """Assert the passed tokens are not in conjunctive normal form."""
+        self.assertFalse(BooleanExpressionTree(postfix_tokens).is_cnf)
+
     def test_is_cnf_single_operand(self):
         """Test cnf determination for single operand trees."""
         for postfix_tokens in (['0'], ['1'], ['token']):
-            self.assertTrue(bet(postfix_tokens).is_cnf)
+            self.assert_is_cnf(postfix_tokens)
 
     def test_is_cnf_only_unary_operators(self):
         """Test cnf determination for trees with only unary operators."""
-        self.assertTrue(bet(['A', 'not']).is_cnf)
-        self.assertFalse(bet(['A', 'not', 'not']).is_cnf)
-        self.assertFalse(bet(['A', 'not', 'not', 'not']).is_cnf)
+        self.assert_is_cnf(['A', 'not'])
+        self.assert_not_cnf(['A', 'not', 'not'])
+        self.assert_not_cnf(['A', 'not', 'not', 'not'])
 
     def test_is_cnf_single_clause(self):
         """Test that a single clause of ORed operands is in cnf form."""
-        self.assertTrue(bet(['op1', 'op2', 'or']).is_cnf)
-        self.assertTrue(bet(['A', 'B', 'C', 'D', 'or', 'or', 'or']).is_cnf)
-        self.assertTrue(bet(['A', '~', 'B', 'C', '~', 'or', 'or']).is_cnf)
+        self.assert_is_cnf(['op1', 'op2', 'or'])
+        self.assert_is_cnf(['A', 'B', 'C', 'D', 'or', 'or', 'or'])
+        self.assert_is_cnf(['A', '~', 'B', 'C', '~', 'or', 'or'])
 
     def test_is_cnf_clauses_of_single_operands(self):
         """Test several ANDed clauses of single operands is in cnf form."""
-        self.assertTrue(bet(['op1', 'op2', 'and']).is_cnf)
-        self.assertTrue(bet(['A', 'B', 'C', 'D', 'and', 'and', 'and']).is_cnf)
-        self.assertTrue(bet(['A', 'B', 'not', 'C', 'and', 'and']).is_cnf)
+        self.assert_is_cnf(['op1', 'op2', 'and'])
+        self.assert_is_cnf(['A', 'B', 'C', 'D', 'and', 'and', 'and'])
+        self.assert_is_cnf(['A', 'B', 'not', 'C', 'and', 'and'])
 
     def test_is_cnf_contains_non_primitive_operator_in_clause(self):
         """Test cases where non-primitive operator is in a clause."""
-        self.assertFalse(bet(['A', 'B', 'or',
-                              'C', 'D', 'or',
-                              'D', 'E', 'nand',
-                              'and', 'and']).is_cnf)
-        self.assertFalse(bet(['A', 'B', 'C', 'xor', 'or',
-                              'A', 'B', 'or',
-                              'and']).is_cnf)
+        self.assert_not_cnf(['A', 'B', 'or',
+                             'C', 'D', 'or',
+                             'D', 'E', 'nand',
+                             'and', 'and'])
+        self.assert_not_cnf(['A', 'B', 'C', 'xor', 'or',
+                             'A', 'B', 'or',
+                             'and'])
 
     def test_is_cnf_contains_non_primitive_operator_joining_clauses(self):
         """Test cases where non-primitive operator joins clauses."""
-        self.assertFalse(bet(['A', 'B', '<->']).is_cnf)
-        self.assertFalse(bet(['A', 'B', 'or',
-                              'B', 'C', 'or',
-                              'C', 'E', 'or',
-                              '->', 'and']).is_cnf)
+        self.assert_not_cnf(['A', 'B', '<->'])
+        self.assert_not_cnf(['A', 'B', 'or',
+                             'B', 'C', 'or',
+                             'C', 'E', 'or',
+                             '->', 'and'])
 
     def test_is_cnf_contains_notted_clause(self):
         """Test cases where an entire clause is notted."""
-        self.assertFalse(bet(['A', 'B', 'or', 'not',
-                              'C', 'D', 'or',
-                              'and']).is_cnf)
+        self.assert_not_cnf(['A', 'B', 'or', 'not',
+                             'C', 'D', 'or',
+                             'and'])
 
     def test_is_cnf_multiple_clauses(self):
-        """Test cnf determination for mulitple clauses."""
-        self.assertTrue(bet(['A', 'C', 'or',
-                             'B', 'C', 'or',
-                             'E', 'F', 'G', 'or', 'or',
-                             'and', 'and']).is_cnf)
+        """Test CNF determination for multiple clauses."""
+        self.assert_is_cnf(['A', 'C', 'or',
+                            'B', 'C', 'or',
+                            'E', 'F', 'G', 'or', 'or',
+                            'and', 'and'])
+
+    def test_is_cnf_for_dnf_expression(self):
+        """Test CNF determination for an expression in DNF."""
+        self.assert_not_cnf(['A', 'B', 'C', 'and', 'and',
+                             'B', 'C', 'not', 'and',
+                             'D', 'E', 'and',
+                             'or', 'or'])
