@@ -43,7 +43,7 @@ class BooleanExpression(object):
 
     @property
     def is_cnf(self):
-        """Whether this expression is in CNF form or not.
+        """Whether this expression is in conjunctive norma form or not.
 
         :type: :class:`bool <python:bool>`
 
@@ -59,6 +59,25 @@ class BooleanExpression(object):
 
         """
         return self._tree.is_cnf
+
+    @property
+    def is_dnf(self):
+        """Whether this expression is in conjunctive norma form or not.
+
+        :type: :class:`bool <python:bool>`
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(A and B) or (~C and D)')
+            >>> b.is_dnf
+            True
+            >>> b = BooleanExpression('(op1 or !op2) and (op3 or op4)')
+            >>> b.is_dnf
+            False
+
+        """
+        return self._tree.is_dnf
 
     @property
     def raw_expr(self):

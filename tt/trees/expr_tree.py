@@ -1,7 +1,7 @@
 """An expression tree implementation for Boolean expressions."""
 
-from ..errors import InvalidArgumentTypeError, InvalidArgumentValueError
 from ..definitions import OPERATOR_MAPPING, TT_NOT_OP
+from ..errors import InvalidArgumentTypeError, InvalidArgumentValueError
 from .tree_node import (BinaryOperatorExpressionTreeNode,
                         OperandExpressionTreeNode,
                         UnaryOperatorExpressionTreeNode)
@@ -95,7 +95,7 @@ class BooleanExpressionTree(object):
 
     @property
     def is_cnf(self):
-        """Whether this tree is in cnf form.
+        """Whether this tree is in conjunctive normal form.
 
         :type: :class:`bool <python:bool>`
 
@@ -134,6 +134,57 @@ class BooleanExpressionTree(object):
 
         """
         return self._root.is_cnf
+
+    @property
+    def is_dnf(self):
+        """Whether this tree is in disjunctive normal form.
+
+        :type: :class:`bool <python:bool>`
+
+        Here a few examples::
+            >>> from tt import BooleanExpressionTree as bet
+            >>> b = bet(['A', 'B', 'or',
+            ...          'C', 'D', 'or',
+            ...          'and'])
+            >>> print(b)
+            and
+            `----or
+            |    `----A
+            |    `----B
+            `----or
+                 `----C
+                 `----D
+            >>> b.is_dnf
+            False
+            >>> b.is_cnf
+            True
+            >>> b = bet(['A', 'B', 'C', 'and', 'and',
+            ...          'D', 'E', 'F', 'G', 'and', 'and', 'and',
+            ...          'H', 'I', 'and',
+            ...          'or', 'or'])
+            >>> print(b)
+            or
+            `----and
+            |    `----A
+            |    `----and
+            |         `----B
+            |         `----C
+            `----or
+                 `----and
+                 |    `----D
+                 |    `----and
+                 |         `----E
+                 |         `----and
+                 |              `----F
+                 |              `----G
+                 `----and
+                      `----H
+                      `----I
+            >>> b.is_dnf
+            True
+
+        """
+        return self._root.is_dnf
 
     def evaluate(self, input_dict):
         """Evaluate the expression held in this tree for specified inputs.

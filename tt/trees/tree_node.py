@@ -13,7 +13,8 @@ class ExpressionTreeNode(object):
 
     This class is extended within tt and is not meant to be used
     directly. If you plan to extend it, note that descendants of this class
-    must compute the ``_is_cnf`` boolean attribute within their initialization.
+    must compute the ``_is_cnf`` and ``_is_dnf`` boolean attributes within
+    their initialization.
 
     """
 
@@ -51,12 +52,21 @@ class ExpressionTreeNode(object):
 
     @property
     def is_cnf(self):
-        """Whether the tree rooted at this node is in cnf form.
+        """Whether the tree rooted at this node is in conjunctive normal form.
 
         :type: :class:`bool <python:bool>`
 
         """
         return self._is_cnf
+
+    @property
+    def is_dnf(self):
+        """Whether the tree rooted at this node is in disjunctive normal form.
+
+        :type: :class:`bool <python:bool>`
+
+        """
+        return self._is_dnf
 
     def evaluate(self, input_dict):
         """Recursively evaluate this node.
@@ -121,6 +131,7 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
         self._operator = OPERATOR_MAPPING[operator_str]
         self._is_cnf = self._cnf_status()
+        self._is_dnf = self._dnf_status()
 
     @property
     def operator(self):
@@ -138,17 +149,18 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.r_child.evaluate(input_dict))
 
     def _cnf_status(self):
-        """Helper to determine cnf status of tree rooted at this node.
+        """Helper to determine CNF status of the tree rooted at this node.
 
-        :returns: True if the tree rooted at this node is in cnf form,
-            otherwise False.
+        :returns: True if the tree rooted at this node is in conjunctive
+            normal form, otherwise False.
         :rtype: :class:`bool <python:bool>`
 
         """
-        if self._operator != TT_AND_OP and self._operator != TT_OR_OP:
-            return False
 
         if not self.l_child.is_cnf or not self.r_child.is_cnf:
+            return False
+
+        if self._operator != TT_AND_OP and self._operator != TT_OR_OP:
             return False
 
         if self._operator == TT_AND_OP:
@@ -166,6 +178,35 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
         return True
 
+    def _dnf_status(self):
+        """Helper to determine DNF status of the tree rooted at this node.
+
+        :returns: True if the tree rooted at this node is in disjunctive
+            normal form, otherwise False.
+        :rtype: :class:`bool <python:bool>`
+
+        """
+        if not self.l_child.is_dnf or not self.r_child.is_dnf:
+            return False
+
+        if self._operator != TT_AND_OP and self._operator != TT_OR_OP:
+            return False
+
+        if self._operator == TT_OR_OP:
+            if isinstance(self.l_child, BinaryOperatorExpressionTreeNode):
+                if self.l_child.operator != TT_AND_OP:
+                    return False
+
+        if self._operator == TT_AND_OP:
+            if isinstance(self.l_child, BinaryOperatorExpressionTreeNode):
+                return False
+
+            if isinstance(self.r_child, BinaryOperatorExpressionTreeNode):
+                if self.r_child.operator != TT_AND_OP:
+                    return False
+
+        return True
+
 
 class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
@@ -177,6 +218,7 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
         self._operator = OPERATOR_MAPPING[operator_str]
         self._is_cnf = isinstance(self.l_child, OperandExpressionTreeNode)
+        self._is_dnf = self._is_cnf
 
     @property
     def operator(self):
@@ -204,6 +246,7 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
     def __init__(self, operand_str):
         super(OperandExpressionTreeNode, self).__init__(operand_str)
         self._is_cnf = True
+        self._is_dnf = True
 
     def evaluate(self, input_dict):
         if self.symbol_name == '0':

@@ -27,13 +27,13 @@ class TestExpressionTreeIsCnf(unittest.TestCase):
         self.assert_not_cnf(['A', 'not', 'not', 'not'])
 
     def test_is_cnf_single_clause(self):
-        """Test that a single clause of ORed operands is in CNF form."""
+        """Test that a single clause of ORed operands is in CNF."""
         self.assert_is_cnf(['op1', 'op2', 'or'])
         self.assert_is_cnf(['A', 'B', 'C', 'D', 'or', 'or', 'or'])
         self.assert_is_cnf(['A', '~', 'B', 'C', '~', 'or', 'or'])
 
     def test_is_cnf_clauses_of_single_operands(self):
-        """Test several ANDed clauses of single operands is in CNF form."""
+        """Test several ANDed clauses of single operands is in CNF."""
         self.assert_is_cnf(['op1', 'op2', 'and'])
         self.assert_is_cnf(['A', 'B', 'C', 'D', 'and', 'and', 'and'])
         self.assert_is_cnf(['A', 'B', 'not', 'C', 'and', 'and'])

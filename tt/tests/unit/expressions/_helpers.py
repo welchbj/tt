@@ -11,12 +11,20 @@ class ExpressionTestCase(unittest.TestCase):
     """An extended TestCase with helpers for testing expressions."""
 
     def assert_is_cnf(self, expr_str):
-        """Assert an expression (given as a string) is in cnf form."""
+        """Assert an expression (given as a string) is in CNF."""
         self.assertTrue(BooleanExpression(expr_str).is_cnf)
 
     def assert_not_cnf(self, expr_str):
-        """Assert an expression (given as a string) is not in cnf form."""
+        """Assert an expression (given as a string) is not in CNF."""
         self.assertFalse(BooleanExpression(expr_str).is_cnf)
+
+    def assert_is_dnf(self, expr_str):
+        """Assert an expression (given as a string) is in DNF."""
+        self.assertTrue(BooleanExpression(expr_str).is_dnf)
+
+    def assert_not_dnf(self, expr_str):
+        """Assert an expression (given as a string) is not in DNF."""
+        self.assertFalse(BooleanExpression(expr_str).is_dnf)
 
     def helper_test_evaluate(self, expr, expected_result=None, **kwargs):
         """Helper for testing the evaluation of expressions.
