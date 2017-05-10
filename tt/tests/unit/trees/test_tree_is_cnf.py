@@ -16,24 +16,24 @@ class TestExpressionTreeIsCnf(unittest.TestCase):
         self.assertFalse(BooleanExpressionTree(postfix_tokens).is_cnf)
 
     def test_is_cnf_single_operand(self):
-        """Test cnf determination for single operand trees."""
+        """Test CNF determination for single operand trees."""
         for postfix_tokens in (['0'], ['1'], ['token']):
             self.assert_is_cnf(postfix_tokens)
 
     def test_is_cnf_only_unary_operators(self):
-        """Test cnf determination for trees with only unary operators."""
+        """Test CNF determination for trees with only unary operators."""
         self.assert_is_cnf(['A', 'not'])
         self.assert_not_cnf(['A', 'not', 'not'])
         self.assert_not_cnf(['A', 'not', 'not', 'not'])
 
     def test_is_cnf_single_clause(self):
-        """Test that a single clause of ORed operands is in cnf form."""
+        """Test that a single clause of ORed operands is in CNF form."""
         self.assert_is_cnf(['op1', 'op2', 'or'])
         self.assert_is_cnf(['A', 'B', 'C', 'D', 'or', 'or', 'or'])
         self.assert_is_cnf(['A', '~', 'B', 'C', '~', 'or', 'or'])
 
     def test_is_cnf_clauses_of_single_operands(self):
-        """Test several ANDed clauses of single operands is in cnf form."""
+        """Test several ANDed clauses of single operands is in CNF form."""
         self.assert_is_cnf(['op1', 'op2', 'and'])
         self.assert_is_cnf(['A', 'B', 'C', 'D', 'and', 'and', 'and'])
         self.assert_is_cnf(['A', 'B', 'not', 'C', 'and', 'and'])
