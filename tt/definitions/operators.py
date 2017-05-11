@@ -143,23 +143,43 @@ TT_NOR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
 
 """
 
-
-OPERATOR_MAPPING = {
-    'not': TT_NOT_OP,
-    'NOT': TT_NOT_OP,
+SYMBOLIC_OPERATOR_MAPPING = {
     '~': TT_NOT_OP,
     '!': TT_NOT_OP,
+
+    '->': TT_IMPL_OP,
+
+    '<->': TT_XNOR_OP,
+
+    '&&': TT_AND_OP,
+    '&': TT_AND_OP,
+    '/\\': TT_AND_OP,
+
+    '||': TT_OR_OP,
+    '|': TT_OR_OP,
+    '\\/': TT_OR_OP
+}
+"""A mapping of Boolean operators.
+
+This mapping includes the symbolic variants of the available Boolean
+operators.
+
+:type: Dict{:class:`str <python:str>`: :class:`BooleanOperator`}
+
+"""
+
+PLAIN_ENGLISH_OPERATOR_MAPPING = {
+    'not': TT_NOT_OP,
+    'NOT': TT_NOT_OP,
 
     'xor': TT_XOR_OP,
     'XOR': TT_XOR_OP,
 
     'impl': TT_IMPL_OP,
     'IMPL': TT_IMPL_OP,
-    '->': TT_IMPL_OP,
 
     'iff': TT_XNOR_OP,
     'IFF': TT_XNOR_OP,
-    '<->': TT_XNOR_OP,
 
     'xnor': TT_XNOR_OP,
     'XNOR': TT_XNOR_OP,
@@ -168,31 +188,38 @@ OPERATOR_MAPPING = {
 
     'and': TT_AND_OP,
     'AND': TT_AND_OP,
-    '&&': TT_AND_OP,
-    '&': TT_AND_OP,
-    '/\\': TT_AND_OP,
 
     'nand': TT_NAND_OP,
     'NAND': TT_NAND_OP,
 
     'or': TT_OR_OP,
     'OR': TT_OR_OP,
-    '||': TT_OR_OP,
-    '|': TT_OR_OP,
-    '\\/': TT_OR_OP,
 
     'nor': TT_NOR_OP,
     'NOR': TT_NOR_OP
 }
 """A mapping of Boolean operators.
 
-This mapping serves to define all valid operator strings and maps them to the
-appropriate :class:`BooleanOperator` object defining the operator behavior.
+This mapping includes the plain-English variants of the available Boolean
+operators.
 
 :type: Dict{:class:`str <python:str>`: :class:`BooleanOperator`}
 
 """
 
+OPERATOR_MAPPING = {}
+"""A mapping of all available Boolean operators.
+
+This dictionary is the concatentation of the
+:data:`PLAIN_ENGLISH_OPERATOR_MAPPING` and :data:`SYMBOLIC_OPERATOR_MAPPING`
+dictionaries.
+
+:type: Dict{:class:`str <python:str>`: :class:`BooleanOperator`}
+
+"""
+
+OPERATOR_MAPPING.update(PLAIN_ENGLISH_OPERATOR_MAPPING)
+OPERATOR_MAPPING.update(SYMBOLIC_OPERATOR_MAPPING)
 
 MAX_OPERATOR_STR_LEN = max(len(k) for k in OPERATOR_MAPPING.keys())
 """The length of the longest operator from :data:`OPERATOR_MAPPING`.
