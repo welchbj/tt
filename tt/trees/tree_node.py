@@ -1,7 +1,10 @@
 """A node, and related classes, for use in expression trees."""
 
-from ..definitions import (MAX_OPERATOR_STR_LEN, OPERATOR_MAPPING, TT_AND_OP,
-                           TT_OR_OP)
+from tt.definitions import (
+    MAX_OPERATOR_STR_LEN,
+    OPERATOR_MAPPING,
+    TT_AND_OP,
+    TT_OR_OP)
 
 
 _DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
@@ -13,8 +16,8 @@ class ExpressionTreeNode(object):
 
     This class is extended within tt and is not meant to be used
     directly. If you plan to extend it, note that descendants of this class
-    must compute the ``_is_cnf`` and ``_is_dnf`` boolean attributes within
-    their initialization.
+    must compute the ``_is_cnf``, ``_is_dnf``, and ``_is_really_unary`` boolean
+    attributes within their initialization.
 
     """
 
@@ -67,6 +70,15 @@ class ExpressionTreeNode(object):
 
         """
         return self._is_dnf
+
+    @property
+    def is_really_unary(self):
+        """Whether the tree rooted at this node contains no binary operators.
+
+        :type: :class:`bool <python:bool>`
+
+        """
+        return self._is_really_unary
 
     def evaluate(self, input_dict):
         """Recursively evaluate this node.
@@ -132,6 +144,7 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
         self._operator = OPERATOR_MAPPING[operator_str]
         self._is_cnf = self._cnf_status()
         self._is_dnf = self._dnf_status()
+        self._is_really_unary = False
 
     @property
     def operator(self):
@@ -219,6 +232,7 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         self._operator = OPERATOR_MAPPING[operator_str]
         self._is_cnf = isinstance(self.l_child, OperandExpressionTreeNode)
         self._is_dnf = self._is_cnf
+        self._is_really_unary = l_child._is_really_unary
 
     @property
     def operator(self):
@@ -247,6 +261,7 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         super(OperandExpressionTreeNode, self).__init__(operand_str)
         self._is_cnf = True
         self._is_dnf = True
+        self._is_really_unary = True
 
     def evaluate(self, input_dict):
         if self.symbol_name == '0':
