@@ -34,9 +34,33 @@ class BooleanExpression(object):
     """An interface for interacting with a Boolean expression.
 
     Instances of ``BooleanExpression`` are meant to be immutable and can be
-    instantiated from a few different representations of expressions::
+    instantiated from a few different representations of expressions. The
+    simplest way to make an expression object is from a string::
 
-        TODO
+        >>> from tt import BooleanExpression
+        >>> BooleanExpression('(A or B) iff (C and D)')
+        <BooleanExpression "(A or B) iff (C and D)">
+
+    If you already have an instance of :class:`BooleanExpressionTree \
+    <tt.trees.expr_tree.BooleanExpressionTree>` laying around, you can make a
+    new expression object from that, too::
+
+        >>> from tt import BooleanExpressionTree
+        >>> tree = BooleanExpressionTree(
+        ...     ['A', 'B', 'or',
+        ...      'C', 'D', 'and',
+        ...      'iff'])
+        >>> BooleanExpression(tree)
+        <BooleanExpression "(A or B) iff (C and D)">
+
+    Additionally, any tree node can be used to build an expression object.
+    Continuing from above, let's make a new expression object for each of the
+    sub-expressions wrapped in parentheses::
+
+        >>> BooleanExpression(tree.root.l_child)
+        <BooleanExpression "A or B">
+        >>> BooleanExpression(tree.root.r_child)
+        <BooleanExpression "C and D">
 
     :param expr: The expression representation from which this object is
         derived.
@@ -44,8 +68,21 @@ class BooleanExpression(object):
         <tt.trees.expr_tree.BooleanExpressionTree>`, or \
         :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
 
-    :raises GrammarError: If invalid identifiers or expression structure are
-        detected in the passed expression.
+    :raises BadParenPositionError: If the passed expression contains a
+        parenthesis in an invalid position.
+    :raises EmptyExpressionError: If the passed expressions contains nothing
+        other than whitespace.
+    :raises ExpressionOrderError: If the expression contains invalid
+        consecutive operators or operands.
+    :raises InvalidArgumentTypeError: If ``expr`` is not an acceptable type.
+    :raises InvalidIdentifierError: If any parsed variable symbols in the
+        expression are invalid identifiers.
+    :raises UnbalancedParenError: If any parenthesis pairs remain unbalanced.
+
+    It is important to note that aside from :exc:`InvalidArgumentTypeError \
+    <tt.errors.arguments.InvalidArgumentTypeError>`, all exceptions raised in
+    expression initialization will be descendants of :exc:`GrammarError \
+    <tt.errors.grammar.GrammarError>`.
 
     """
 
@@ -345,10 +382,9 @@ class BooleanExpression(object):
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.
 
-        TODO
-
-        This method will populate the ``symbols`` and ``tokens`` attributes,
-        and is the first step in the expression-processing pipeline.
+        This method is a helper for initializing an expression object from a
+        string and will populate the ``_symbols``, ``_symbol_set``, and
+        ``_tokens`` attributes of this object.
 
         :raises GrammarError: If a malformed expression is received.
 
@@ -364,10 +400,10 @@ class BooleanExpression(object):
 
         idx = 0
         open_paren_count = 0
-        num_chars = len(self.raw_expr)
+        num_chars = len(self._raw_expr)
 
         while idx < num_chars:
-            c = self.raw_expr[idx].strip()
+            c = self._raw_expr[idx].strip()
 
             if not c:
                 # do nothing
@@ -375,7 +411,7 @@ class BooleanExpression(object):
             elif c == '(':
                 if grammar_state != EXPECTING_OPERAND:
                     raise BadParenPositionError('Unexpected parenthesis',
-                                                self.raw_expr, idx)
+                                                self._raw_expr, idx)
 
                 open_paren_count += 1
                 self._tokens.append(c)
@@ -383,10 +419,10 @@ class BooleanExpression(object):
             elif c == ')':
                 if grammar_state != EXPECTING_OPERATOR:
                     raise BadParenPositionError('Unexpected parenthesis',
-                                                self.raw_expr, idx)
+                                                self._raw_expr, idx)
                 elif not open_paren_count:
                     raise UnbalancedParenError('Unbalanced parenthesis',
-                                               self.raw_expr, idx)
+                                               self._raw_expr, idx)
 
                 open_paren_count -= 1
                 self._tokens.append(c)
@@ -398,32 +434,32 @@ class BooleanExpression(object):
                 matching_operators = [
                     operator for operator in operator_search_list
                     if len(operator) <= num_chars_remaining and
-                    self.raw_expr[idx:(idx+len(operator))] == operator]
+                    self._raw_expr[idx:(idx+len(operator))] == operator]
 
                 if matching_operators:
                     match = matching_operators[0]
                     match_length = len(match)
                     next_c_pos = idx + match_length
                     next_c = (None if next_c_pos >= num_chars else
-                              self.raw_expr[idx + match_length])
+                              self._raw_expr[idx + match_length])
 
                     if next_c is None:
                         # trailing operator
                         raise ExpressionOrderError(
                             'Unexpected operator "{}"'.format(match),
-                            self.raw_expr, idx)
+                            self._raw_expr, idx)
 
                     if next_c in delimiters or is_symbolic[match]:
                         if OPERATOR_MAPPING[match] == TT_NOT_OP:
                             if grammar_state != EXPECTING_OPERAND:
                                 raise ExpressionOrderError(
                                     'Unexpected unary operator "{}"'.format(
-                                        match), self.raw_expr, idx)
+                                        match), self._raw_expr, idx)
                         else:
                             if grammar_state != EXPECTING_OPERATOR:
                                 raise ExpressionOrderError(
                                     'Unexpected binary operator "{}"'.format(
-                                        match), self.raw_expr, idx)
+                                        match), self._raw_expr, idx)
                             grammar_state = EXPECTING_OPERAND
 
                         is_operator = True
@@ -433,19 +469,19 @@ class BooleanExpression(object):
                 if not is_operator:
                     if grammar_state != EXPECTING_OPERAND:
                         raise ExpressionOrderError('Unexpected operand',
-                                                   self.raw_expr, idx)
+                                                   self._raw_expr, idx)
 
                     operand_end_idx = idx + 1
                     while (operand_end_idx < num_chars and
-                           self.raw_expr[operand_end_idx] not in delimiters):
+                           self._raw_expr[operand_end_idx] not in delimiters):
                         operand_end_idx += 1
 
-                    operand = self.raw_expr[idx:operand_end_idx]
+                    operand = self._raw_expr[idx:operand_end_idx]
                     if (operand not in CONSTANT_VALUES and
                             not is_valid_identifier(operand)):
                         raise InvalidIdentifierError(
                             'Invalid operand name "{}"'.format(operand),
-                            self.raw_expr, idx)
+                            self._raw_expr, idx)
 
                     self._tokens.append(operand)
                     if operand not in self._symbol_set:
@@ -457,9 +493,9 @@ class BooleanExpression(object):
 
         if open_paren_count:
             left_paren_positions = [m.start() for m in
-                                    re.finditer(r'\(', self.raw_expr)]
+                                    re.finditer(r'\(', self._raw_expr)]
             raise UnbalancedParenError(
-                'Unbalanced left parenthesis', self.raw_expr,
+                'Unbalanced left parenthesis', self._raw_expr,
                 left_paren_positions[open_paren_count-1])
 
         if not self._tokens:
