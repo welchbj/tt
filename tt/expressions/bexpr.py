@@ -2,33 +2,143 @@
 
 import re
 
-from ..definitions import (CONSTANT_VALUES, DELIMITERS, is_valid_identifier,
-                           OPERATOR_MAPPING, TT_NOT_OP)
-from ..errors import (BadParenPositionError, EmptyExpressionError,
-                      ExpressionOrderError, InvalidArgumentTypeError,
-                      InvalidIdentifierError, UnbalancedParenError)
-from ..trees import BooleanExpressionTree
-from ..utils import (assert_all_valid_keys,
-                     assert_iterable_contains_all_expr_symbols)
+from contextlib import contextmanager
+
+from tt.definitions import (
+    CONSTANT_VALUES,
+    DELIMITERS,
+    is_valid_identifier,
+    OPERATOR_MAPPING,
+    SYMBOLIC_OPERATOR_MAPPING,
+    TT_NOT_OP)
+from tt.errors import (
+    BadParenPositionError,
+    EmptyExpressionError,
+    ExpressionOrderError,
+    InvalidArgumentTypeError,
+    InvalidIdentifierError,
+    UnbalancedParenError)
+from tt.trees import (
+    BinaryOperatorExpressionTreeNode,
+    BooleanExpressionTree,
+    ExpressionTreeNode,
+    OperandExpressionTreeNode,
+    UnaryOperatorExpressionTreeNode)
+from tt.utils import (
+    assert_all_valid_keys,
+    assert_iterable_contains_all_expr_symbols)
 
 
 class BooleanExpression(object):
 
     """An interface for interacting with a Boolean expression.
 
-    Instances of ``BooleanExpression`` are meant to be immutable.
+    Instances of ``BooleanExpression`` are meant to be immutable and can be
+    instantiated from a few different representations of expressions::
 
-    :param raw_expr: The raw string expression that this expression object
-        represents.
-    :type raw_expr: :class:`str <python:str>`
+        TODO
+
+    :param expr: The expression representation from which this object is
+        derived.
+    :type expr: :class:`str <python:str>`, :class:`BooleanExpressionTree\
+        <tt.trees.expr_tree.BooleanExpressionTree>`, or \
+        :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
+
+    :raises GrammarError: If invalid identifiers or expression structure are
+        detected in the passed expression.
 
     """
 
-    def __init__(self, raw_expr):
-        if not isinstance(raw_expr, str):
-            raise InvalidArgumentTypeError('raw_expr must be of type str')
+    def __init__(self, expr):
+        if isinstance(expr, str):
+            self._init_from_str(expr)
+        elif isinstance(expr, BooleanExpressionTree):
+            self._init_from_expr_node(expr.root)
+        elif isinstance(expr, ExpressionTreeNode):
+            self._init_from_expr_node(expr)
+        else:
+            raise InvalidArgumentTypeError(
+                'expr must be a str, BooleanExpressionTree, or '
+                'ExpressionTreeNode')
 
-        self._raw_expr = raw_expr
+    def _init_from_expr_node(self, expr_node):
+        """Initalize this object from an expression node."""
+        self._symbols = []
+        self._symbol_set = set()
+        self._postfix_tokens = []
+        self._tokens = []
+        self._raw_expr = ''
+
+        with self._symbol_set_includes_constant_values():
+            self._init_from_expr_node_recursive_helper(expr_node)
+
+        self._tree = BooleanExpressionTree(self._postfix_tokens)
+
+    def _init_from_expr_node_recursive_helper(self, expr_node, parent=None):
+        """Recursive helper for initializing from an expression node.
+
+        This method will populate the ``_symbols``, ``_symbol_set``,
+        ``_postfix_tokens``, ``_tokens``, and ``_raw_expr`` attributes of this
+         object.
+
+        """
+        if isinstance(expr_node, OperandExpressionTreeNode):
+            operand_str = expr_node.symbol_name
+
+            self._tokens.append(operand_str)
+            self._postfix_tokens.append(operand_str)
+            self._raw_expr += operand_str
+            if operand_str not in self._symbol_set:
+                self._symbols.append(operand_str)
+                self._symbol_set.add(operand_str)
+        elif isinstance(expr_node, UnaryOperatorExpressionTreeNode):
+            operator_str = expr_node.symbol_name
+
+            self._tokens.append(operator_str)
+
+            self._raw_expr += operator_str
+            if operator_str not in SYMBOLIC_OPERATOR_MAPPING:
+                self._raw_expr += ' '
+
+            self._init_from_expr_node_recursive_helper(
+                expr_node.l_child, parent=expr_node)
+            self._postfix_tokens.append(operator_str)
+        elif isinstance(expr_node, BinaryOperatorExpressionTreeNode):
+            operator_str = expr_node.symbol_name
+            include_parens = True
+
+            if parent is None:
+                include_parens = False
+            elif isinstance(parent, BinaryOperatorExpressionTreeNode):
+                this_operator = OPERATOR_MAPPING[operator_str]
+                parent_operator = OPERATOR_MAPPING[parent.symbol_name]
+                if (expr_node is parent.r_child and
+                        this_operator == parent_operator and
+                        parent.l_child.is_really_unary):
+                    include_parens = False
+
+            if include_parens:
+                self._tokens.append('(')
+                self._raw_expr += '('
+
+            self._init_from_expr_node_recursive_helper(
+                expr_node.l_child, parent=expr_node)
+
+            self._tokens.append(operator_str)
+            self._raw_expr += (' ' + operator_str + ' ')
+
+            self._init_from_expr_node_recursive_helper(
+                expr_node.r_child, parent=expr_node)
+
+            if include_parens:
+                self._tokens.append(')')
+                self._raw_expr += ')'
+
+            self._postfix_tokens.append(operator_str)
+
+    def _init_from_str(self, raw_expr_str):
+        """Initalize this object from a raw expression string."""
+        self._raw_expr = raw_expr_str
 
         self._symbols = []
         self._symbol_set = set()
@@ -36,8 +146,9 @@ class BooleanExpression(object):
         self._tokens = []
         self._postfix_tokens = []
 
-        self._tokenize()
-        self._to_postfix()
+        with self._symbol_set_includes_constant_values():
+            self._tokenize()
+            self._to_postfix()
 
         self._tree = BooleanExpressionTree(self._postfix_tokens)
 
@@ -62,7 +173,7 @@ class BooleanExpression(object):
 
     @property
     def is_dnf(self):
-        """Whether this expression is in conjunctive norma form or not.
+        """Whether this expression is in conjunctive normal form or not.
 
         :type: :class:`bool <python:bool>`
 
@@ -193,15 +304,7 @@ class BooleanExpression(object):
         :raises InvalidBooleanValueError: If any values from ``kwargs`` are not
             valid Boolean inputs.
         :raises InvalidIdentifierError: If any symbol names are invalid
-            identifier.
-
-        .. note::
-
-            See :func:`assert_all_valid_keys\
-            <tt.utils.assertions.assert_all_valid_keys>` and
-            :func:`assert_iterable_contains_all_expr_symbols\
-            <tt.utils.assertions.assert_iterable_contains_all_expr_symbols>`
-            for more information about the exceptions raised by this method.
+            identifiers.
 
         Usage::
 
@@ -238,6 +341,8 @@ class BooleanExpression(object):
 
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.
+
+        TODO
 
         This method will populate the ``symbols`` and ``tokens`` attributes,
         and is the first step in the expression-processing pipeline.
@@ -340,7 +445,7 @@ class BooleanExpression(object):
                             self.raw_expr, idx)
 
                     self._tokens.append(operand)
-                    if operand not in (self._symbol_set | CONSTANT_VALUES):
+                    if operand not in self._symbol_set:
                         self._symbols.append(operand)
                         self._symbol_set.add(operand)
 
@@ -358,12 +463,11 @@ class BooleanExpression(object):
             raise EmptyExpressionError('Empty expression is invalid')
 
     def _to_postfix(self):
-        """Populate the ``postfix_tokens`` attribute."""
-        operand_set = self._symbol_set | CONSTANT_VALUES
+        """Populate the ``_postfix_tokens`` attribute."""
         stack = []
 
         for token in self._tokens:
-            if token in operand_set:
+            if token in self._symbol_set:
                 self._postfix_tokens.append(token)
             elif token == '(':
                 stack.append(token)
@@ -383,3 +487,10 @@ class BooleanExpression(object):
 
         for token in reversed(stack):
             self._postfix_tokens.append(token)
+
+    @contextmanager
+    def _symbol_set_includes_constant_values(self):
+        """Context manager to include CONSTANT_VALUES in _symbol_set."""
+        self._symbol_set |= CONSTANT_VALUES
+        yield
+        self._symbol_set -= CONSTANT_VALUES

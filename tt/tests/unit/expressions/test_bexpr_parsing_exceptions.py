@@ -2,17 +2,11 @@
 
 from ._helpers import ExpressionTestCase
 from ....errors import (BadParenPositionError, EmptyExpressionError,
-                        ExpressionOrderError, InvalidArgumentTypeError,
-                        InvalidIdentifierError, UnbalancedParenError)
+                        ExpressionOrderError, InvalidIdentifierError,
+                        UnbalancedParenError)
 
 
 class TestBooleanExpressionParsingExceptions(ExpressionTestCase):
-
-    def test_non_str(self):
-        """Test passing something other than a str to __init__"""
-        self.helper_test_tokenization_raises(
-            float(),
-            expected_exc_type=InvalidArgumentTypeError)
 
     def test_empty(self):
         """Test an empty expression."""

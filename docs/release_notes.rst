@@ -14,6 +14,8 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 
     * Add iff (iff, ->) and implies (impl, <->) Boolean operators
     * Add :data:`is_cnf <tt.expressions.bexpr.BooleanExpression.is_cnf>` and :data:`is_dnf <tt.expressions.bexpr.BooleanExpression.is_dnf>` attributes to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+    * Add functionality to initialize :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` objects from instances of :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>` or :class:`BooleanExpressionTree <tt.trees.expr_tree.BooleanExpressionTree>`
+    * Add :data:`is_really_unary <tt.trees.tree_node.ExpressionTreeNode.is_really_unary>` attribute to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
 
 0.6.0
 `````
