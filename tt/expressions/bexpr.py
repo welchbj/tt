@@ -282,6 +282,9 @@ class BooleanExpression(object):
         return self._tree
 
     def __str__(self):
+        return self._raw_expr
+
+    def __repr__(self):
         return '<BooleanExpression "{}">'.format(self._raw_expr)
 
     def evaluate(self, **kwargs):
