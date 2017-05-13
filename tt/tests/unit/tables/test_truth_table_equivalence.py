@@ -1,8 +1,9 @@
 """Test truth table equivalence."""
 
+from tt.expressions import BooleanExpression
+from tt.tables import TruthTable
+
 from ._helpers import TruthTableTestCase
-from ....expressions import BooleanExpression
-from ....tables import TruthTable
 
 
 class TestTruhtTableEquivalence(TruthTableTestCase):

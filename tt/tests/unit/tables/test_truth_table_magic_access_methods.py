@@ -1,10 +1,11 @@
 """Tests for truth table magic access methods (__getitem__, __iter__, etc.)."""
 
+from tt.tables import TruthTable
+
 from ._helpers import TruthTableTestCase
-from ....tables import TruthTable
 
 
-class TestTruthTableAccessMethods(TruthTableTestCase):
+class TestTruthTableMagicAccessMethods(TruthTableTestCase):
 
     def test_table_iter_unfilled(self):
         """Test iterating through a table that has not been filled."""

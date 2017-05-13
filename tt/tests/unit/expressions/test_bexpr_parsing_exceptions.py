@@ -1,9 +1,13 @@
 """Tests for handling malformed expressions on initialization."""
 
+from tt.errors import (
+    BadParenPositionError,
+    EmptyExpressionError,
+    ExpressionOrderError,
+    InvalidIdentifierError,
+    UnbalancedParenError)
+
 from ._helpers import ExpressionTestCase
-from ....errors import (BadParenPositionError, EmptyExpressionError,
-                        ExpressionOrderError, InvalidIdentifierError,
-                        UnbalancedParenError)
 
 
 class TestBooleanExpressionParsingExceptions(ExpressionTestCase):

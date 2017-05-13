@@ -3,7 +3,7 @@
 import traceback
 import unittest
 
-from ....expressions import BooleanExpression
+from tt.expressions import BooleanExpression
 
 
 class ExpressionTestCase(unittest.TestCase):

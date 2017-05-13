@@ -1,8 +1,11 @@
 """Test truth table equivalence exceptions."""
 
+from tt.errors import (
+    InvalidArgumentTypeError,
+    RequiresFullTableError)
+from tt.tables import TruthTable
+
 from ._helpers import TruthTableTestCase
-from ....errors import InvalidArgumentTypeError, RequiresFullTableError
-from ....tables import TruthTable
 
 
 class TestTruthTableEquivalenceExceptions(TruthTableTestCase):

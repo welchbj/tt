@@ -2,8 +2,10 @@
 
 import unittest
 
-from ....errors import InvalidArgumentTypeError, InvalidArgumentValueError
-from ....definitions import is_valid_identifier
+from tt.definitions import is_valid_identifier
+from tt.errors import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError)
 
 
 class TestIsValidIdentifier(unittest.TestCase):

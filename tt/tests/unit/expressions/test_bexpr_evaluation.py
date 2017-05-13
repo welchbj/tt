@@ -1,7 +1,8 @@
 """Tests for expression evaluation."""
 
+from tt.definitions import BOOLEAN_VALUES
+
 from ._helpers import ExpressionTestCase
-from ....definitions import BOOLEAN_VALUES
 
 
 class TestBooleanExpressionEvaluation(ExpressionTestCase):

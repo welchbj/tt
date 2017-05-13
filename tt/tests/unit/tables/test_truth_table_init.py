@@ -1,7 +1,8 @@
 """Tests for valid truth table initializaton."""
 
+from tt.expressions import BooleanExpression
+
 from ._helpers import TruthTableTestCase
-from ....expressions import BooleanExpression
 
 
 class TestTruthTableInit(TruthTableTestCase):

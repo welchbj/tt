@@ -1,11 +1,18 @@
 """Tests for truth table exceptions on initialization."""
 
+from tt.errors import (
+    ConflictingArgumentsError,
+    DuplicateSymbolError,
+    ExtraSymbolError,
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError,
+    InvalidBooleanValueError,
+    InvalidIdentifierError,
+    MissingSymbolError,
+    NoEvaluationVariationError,
+    RequiredArgumentError)
+
 from ._helpers import TruthTableTestCase
-from ....errors import (ConflictingArgumentsError, DuplicateSymbolError,
-                        ExtraSymbolError, InvalidArgumentTypeError,
-                        InvalidArgumentValueError, InvalidBooleanValueError,
-                        InvalidIdentifierError, MissingSymbolError,
-                        NoEvaluationVariationError, RequiredArgumentError)
 
 
 class TestTruthTableInitExceptions(TruthTableTestCase):

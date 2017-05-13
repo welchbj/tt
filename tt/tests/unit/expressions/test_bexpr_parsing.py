@@ -1,7 +1,10 @@
 """Tests for parsing/tokenization of well-formed expressions."""
 
+from tt.definitions import (
+    OPERATOR_MAPPING,
+    TT_NOT_OP)
+
 from ._helpers import ExpressionTestCase
-from ....definitions import OPERATOR_MAPPING, TT_NOT_OP
 
 
 class TestBooleanExpressionParsing(ExpressionTestCase):

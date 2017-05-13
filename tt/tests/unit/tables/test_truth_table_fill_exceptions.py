@@ -1,9 +1,12 @@
 """Tests for filling truth tables that cause exceptions."""
 
+from tt.errors import (
+    AlreadyFullTableError,
+    ExtraSymbolError,
+    InvalidBooleanValueError)
+from tt.tables import TruthTable
+
 from ._helpers import TruthTableTestCase
-from ....errors import (AlreadyFullTableError, ExtraSymbolError,
-                        InvalidBooleanValueError)
-from ....tables import TruthTable
 
 
 class TestTruthTableFillExceptions(TruthTableTestCase):

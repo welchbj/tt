@@ -2,7 +2,9 @@
 
 import unittest
 
-from tt.errors import InvalidArgumentTypeError, InvalidArgumentValueError
+from tt.errors import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError)
 from tt.trees import BooleanExpressionTree
 
 

@@ -1,7 +1,8 @@
 """Tests for checking if a truth table is full."""
 
+from tt.tables import TruthTable
+
 from ._helpers import TruthTableTestCase
-from ....tables import TruthTable
 
 
 class TestTruthTableIsFull(TruthTableTestCase):

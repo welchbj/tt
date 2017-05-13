@@ -1,7 +1,7 @@
 import traceback
 import unittest
 
-from ....tables import TruthTable
+from tt.tables import TruthTable
 
 
 class TruthTableTestCase(unittest.TestCase):

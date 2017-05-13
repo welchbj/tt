@@ -2,9 +2,12 @@
 
 import unittest
 
-from tt.errors.arguments import (InvalidArgumentTypeError,
-                                 InvalidArgumentValueError)
-from tt.satisfiability.picosat import sat_one, VERSION
+from tt.errors import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError)
+from tt.satisfiability.picosat import (
+    sat_one,
+    VERSION)
 
 
 class TestPicosat(unittest.TestCase):

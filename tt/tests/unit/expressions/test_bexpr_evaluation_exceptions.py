@@ -1,9 +1,11 @@
 """Tests for expression evaluation exceptions."""
 
-from ._helpers import ExpressionTestCase
+from tt.errors import (
+    ExtraSymbolError,
+    InvalidBooleanValueError,
+    MissingSymbolError)
 
-from ....errors import (ExtraSymbolError, InvalidBooleanValueError,
-                        MissingSymbolError)
+from ._helpers import ExpressionTestCase
 
 
 class TestBooleanExpressionEvaluationExceptions(ExpressionTestCase):

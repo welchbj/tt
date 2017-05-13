@@ -1,8 +1,8 @@
 """Tests for non-grammar exceptions on expression initialization."""
 
-from ._helpers import ExpressionTestCase
-
 from tt.errors import InvalidArgumentTypeError
+
+from ._helpers import ExpressionTestCase
 
 
 class TestBooleanExpressionInitExceptions(ExpressionTestCase):

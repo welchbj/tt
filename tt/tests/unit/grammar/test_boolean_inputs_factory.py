@@ -2,7 +2,7 @@
 
 import unittest
 
-from ....definitions import boolean_variables_factory
+from tt.definitions import boolean_variables_factory
 
 
 class TestBooleanInputsFactory(unittest.TestCase):
