@@ -2,8 +2,9 @@
 
 import os
 
-from tt.errors.arguments import (InvalidArgumentTypeError,
-                                 InvalidArgumentValueError)
+from tt.errors.arguments import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError)
 
 if os.environ.get('READTHEDOCS') != 'True':
     from tt._clibs import picosat as _c_picosat

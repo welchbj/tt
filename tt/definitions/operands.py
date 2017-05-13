@@ -5,7 +5,9 @@ import re
 from collections import namedtuple
 from keyword import kwlist
 
-from ..errors import InvalidArgumentTypeError, InvalidArgumentValueError
+from tt.errors import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError)
 
 
 BOOLEAN_VALUES = {0, 1, True, False}

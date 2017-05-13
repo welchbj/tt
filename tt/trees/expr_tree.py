@@ -1,10 +1,16 @@
 """An expression tree implementation for Boolean expressions."""
 
-from ..definitions import OPERATOR_MAPPING, TT_NOT_OP
-from ..errors import InvalidArgumentTypeError, InvalidArgumentValueError
-from .tree_node import (BinaryOperatorExpressionTreeNode,
-                        OperandExpressionTreeNode,
-                        UnaryOperatorExpressionTreeNode)
+from tt.definitions import (
+    OPERATOR_MAPPING,
+    TT_NOT_OP)
+from tt.errors import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError)
+
+from .tree_node import (
+    BinaryOperatorExpressionTreeNode,
+    OperandExpressionTreeNode,
+    UnaryOperatorExpressionTreeNode)
 
 
 class BooleanExpressionTree(object):

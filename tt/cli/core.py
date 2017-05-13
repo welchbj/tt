@@ -2,12 +2,17 @@
 
 import sys
 
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import (
+    ArgumentParser,
+    RawTextHelpFormatter)
 
-from ..errors import EmptyExpressionError, GrammarError
-from ..expressions import BooleanExpression
-from ..tables import TruthTable
-from ..version import __version__
+from tt.errors import (
+    EmptyExpressionError,
+    GrammarError)
+from tt.expressions import BooleanExpression
+from tt.tables import TruthTable
+from tt.version import __version__
+
 from .utils import print_err, print_info
 
 

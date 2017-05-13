@@ -9,11 +9,24 @@ from .state import StateError  # noqa
 from .symbols import SymbolError  # noqa
 
 # import specific exception types
-from .arguments import (ConflictingArgumentsError, InvalidArgumentTypeError,  # noqa
-                        InvalidArgumentValueError, RequiredArgumentError)
-from .evaluation import InvalidBooleanValueError, NoEvaluationVariationError  # noqa
-from .grammar import (BadParenPositionError, EmptyExpressionError,  # noqa
-                      ExpressionOrderError, InvalidIdentifierError,
-                      UnbalancedParenError)
-from .state import AlreadyFullTableError, RequiresFullTableError  # noqa
-from .symbols import DuplicateSymbolError, ExtraSymbolError, MissingSymbolError  # noqa
+from .arguments import (  # noqa
+    ConflictingArgumentsError,
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError,
+    RequiredArgumentError)
+from .evaluation import(  # noqa
+    InvalidBooleanValueError,
+    NoEvaluationVariationError)
+from .grammar import (  # noqa
+    BadParenPositionError,
+    EmptyExpressionError,
+    ExpressionOrderError,
+    InvalidIdentifierError,
+    UnbalancedParenError)
+from .state import (  # noqa
+    AlreadyFullTableError,
+    RequiresFullTableError)
+from .symbols import (  # noqa
+    DuplicateSymbolError,
+    ExtraSymbolError,
+    MissingSymbolError)

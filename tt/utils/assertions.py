@@ -1,8 +1,11 @@
 """Utilities for asserting inputs and states."""
 
-from ..definitions import BOOLEAN_VALUES
-from ..errors import (DuplicateSymbolError, ExtraSymbolError,
-                      InvalidBooleanValueError, MissingSymbolError)
+from tt.definitions import BOOLEAN_VALUES
+from tt.errors import (
+    DuplicateSymbolError,
+    ExtraSymbolError,
+    InvalidBooleanValueError,
+    MissingSymbolError)
 
 
 def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):

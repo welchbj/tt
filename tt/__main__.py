@@ -2,7 +2,7 @@
 
 import sys
 
-from .cli import main
+from tt.cli import main
 
 
 if __name__ == '__main__':

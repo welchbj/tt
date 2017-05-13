@@ -7,17 +7,26 @@ import itertools
 from math import log
 from string import ascii_uppercase as ALPHABET
 
-from ..definitions import (boolean_variables_factory, DONT_CARE_VALUE,
-                           is_valid_identifier)
-from ..errors import (AlreadyFullTableError, ConflictingArgumentsError,
-                      ExtraSymbolError, InvalidArgumentTypeError,
-                      InvalidArgumentValueError, InvalidBooleanValueError,
-                      InvalidIdentifierError, MissingSymbolError,
-                      NoEvaluationVariationError, RequiredArgumentError,
-                      RequiresFullTableError)
-from ..expressions import BooleanExpression
-from ..utils import (assert_all_valid_keys,
-                     assert_iterable_contains_all_expr_symbols)
+from tt.definitions import (
+    boolean_variables_factory,
+    DONT_CARE_VALUE,
+    is_valid_identifier)
+from tt.errors import (
+    AlreadyFullTableError,
+    ConflictingArgumentsError,
+    ExtraSymbolError,
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError,
+    InvalidBooleanValueError,
+    InvalidIdentifierError,
+    MissingSymbolError,
+    NoEvaluationVariationError,
+    RequiredArgumentError,
+    RequiresFullTableError)
+from tt.expressions import BooleanExpression
+from tt.utils import (
+    assert_all_valid_keys,
+    assert_iterable_contains_all_expr_symbols)
 
 
 _DEFAULT_CELL_PADDING = 1
