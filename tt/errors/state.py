@@ -47,3 +47,13 @@ class RequiresFullTableError(StateError):
         <class 'tt.errors.state.RequiresFullTableError'>
 
     """
+
+
+class RequiresNormalFormError(StateError):
+    """An exception to be raised when expression normal form is required.
+
+    .. code-block:: python
+
+        TODO
+
+    """

@@ -25,7 +25,8 @@ from .grammar import (  # noqa
     UnbalancedParenError)
 from .state import (  # noqa
     AlreadyFullTableError,
-    RequiresFullTableError)
+    RequiresFullTableError,
+    RequiresNormalFormError)
 from .symbols import (  # noqa
     DuplicateSymbolError,
     ExtraSymbolError,

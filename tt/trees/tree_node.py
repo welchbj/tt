@@ -1,10 +1,13 @@
 """A node, and related classes, for use in expression trees."""
 
+import itertools
+
 from tt.definitions import (
     MAX_OPERATOR_STR_LEN,
     OPERATOR_MAPPING,
     TT_AND_OP,
     TT_OR_OP)
+from tt.errors import RequiresNormalFormError
 
 
 _DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
@@ -79,6 +82,79 @@ class ExpressionTreeNode(object):
 
         """
         return self._is_really_unary
+
+    def iter_clauses(self):
+        """Iterate the clauses in the expression tree rooted at this node.
+
+        If the normal form of the expression is ambiguous, then precedence will
+        be given to conjunctive normal form.
+
+        :returns: Iterator of each CNF or DNF clause, rooted by a tree node,
+            contained within the expression tree rooted at this node.
+        :rtype: Iterator[:class:`ExpressionTreeNode`]
+
+        :raises RequiresNormalFormError: If this expression is  not in
+            conjunctive or disjunctive normal form.
+
+        """
+        if self._is_cnf:
+            for node in self.iter_cnf_clauses():
+                yield node
+        elif self._is_dnf:
+            for node in self.iter_dnf_clauses():
+                yield node
+        else:
+            raise RequiresNormalFormError(
+                'Must be in conjunctive or disjunctive normal form to '
+                'iterate clauses')
+
+    def iter_cnf_clauses(self):
+        """Iterate the clauses in conjunctive normal form order.
+
+        :returns: Iterator of each CNF clause, rooted by a tree node, contained
+            within the expression tree rooted at this node.
+        :rtype: Iterator[:class:`ExpressionTreeNode`]
+
+        :raises RequiresNormalFormError: If the expression tree rooted at this
+            node is not in conjunctive normal form.
+
+        """
+        if not self._is_cnf:
+            raise RequiresNormalFormError(
+                'Must be in conjunctive normal form to iterate CNF clauses')
+        elif (isinstance(self, BinaryOperatorExpressionTreeNode) and
+                self._operator == TT_AND_OP):
+            child_iter = itertools.chain(
+                self._l_child.iter_cnf_clauses(),
+                self._r_child.iter_cnf_clauses())
+            for node in child_iter:
+                yield node
+        else:
+            yield self
+
+    def iter_dnf_clauses(self):
+        """Iterate the clauses in disjunctive normal form order.
+
+        :returns: Iterator of each DNF clause, rooted by a tree node, contained
+            within the expression tree rooted at this node.
+        :rtype: Iterator[:class:`ExpressionTreeNode`]
+
+        :raises RequiresNormalFormError: If the expression tree rooted at this
+            node is not in disjunctive normal form.
+
+        """
+        if not self._is_dnf:
+            raise RequiresNormalFormError(
+                'Must be in conjunctive normal form to iterate DNF clauses')
+        elif (isinstance(self, BinaryOperatorExpressionTreeNode) and
+                self._operator == TT_OR_OP):
+            child_iter = itertools.chain(
+                self._l_child.iter_dnf_clauses(),
+                self._r_child.iter_dnf_clauses())
+            for node in child_iter:
+                yield node
+        else:
+            yield self
 
     def evaluate(self, input_dict):
         """Recursively evaluate this node.
