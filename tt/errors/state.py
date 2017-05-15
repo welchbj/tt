@@ -4,14 +4,7 @@ from .base import TtError
 
 
 class StateError(TtError):
-    """An exception type for errors occurring in expression evaluation.
-
-    .. note::
-
-        This exception type should be sub-classed and is not meant to be raised
-        explicitly.
-
-    """
+    """Base exception type for errors involving invalid state."""
 
 
 class AlreadyFullTableError(StateError):
@@ -22,12 +15,12 @@ class AlreadyFullTableError(StateError):
         >>> from tt import TruthTable
         >>> t = TruthTable('A or B', fill_all=False)
         >>> t.fill()
-        >>> try:
-        ...     t.fill()
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.state.AlreadyFullTableError'>
+        >>> t.is_full
+        True
+        >>> t.fill()
+        Traceback (most recent call last):
+        tt.errors.state.AlreadyFullTableError: Cannot fill an already-full \
+table
 
     """
 
@@ -39,12 +32,10 @@ class RequiresFullTableError(StateError):
 
         >>> from tt import TruthTable
         >>> t = TruthTable('A or B', fill_all=False)
-        >>> try:
-        ...     print(t.equivalent_to('A or B'))
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.state.RequiresFullTableError'>
+        >>> t.equivalent_to('A or B')
+        Traceback (most recent call last):
+        tt.errors.state.RequiresFullTableError: Equivalence can only be \
+checked on full truth tables
 
     """
 
@@ -54,6 +45,15 @@ class RequiresNormalFormError(StateError):
 
     .. code-block:: python
 
-        TODO
+        >>> from tt import BooleanExpression
+        >>> b = BooleanExpression('A nand (B or C)')
+        >>> b.is_cnf or b.is_dnf
+        False
+        >>> for clause in b.iter_clauses():
+        ...     print(clause)
+        ...
+        Traceback (most recent call last):
+        tt.errors.state.RequiresNormalFormError: Must be in conjunctive or \
+disjunctive normal form to iterate clauses
 
     """

@@ -379,6 +379,96 @@ class BooleanExpression(object):
         truthy = self._tree.evaluate(kwargs)
         return bool(truthy)
 
+    def iter_clauses(self):
+        """Iterate over the clauses in this expression.
+
+        An expression must be in conjunctive normal form (CNF) or disjunctive
+        normal form (DNF) in order to iterate over its clauses. Here's a simple
+        example::
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(~A or B) and (C or D) and (~E or ~F)')
+            >>> for clause in b.iter_clauses():
+            ...     clause
+            ...
+            <BooleanExpression "~A or B">
+            <BooleanExpression "C or D">
+            <BooleanExpression "~E or ~F">
+
+        In the case of an ambiguous expression form (between CNF and DNF), the
+        clauses will be interpreted to be in CNF form. For example::
+
+            >>> b = BooleanExpression('A and ~B and C')
+            >>> b.is_cnf
+            True
+            >>> b.is_dnf
+            True
+            >>> print(', '.join(str(clause) for clause in b.iter_clauses()))
+            A, ~B, C
+
+        If you want to enforce a specific CNF or DNF interpretation of the
+        clauses, take a look at :func:`iter_cnf_clauses` and
+        :func:`iter_dnf_clauses`.
+
+        :returns: An iterator of expression objects, each representing a
+            separate clause of this expression.
+        :rtype: Iterator[:class:`BooleanExpression`]
+
+        :raises RequiresNormalFormError: If this expression is not in
+            conjunctive or disjunctive normal form.
+
+        """
+        for node in self._tree.root.iter_clauses():
+            yield BooleanExpression(node)
+
+    def iter_cnf_clauses(self):
+        """Iterate over the CNF clauses in this expression.
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(A or B) and ~C')
+            >>> for clause in b.iter_cnf_clauses():
+            ...     print(clause)
+            ...
+            A or B
+            ~C
+
+        :returns: An iterator of expression objects, each representing a
+            separate CNF clause of this expression.
+        :rtype: Iterator[:class:`BooleanExpression`]
+
+        :raises RequiresNormalFormError: If this expression is not in
+            conjunctive normal form.
+
+        """
+        for node in self._tree.root.iter_cnf_clauses():
+            yield BooleanExpression(node)
+
+    def iter_dnf_clauses(self):
+        """Iterate over the DNF clauses in this expression.
+
+        .. code-block:: python
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(A and ~B) or (C and D and E)')
+            >>> for clause in b.iter_dnf_clauses():
+            ...     print(clause)
+            ...
+            A and ~B
+            C and D and E
+
+        :returns: An iterator of expression objects, each representing a
+            separate DNF clause of this expression.
+        :rtype: Iterator[:class:`BooleanExpression`]
+
+        :raises RequiresNormalFormError: If this expression is not in
+            disjunctive normal form.
+
+        """
+        for node in self._tree.root.iter_dnf_clauses():
+            yield BooleanExpression(node)
+
     def _tokenize(self):
         """Make the first pass through the expression, tokenizing it.
 

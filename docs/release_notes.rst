@@ -18,6 +18,8 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Update __str__ and __repr__ for :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
     * Add :data:`is_really_unary <tt.trees.tree_node.ExpressionTreeNode.is_really_unary>` attribute to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Add :func:`iter_clauses <tt.trees.tree_node.ExpressionTreeNode.iter_clauses>`, :func:`iter_cnf_clauses <tt.trees.tree_node.ExpressionTreeNode.iter_cnf_clauses>`, and :func:`iter_dnf_clauses <tt.trees.tree_node.ExpressionTreeNode.iter_dnf_clauses>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
+    * Add :func:`iter_clauses <tt.expressions.bexpr.BooleanExpression.iter_clauses>`, :func:`iter_cnf_clauses <tt.expressions.bexpr.BooleanExpression.iter_cnf_clauses>`, and :func:`iter_dnf_clauses <tt.expressions.bexpr.BooleanExpression.iter_dnf_clauses>` to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+    * Add :exc:`RequiresNormalFormError <tt.errors.state.RequiresNormalFormError>`
 
 0.6.0
 `````
