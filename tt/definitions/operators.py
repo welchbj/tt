@@ -3,15 +3,20 @@
 
 class BooleanOperator(object):
 
-    """A wrapper around a Boolean operator."""
+    """A thin wrapper around a Boolean operator."""
 
-    def __init__(self, precedence, eval_func, name):
+    def __init__(self, precedence, eval_func, default_symbol_str,
+                 default_plain_english_str):
         self._precedence = precedence
         self._eval_func = eval_func
-        self._name = name
+        self._default_symbol_str = default_symbol_str
+        self._default_plain_english_str = default_plain_english_str
+
+    def __str__(self):
+        return self._default_plain_english_str
 
     def __repr__(self):
-        return '<BooleanOperator {}>'.format(self.name)
+        return '<BooleanOperator "{}">'.format(self._default_plain_english_str)
 
     @property
     def precedence(self):
@@ -46,21 +51,44 @@ class BooleanOperator(object):
         return self._eval_func
 
     @property
-    def name(self):
-        """The human-readable name of this operator.
+    def default_symbol_str(self):
+        """The default symbolic string representation of this operator.
+
+        Some operators may not have a recognized symbol str, in which case
+        this attribute will be ``None``.
+
+        :type: :class:`str <python:str>` or ``None``
+
+        .. code-block:: python
+
+            >>> from tt.definitions import TT_AND_OP, TT_NAND_OP
+            >>> print(TT_AND_OP.default_symbol_str)
+            &
+            >>> print(TT_NAND_OP.default_symbol_str)
+            None
+
+        """
+        return self._default_symbol_str
+
+    @property
+    def default_plain_english_str(self):
+        """The default plain English string representation of this operator.
+
+        Unlike :data:`default_symbol_str`, this attribute should never be
+        ``None``.
 
         :type: :class:`str <python:str>`
 
         .. code-block:: python
 
-            >>> from tt.definitions import TT_NOT_OP, TT_XOR_OP
-            >>> TT_NOT_OP.name
-            'NOT'
-            >>> TT_XOR_OP.name
-            'XOR'
+            >>> from tt.definitions import TT_AND_OP, TT_NAND_OP
+            >>> print(TT_AND_OP.default_plain_english_str)
+            and
+            >>> print(TT_NAND_OP.default_plain_english_str)
+            nand
 
         """
-        return self._name
+        return self._default_plain_english_str
 
 
 _PRECEDENCE = {
@@ -73,7 +101,7 @@ _PRECEDENCE = {
 
 TT_NOT_OP = BooleanOperator(_PRECEDENCE['HIGH'],
                             lambda a: not a,
-                            'NOT')
+                            '~', 'not')
 """tt's operator implementation of a Boolean NOT.
 
 :type: :class:`BooleanOperator`
@@ -82,7 +110,7 @@ TT_NOT_OP = BooleanOperator(_PRECEDENCE['HIGH'],
 
 TT_IMPL_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
                              lambda a, b: (not a) or b,
-                             'IMPL')
+                             '->', 'impl')
 """tt's operator implementation of a Boolean IMPLIES.
 
 :type: :class:`BooleanOperator`
@@ -91,7 +119,7 @@ TT_IMPL_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
 
 TT_XOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
                             lambda a, b: a != b,
-                            'XOR')
+                            None, 'xor')
 """tt's operator implementation of a Boolean XOR.
 
 :type: :class:`BooleanOperator`
@@ -100,7 +128,7 @@ TT_XOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
 
 TT_XNOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
                              lambda a, b: a == b,
-                             'XNOR')
+                             None, 'xnor')
 """tt's operator implementation of a Boolean XNOR.
 
 :type: :class:`BooleanOperator`
@@ -109,7 +137,7 @@ TT_XNOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
 
 TT_AND_OP = BooleanOperator(_PRECEDENCE['LOW'],
                             lambda a, b: a and b,
-                            'AND')
+                            '&', 'and')
 """tt's operator implementation of a Boolean AND.
 
 :type: :class:`BooleanOperator`
@@ -118,7 +146,7 @@ TT_AND_OP = BooleanOperator(_PRECEDENCE['LOW'],
 
 TT_NAND_OP = BooleanOperator(_PRECEDENCE['LOW'],
                              lambda a, b: not(a and b),
-                             'NAND')
+                             None, 'nand')
 """tt's operator implementation of a Boolean NAND.
 
 :type: :class:`BooleanOperator`
@@ -127,7 +155,7 @@ TT_NAND_OP = BooleanOperator(_PRECEDENCE['LOW'],
 
 TT_OR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
                            lambda a, b: a or b,
-                           'OR')
+                           '|', 'or')
 """tt's operator implementation of a Boolean OR.
 
 :type: :class:`BooleanOperator`
@@ -136,7 +164,7 @@ TT_OR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
 
 TT_NOR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
                             lambda a, b: not(a or b),
-                            'NOR')
+                            None, 'nor')
 """tt's operator implementation of a Boolean NOR.
 
 :type: :class:`BooleanOperator`

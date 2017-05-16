@@ -20,6 +20,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add :func:`iter_clauses <tt.trees.tree_node.ExpressionTreeNode.iter_clauses>`, :func:`iter_cnf_clauses <tt.trees.tree_node.ExpressionTreeNode.iter_cnf_clauses>`, and :func:`iter_dnf_clauses <tt.trees.tree_node.ExpressionTreeNode.iter_dnf_clauses>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Add :func:`iter_clauses <tt.expressions.bexpr.BooleanExpression.iter_clauses>`, :func:`iter_cnf_clauses <tt.expressions.bexpr.BooleanExpression.iter_cnf_clauses>`, and :func:`iter_dnf_clauses <tt.expressions.bexpr.BooleanExpression.iter_dnf_clauses>` to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
     * Add :exc:`RequiresNormalFormError <tt.errors.state.RequiresNormalFormError>`
+    * Add attributes :data:`default_symbol_str <tt.definitions.operators.BooleanOperator.default_symbol_str>` and :data:`default_plain_english_str <tt.definitions.operators.BooleanOperator.default_plain_english_str>` to :class:`BooleanOperator <tt.definitions.operators.BooleanOperator>`, in place of removed ``name`` attribute
 
 0.6.0
 `````
