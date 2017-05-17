@@ -69,7 +69,7 @@ Features in the 0.5.x series of releases were focused on expanding the top-level
 pre-0.5
 -------
 
-Unfortunatley, release notes were not kept before the 0.5.0 release.
+Unfortunately, release notes were not kept before the 0.5.0 release.
 
 
 .. _doctest: https://docs.python.org/3/library/doctest.html
