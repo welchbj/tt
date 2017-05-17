@@ -1,27 +1,22 @@
 """Test iterating through clauses via nodes."""
 
-import unittest
-
 from tt.errors import RequiresNormalFormError
-from tt.expressions import BooleanExpression
+
+from ._helpers import ExpressionTreeAndNodeTestCase
 
 
-class TestNodeIterClauses(unittest.TestCase):
-
-    def _get_tree_root_from_expr_str(self, expr_str):
-        """Get an tree root node from an expression string."""
-        return BooleanExpression(expr_str).tree.root
+class TestNodeIterClauses(ExpressionTreeAndNodeTestCase):
 
     def test_not_normal_form(self):
         """Test trying to iter clauses on an expression not in normal form."""
         with self.assertRaises(RequiresNormalFormError):
-            root = self._get_tree_root_from_expr_str('~(A or B)')
+            root = self.get_tree_root_from_expr_str('~(A or B)')
             for node in root.iter_clauses():
                 pass
 
     def test_iter_clauses_defaults_to_cnf(self):
         """Test iterating over an ambiguous expression, ensuring CNF order."""
-        root = self._get_tree_root_from_expr_str('A and B and C and D')
+        root = self.get_tree_root_from_expr_str('A and B and C and D')
         self.assertTrue(root.is_cnf)
         self.assertTrue(root.is_dnf)
 
@@ -31,7 +26,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_clauses_falls_back_to_dnf(self):
         """Test iterating over a DNF expression, ensuring DNF order."""
-        root = self._get_tree_root_from_expr_str(
+        root = self.get_tree_root_from_expr_str(
             '(A and ~B) or (~C and D) or (~E and ~F)')
         self.assertFalse(root.is_cnf)
         self.assertTrue(root.is_dnf)
@@ -41,7 +36,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_cnf_when_not_cnf(self):
         """Test that an exc is raised when invalid attempt at iter cnf."""
-        root = self._get_tree_root_from_expr_str('A xor B')
+        root = self.get_tree_root_from_expr_str('A xor B')
         self.assertFalse(root.is_cnf)
 
         with self.assertRaises(RequiresNormalFormError):
@@ -50,7 +45,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_cnf_single_operand_clauses(self):
         """Test iterating over a CNF expression of single operand clauses."""
-        root = self._get_tree_root_from_expr_str('A and B and C and D')
+        root = self.get_tree_root_from_expr_str('A and B and C and D')
 
         clauses = root.iter_cnf_clauses()
         self.assertEqual(next(clauses).symbol_name, 'A')
@@ -63,7 +58,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_cnf_one_multi_operand_clause(self):
         """Test iterating over a single-clause CNF expression."""
-        root = self._get_tree_root_from_expr_str('A or B or C')
+        root = self.get_tree_root_from_expr_str('A or B or C')
 
         clauses = root.iter_cnf_clauses()
         node = next(clauses)
@@ -78,7 +73,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_cnf_multi_clauses(self):
         """Test iterating over CNF expressions with multiple clauses."""
-        root = self._get_tree_root_from_expr_str(
+        root = self.get_tree_root_from_expr_str(
             '(A or B or C) and (D or E or F)')
 
         clauses = root.iter_cnf_clauses()
@@ -101,7 +96,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_dnf_when_not_dnf(self):
         """Test that an exc is raised when invalid attempt at iter dnf."""
-        root = self._get_tree_root_from_expr_str(
+        root = self.get_tree_root_from_expr_str(
             '(A or B) and (C or D) and (E or F)')
         self.assertFalse(root.is_dnf)
 
@@ -111,7 +106,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_dnf_single_operand_clauses(self):
         """Test iterating over a DNF expression of single operand clauses."""
-        root = self._get_tree_root_from_expr_str('A or B or C or D')
+        root = self.get_tree_root_from_expr_str('A or B or C or D')
 
         clauses = root.iter_dnf_clauses()
         self.assertEqual(next(clauses).symbol_name, 'A')
@@ -124,7 +119,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_dnf_one_multi_operand_clause(self):
         """Test iterating over a single-clause DNF expression."""
-        root = self._get_tree_root_from_expr_str('A and B and C')
+        root = self.get_tree_root_from_expr_str('A and B and C')
 
         clauses = root.iter_dnf_clauses()
         node = next(clauses)
@@ -139,7 +134,7 @@ class TestNodeIterClauses(unittest.TestCase):
 
     def test_iter_dnf_multi_clauses(self):
         """Test iterating over DNF expressions with multiple clauses."""
-        root = self._get_tree_root_from_expr_str(
+        root = self.get_tree_root_from_expr_str(
             '(A and B and C) or (D and E and F)')
 
         clauses = root.iter_dnf_clauses()
