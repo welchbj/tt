@@ -5,8 +5,15 @@ import itertools
 from tt.definitions import (
     MAX_OPERATOR_STR_LEN,
     OPERATOR_MAPPING,
+    SYMBOLIC_OPERATOR_MAPPING,
     TT_AND_OP,
-    TT_OR_OP)
+    TT_IMPL_OP,
+    TT_NAND_OP,
+    TT_NOR_OP,
+    TT_NOT_OP,
+    TT_OR_OP,
+    TT_XOR_OP,
+    TT_XNOR_OP)
 from tt.errors import RequiresNormalFormError
 
 
@@ -42,7 +49,7 @@ class ExpressionTreeNode(object):
     def l_child(self):
         """This node's left child; ``None`` indicates the absence of a child.
 
-        :type: :class:`ExpressionTreeNode`, optional
+        :type: :class:`ExpressionTreeNode` or ``None``
 
         """
         return self._l_child
@@ -51,7 +58,7 @@ class ExpressionTreeNode(object):
     def r_child(self):
         """This node's left child; ``None`` indicates the absence of a child.
 
-        :type: :class:`ExpressionTreeNode`, optional
+        :type: :class:`ExpressionTreeNode` or ``None``
 
         """
         return self._r_child
@@ -172,7 +179,21 @@ class ExpressionTreeNode(object):
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement `evaluate`.')
+            'Expression tree nodes must implement evaluate().')
+
+    def to_primitives(self):
+        """Return a transformed node, containing only NOTs, ANDs, and ORs.
+
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects.
+
+        :returns: An expression tree node with all operators transformed to
+            consist only of NOTs, ANDs, and ORs.
+        :rtype: :class:`ExpressionTreeNode`
+
+        """
+        raise NotImplementedError(
+            'Expression tree nodes must implement to_primitives()')
 
     def __str__(self):
         return self._str_helper()[:-1]
@@ -236,6 +257,75 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
         return self.operator.eval_func(
             self.l_child.evaluate(input_dict),
             self.r_child.evaluate(input_dict))
+
+    def to_primitives(self):
+        if self.symbol_name in SYMBOLIC_OPERATOR_MAPPING:
+            not_str = TT_NOT_OP.default_symbol_str
+            and_str = TT_AND_OP.default_symbol_str
+            or_str = TT_OR_OP.default_symbol_str
+        else:
+            not_str = TT_NOT_OP.default_plain_english_str
+            and_str = TT_AND_OP.default_plain_english_str
+            or_str = TT_OR_OP.default_plain_english_str
+
+        if self._operator == TT_IMPL_OP:
+            return BinaryOperatorExpressionTreeNode(
+                or_str,
+                UnaryOperatorExpressionTreeNode(
+                    not_str, self._l_child.to_primitives()),
+                self._r_child.to_primitives())
+        elif self._operator == TT_XOR_OP:
+            new_l_child = self._l_child.to_primitives()
+            new_r_child = self._r_child.to_primitives()
+
+            return BinaryOperatorExpressionTreeNode(
+                or_str,
+                BinaryOperatorExpressionTreeNode(
+                    and_str,
+                    new_l_child,
+                    UnaryOperatorExpressionTreeNode(not_str, new_r_child)),
+                BinaryOperatorExpressionTreeNode(
+                    and_str,
+                    UnaryOperatorExpressionTreeNode(not_str, new_l_child),
+                    new_r_child))
+        elif self._operator == TT_XNOR_OP:
+            new_l_prim = self._l_child.to_primitives()
+            new_r_prim = self._r_child.to_primitives()
+
+            return BinaryOperatorExpressionTreeNode(
+                or_str,
+                BinaryOperatorExpressionTreeNode(
+                    and_str,
+                    new_l_prim,
+                    new_r_prim),
+                BinaryOperatorExpressionTreeNode(
+                    and_str,
+                    UnaryOperatorExpressionTreeNode(not_str, new_l_prim),
+                    UnaryOperatorExpressionTreeNode(not_str, new_r_prim)))
+        elif self._operator == TT_AND_OP:
+            return BinaryOperatorExpressionTreeNode(
+                and_str,
+                self._l_child.to_primitives(), self._r_child.to_primitives())
+        elif self._operator == TT_NAND_OP:
+            new_l_child = self._l_child.to_primitives()
+            new_r_child = self._r_child.to_primitives()
+
+            return BinaryOperatorExpressionTreeNode(
+                or_str,
+                UnaryOperatorExpressionTreeNode(not_str, new_l_child),
+                UnaryOperatorExpressionTreeNode(not_str, new_r_child))
+        elif self._operator == TT_OR_OP:
+            return BinaryOperatorExpressionTreeNode(
+                or_str,
+                self._l_child.to_primitives(), self._r_child.to_primitives())
+        elif self._operator == TT_NOR_OP:
+            new_l_child = self._l_child.to_primitives()
+            new_r_child = self._r_child.to_primitives()
+
+            return BinaryOperatorExpressionTreeNode(
+                and_str,
+                UnaryOperatorExpressionTreeNode(not_str, new_l_child),
+                UnaryOperatorExpressionTreeNode(not_str, new_r_child))
 
     def _cnf_status(self):
         """Helper to determine CNF status of the tree rooted at this node.
@@ -324,6 +414,10 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         return self.operator.eval_func(
             self.l_child.evaluate(input_dict))
 
+    def to_primitives(self):
+        return UnaryOperatorExpressionTreeNode(
+            self.symbol_name, self._l_child.to_primitives())
+
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
 
@@ -346,3 +440,6 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
             return True
         else:
             return input_dict[self.symbol_name]
+
+    def to_primitives(self):
+        return OperandExpressionTreeNode(self.symbol_name)
