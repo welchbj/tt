@@ -4,6 +4,9 @@ import re
 
 from contextlib import contextmanager
 
+from tt._assertions import (
+    assert_all_valid_keys,
+    assert_iterable_contains_all_expr_symbols)
 from tt.definitions import (
     CONSTANT_VALUES,
     DELIMITERS,
@@ -24,9 +27,6 @@ from tt.trees import (
     ExpressionTreeNode,
     OperandExpressionTreeNode,
     UnaryOperatorExpressionTreeNode)
-from tt.utils import (
-    assert_all_valid_keys,
-    assert_iterable_contains_all_expr_symbols)
 
 
 class BooleanExpression(object):

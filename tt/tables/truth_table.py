@@ -7,6 +7,9 @@ import itertools
 from math import log
 from string import ascii_uppercase as ALPHABET
 
+from tt._assertions import (
+    assert_all_valid_keys,
+    assert_iterable_contains_all_expr_symbols)
 from tt.definitions import (
     boolean_variables_factory,
     DONT_CARE_VALUE,
@@ -24,9 +27,6 @@ from tt.errors import (
     RequiredArgumentError,
     RequiresFullTableError)
 from tt.expressions import BooleanExpression
-from tt.utils import (
-    assert_all_valid_keys,
-    assert_iterable_contains_all_expr_symbols)
 
 
 _DEFAULT_CELL_PADDING = 1
@@ -478,16 +478,12 @@ class TruthTable(object):
         :param kwargs: Filter which entries in the table are filled by
             specifying symbol values through the keyword args.
 
+        :raises AlreadyFullTableError: If the table is already full when this
+            method is called.
         :raises ExtraSymbolError: If a symbol not in the expression is passed
             as a keyword arg.
         :raises InvalidBooleanValueError: If a non-Boolean value is passed
             as a value for one of the keyword args.
-
-        .. note::
-
-            See :func:`assert_all_valid_keys\
-            <tt.utils.assertions.assert_all_valid_keys>`
-            for more information about the exceptions raised by this method.
 
         An example of iteratively filling a table::
 

@@ -101,8 +101,7 @@ def test():
         tt.satisfiability.picosat,
         tt.tables.truth_table,
         tt.trees.expr_tree,
-        tt.trees.tree_node,
-        tt.utils.assertions
+        tt.trees.tree_node
     ]
 
     doctest_files = [
