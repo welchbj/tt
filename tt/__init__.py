@@ -2,6 +2,7 @@ from .definitions import *  # noqa
 from .errors import *  # noqa
 from .expressions import *  # noqa
 from .tables import *  # noqa
+from .transformations import *  # noqa
 from .trees import *  # noqa
 
 from .satisfiability import picosat  # noqa
