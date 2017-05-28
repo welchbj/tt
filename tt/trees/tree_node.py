@@ -195,6 +195,18 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement to_primitives()')
 
+    def coalesce_negations(self):
+        """Return a transformed node, with consecutive negations coalesced.
+
+        :returns: An expression tree node with all consecutive negations
+            compressed into the minimal number of equivalent negations (either
+            one or none).
+        :rtype: :class:`ExpressionTreeNode`
+
+        """
+        raise NotImplementedError(
+            'Expression tree nodes must implement coalesce_negations()')
+
     def __str__(self):
         return self._str_helper()[:-1]
 
@@ -327,6 +339,12 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
                 UnaryOperatorExpressionTreeNode(not_str, new_l_child),
                 UnaryOperatorExpressionTreeNode(not_str, new_r_child))
 
+    def coalesce_negations(self):
+        return BinaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.coalesce_negations(),
+            self._r_child.coalesce_negations())
+
     def _cnf_status(self):
         """Helper to determine CNF status of the tree rooted at this node.
 
@@ -418,6 +436,14 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         return UnaryOperatorExpressionTreeNode(
             self.symbol_name, self._l_child.to_primitives())
 
+    def coalesce_negations(self):
+        if isinstance(self._l_child, UnaryOperatorExpressionTreeNode):
+            return self._l_child._l_child.coalesce_negations()
+        else:
+            return UnaryOperatorExpressionTreeNode(
+                self.symbol_name,
+                self._l_child.coalesce_negations())
+
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
 
@@ -442,4 +468,7 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
             return input_dict[self.symbol_name]
 
     def to_primitives(self):
+        return OperandExpressionTreeNode(self.symbol_name)
+
+    def coalesce_negations(self):
         return OperandExpressionTreeNode(self.symbol_name)

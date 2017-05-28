@@ -21,8 +21,9 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add :func:`iter_clauses <tt.expressions.bexpr.BooleanExpression.iter_clauses>`, :func:`iter_cnf_clauses <tt.expressions.bexpr.BooleanExpression.iter_cnf_clauses>`, and :func:`iter_dnf_clauses <tt.expressions.bexpr.BooleanExpression.iter_dnf_clauses>` to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
     * Add :exc:`RequiresNormalFormError <tt.errors.state.RequiresNormalFormError>`
     * Add attributes :data:`default_symbol_str <tt.definitions.operators.BooleanOperator.default_symbol_str>` and :data:`default_plain_english_str <tt.definitions.operators.BooleanOperator.default_plain_english_str>` to :class:`BooleanOperator <tt.definitions.operators.BooleanOperator>`, in place of removed ``name`` attribute
-    * Add :func:`to_primitives <tt.trees.tree_node.ExpressionTreeNode.to_primitives>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
-    * Introduce high-level :mod:`transformations <tt.transformations>` interface
+    * Add :func:`to_primitives <tt.trees.tree_node.ExpressionTreeNode.to_primitives>` and :func:`coalesce_negations <tt.trees.tree_node.ExpressionTreeNode.coalesce_negations>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
+    * Introduce high-level :mod:`transformations <tt.transformations>` interface, including transformation functions :func:`to_primitives <tt.transformations.bexpr.to_primitives>` and :func:`coalesce_negations <tt.transformations.bexpr.coalesce_negations>`
+    * Add :data:`BINARY_OPERATORS <tt.definitions.operators.BINARY_OPERATORS>` set to :mod:`definitions <tt.definitions>` module
 
 0.6.0
 `````

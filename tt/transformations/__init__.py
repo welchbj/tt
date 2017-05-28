@@ -1,3 +1,5 @@
 """Interfaces for transforming representations of expressions."""
 
-from .bexpr import to_primitives  # noqa
+from .bexpr import (  # noqa
+    coalesce_negations,
+    to_primitives)
