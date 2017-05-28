@@ -70,7 +70,7 @@ be empty
         tt.errors.arguments.InvalidArgumentTypeError: identifier_name must be \
 a string
 
-    ."""
+    """
     if not isinstance(identifier_name, str):
         raise InvalidArgumentTypeError('identifier_name must be a string')
 
