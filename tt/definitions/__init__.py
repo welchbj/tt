@@ -9,6 +9,7 @@ from .operands import (  # noqa
     DONT_CARE_VALUE,
     is_valid_identifier)
 from .operators import (  # noqa
+    BINARY_OPERATORS,
     MAX_OPERATOR_STR_LEN,
     TT_IMPL_OP,
     TT_NOT_OP,

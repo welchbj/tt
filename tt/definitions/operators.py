@@ -171,6 +171,21 @@ TT_NOR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
 
 """
 
+BINARY_OPERATORS = {
+    TT_AND_OP,
+    TT_IMPL_OP,
+    TT_NAND_OP,
+    TT_NOR_OP,
+    TT_OR_OP,
+    TT_XNOR_OP,
+    TT_XOR_OP
+}
+"""The set of all binary operators available in tt.
+
+:type: Set{:class:`BooleanOperator`}
+
+"""
+
 SYMBOLIC_OPERATOR_MAPPING = {
     '~': TT_NOT_OP,
     '!': TT_NOT_OP,
