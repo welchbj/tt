@@ -25,8 +25,6 @@ def coalesce_negations(expr):
 
     :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
 
-    .. code-block:: python
-
     Here's a simple example showing the basic premise of this transformation::
 
         >>> from tt import coalesce_negations
