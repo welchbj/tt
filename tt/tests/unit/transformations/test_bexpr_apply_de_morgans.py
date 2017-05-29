@@ -42,7 +42,7 @@ class TestApplyDeMorgans(unittest.TestCase):
         """Test the transformation on a negated AND."""
         self.assert_apply_de_morgans_transformation(
             '~(A and B)',
-            '~A | ~B')
+            r'~A \/ ~B')
 
         self.assert_apply_de_morgans_transformation(
             '(not (A and B))',
@@ -52,7 +52,7 @@ class TestApplyDeMorgans(unittest.TestCase):
         """Test the transformation on a negated OR."""
         self.assert_apply_de_morgans_transformation(
             '~(A and B)',
-            '~A | ~B')
+            r'~A \/ ~B')
 
         self.assert_apply_de_morgans_transformation(
             '(not (A and B))',
@@ -62,4 +62,4 @@ class TestApplyDeMorgans(unittest.TestCase):
         """Test the transformation of compound expressions."""
         self.assert_apply_de_morgans_transformation(
             'not (~(A or B) and ~(C and D))',
-            'not (~A & ~B) or not (~C | ~D)')
+            r'not (~A /\ ~B) or not (~C \/ ~D)')

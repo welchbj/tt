@@ -91,7 +91,7 @@ def to_primitives(expr):
     And another example of if-and-only-if (using symbolic operators)::
 
         >>> to_primitives('A <-> B')
-        <BooleanExpression "(A & B) | (~A & ~B)">
+        <BooleanExpression "(A /\ B) \/ (~A /\ ~B)">
 
     """
     bexpr = _ensure_bexpr(expr)

@@ -59,7 +59,7 @@ class TestNodeApplyDeMorgans(ExpressionTreeAndNodeTestCase):
         self.assertEqual(
             str(demo),
             '\n'.join((
-                '|',
+                '\\/',
                 '`----~',
                 '|    `----A',
                 '`----~',
@@ -89,7 +89,7 @@ class TestNodeApplyDeMorgans(ExpressionTreeAndNodeTestCase):
         self.assertEqual(
             str(demo),
             '\n'.join((
-                '&',
+                '/\\',
                 '`----~',
                 '|    `----A',
                 '`----~',

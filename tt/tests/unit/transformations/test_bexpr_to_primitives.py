@@ -36,12 +36,12 @@ class TestToPrimitives(unittest.TestCase):
         """Test a compound expression of only symbolic operators."""
         self.assert_to_primitives_tranformation(
             '(A <-> B) -> C -> ~~~(A && !D) <-> ~!~(((E)))',
-            '~((A & B) | (~A & ~B)) | (~C | (~~~(A & !D) & ~!~E) | '
-            '(~~~~(A & !D) & ~~!~E))')
+            r'~((A /\ B) \/ (~A /\ ~B)) \/ (~C \/ (~~~(A /\ !D) /\ ~!~E) \/ '
+            '(~~~~(A /\ !D) /\ ~~!~E))')
 
     def test_compound_mixed_expression(self):
         """Test an expression of mixed symbolic and plain English operators."""
         self.assert_to_primitives_tranformation(
-            '~(A and B) -> (C or D || (E /\\ F)) nor (G xor H)',
-            'not (~~(A and B) | (C or D | (E & F))) and not ((G and not H) or '
-            '(not G and H))')
+            r'~(A and B) -> (C or D || (E /\ F)) nor (G xor H)',
+            r'not (~~(A and B) \/ (C or D \/ (E /\ F))) and not '
+            '((G and not H) or (not G and H))')

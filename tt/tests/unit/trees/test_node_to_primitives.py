@@ -59,7 +59,7 @@ class TestNodeToPrimitives(ExpressionTreeAndNodeTestCase):
         self.assertEqual(
             str(prim),
             '\n'.join((
-                '&',
+                '/\\',
                 '`----A',
                 '`----B')))
 
@@ -86,7 +86,7 @@ class TestNodeToPrimitives(ExpressionTreeAndNodeTestCase):
         self.assertEqual(
             str(prim),
             '\n'.join((
-                '|',
+                '\\/',
                 '`----~',
                 '|    `----A',
                 '`----B')))
@@ -145,7 +145,7 @@ class TestNodeToPrimitives(ExpressionTreeAndNodeTestCase):
         self.assertEqual(
             str(prim),
             '\n'.join((
-                '|',
+                '\\/',
                 '`----A',
                 '`----B')))
 

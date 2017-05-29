@@ -63,7 +63,7 @@ class BooleanOperator(object):
 
             >>> from tt.definitions import TT_AND_OP, TT_NAND_OP
             >>> print(TT_AND_OP.default_symbol_str)
-            &
+            /\\
             >>> print(TT_NAND_OP.default_symbol_str)
             None
 
@@ -137,7 +137,7 @@ TT_XNOR_OP = BooleanOperator(_PRECEDENCE['MEDIUM'],
 
 TT_AND_OP = BooleanOperator(_PRECEDENCE['LOW'],
                             lambda a, b: a and b,
-                            '&', 'and')
+                            '/\\', 'and')
 """tt's operator implementation of a Boolean AND.
 
 :type: :class:`BooleanOperator`
@@ -155,7 +155,7 @@ TT_NAND_OP = BooleanOperator(_PRECEDENCE['LOW'],
 
 TT_OR_OP = BooleanOperator(_PRECEDENCE['ZERO'],
                            lambda a, b: a or b,
-                           '|', 'or')
+                           '\\/', 'or')
 """tt's operator implementation of a Boolean OR.
 
 :type: :class:`BooleanOperator`
