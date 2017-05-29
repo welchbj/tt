@@ -16,11 +16,34 @@ def _ensure_bexpr(expr):
             'argument')
 
 
+def apply_de_morgans(expr):
+    """Convert an expression to a form with De Morgan's Law applied.
+
+    :returns: A new expression object, transformed so that De Morgan's Law has
+        been applied to negated *ANDs* and *ORs*.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
+
+    Here's a couple of simple examples showing De Morgan's Law being applied
+    to a negated AND and a negated OR::
+
+        >>> from tt import apply_de_morgans
+        >>> apply_de_morgans('not (A or B)')
+        <BooleanExpression "not A and not B">
+        >>> apply_de_morgans('not (A and B)')
+        <BooleanExpression "not A or not B">
+
+    """
+    bexpr = _ensure_bexpr(expr)
+    return BooleanExpression(bexpr.tree.root.apply_de_morgans())
+
+
 def coalesce_negations(expr):
     """Convert an expression to a form with all negations condensed.
 
     :returns: A new expression object, transformed so that all "runs" of
-        logical *nots* are condensed into the minimal equivalent number.
+        logical *NOTs* are condensed into the minimal equivalent number.
     :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
 
     :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.

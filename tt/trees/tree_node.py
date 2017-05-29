@@ -198,6 +198,9 @@ class ExpressionTreeNode(object):
     def coalesce_negations(self):
         """Return a transformed node, with consecutive negations coalesced.
 
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects.
+
         :returns: An expression tree node with all consecutive negations
             compressed into the minimal number of equivalent negations (either
             one or none).
@@ -206,6 +209,20 @@ class ExpressionTreeNode(object):
         """
         raise NotImplementedError(
             'Expression tree nodes must implement coalesce_negations()')
+
+    def apply_de_morgans(self):
+        """Return a transformed node, with De Morgan's Law applied.
+
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects.
+
+        :returns: An expression tree node with all negated AND and OR operators
+            transformed, following De Morgan's Law.
+        :rtype: :class:`ExpressionTreeNode`
+
+        """
+        raise NotImplementedError(
+            'Expression tree nodes must implement apply_de_morgans()')
 
     def __str__(self):
         return self._str_helper()[:-1]
@@ -241,6 +258,13 @@ class ExpressionTreeNode(object):
 
         return ret
 
+    def _get_op_strs(self, *ops):
+        """Get the appropriate operator strings for the passed operators."""
+        if self.symbol_name in SYMBOLIC_OPERATOR_MAPPING:
+            return tuple(op.default_symbol_str for op in ops)
+        else:
+            return tuple(op.default_plain_english_str for op in ops)
+
 
 class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
@@ -271,14 +295,8 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.r_child.evaluate(input_dict))
 
     def to_primitives(self):
-        if self.symbol_name in SYMBOLIC_OPERATOR_MAPPING:
-            not_str = TT_NOT_OP.default_symbol_str
-            and_str = TT_AND_OP.default_symbol_str
-            or_str = TT_OR_OP.default_symbol_str
-        else:
-            not_str = TT_NOT_OP.default_plain_english_str
-            and_str = TT_AND_OP.default_plain_english_str
-            or_str = TT_OR_OP.default_plain_english_str
+        not_str, and_str, or_str = self._get_op_strs(
+            TT_NOT_OP, TT_AND_OP, TT_OR_OP)
 
         if self._operator == TT_IMPL_OP:
             return BinaryOperatorExpressionTreeNode(
@@ -344,6 +362,12 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             self._l_child.coalesce_negations(),
             self._r_child.coalesce_negations())
+
+    def apply_de_morgans(self):
+        return BinaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_de_morgans(),
+            self._r_child.apply_de_morgans())
 
     def _cnf_status(self):
         """Helper to determine CNF status of the tree rooted at this node.
@@ -444,6 +468,30 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
                 self.symbol_name,
                 self._l_child.coalesce_negations())
 
+    def apply_de_morgans(self):
+        if isinstance(self._l_child, BinaryOperatorExpressionTreeNode):
+            binary_node = self._l_child
+            op = binary_node._operator
+            not_str, and_str, or_str = self._get_op_strs(
+                TT_NOT_OP, TT_AND_OP, TT_OR_OP)
+
+            notted_l_child = UnaryOperatorExpressionTreeNode(
+                not_str, binary_node._l_child.apply_de_morgans())
+            notted_r_child = UnaryOperatorExpressionTreeNode(
+                not_str, binary_node._r_child.apply_de_morgans())
+
+            if op == TT_AND_OP:
+                return BinaryOperatorExpressionTreeNode(
+                    or_str, notted_l_child, notted_r_child)
+            elif op == TT_OR_OP:
+                return BinaryOperatorExpressionTreeNode(
+                    and_str, notted_l_child, notted_r_child)
+
+        # default to returning a copy if child isn't AND or OR
+        return UnaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_de_morgans())
+
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
 
@@ -471,4 +519,7 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def coalesce_negations(self):
+        return OperandExpressionTreeNode(self.symbol_name)
+
+    def apply_de_morgans(self):
         return OperandExpressionTreeNode(self.symbol_name)
