@@ -15,9 +15,7 @@ tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. You can get the latest rele
 Basic Usage
 -----------
 
-tt aims to provide a Pythonic interface for working with Boolean expressions. Here are some simple examples from the REPL:
-
-.. code-block:: python
+tt aims to provide a Pythonic interface for working with Boolean expressions. Here are some simple examples from the REPL::
 
     >>> from tt import BooleanExpression, TruthTable
     >>> b = BooleanExpression('A xor (B and 1)')
