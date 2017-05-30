@@ -289,3 +289,71 @@ class TestBooleanExpressionInitFromTrees(unittest.TestCase):
             '~(A xor ((B -> C -> D) nand E)) iff (~(A xor B) nand '
             '(!(A xnor B) or C))')
         self.assertTrue(b.tree is not None)
+
+    def test_parens_for_leading_single_operand_same_op_as_next(self):
+        """Parens are omitted for a leading op the same as the next clause."""
+        b = self._bexpr_from_postfix_tokens(
+            ['A',
+             'B', 'C', 'and',
+             'and'])
+        self.assertEqual(
+            b.symbols,
+            ['A', 'B', 'C'])
+        self.assertEqual(
+            b.tokens,
+            ['A', 'and', 'B', 'and', 'C'])
+        self.assertEqual(
+            b.postfix_tokens,
+            ['A',
+             'B', 'C', 'and',
+             'and'])
+        self.assertEqual(
+            b.raw_expr,
+            'A and B and C')
+        self.assertTrue(b.tree is not None)
+
+    def test_parens_for_trailing_single_operand_same_op_as_prev(self):
+        """Parens are omitted for a trailing op the same as the prev clause."""
+        b = self._bexpr_from_postfix_tokens(
+            ['A', 'B', 'and',
+             'C',
+             'and'])
+        self.assertEqual(
+            b.symbols,
+            ['A', 'B', 'C'])
+        self.assertEqual(
+            b.tokens,
+            ['A', 'and', 'B', 'and', 'C'])
+        self.assertEqual(
+            b.postfix_tokens,
+            ['A', 'B', 'and',
+             'C',
+             'and'])
+        self.assertEqual(
+            b.raw_expr,
+            'A and B and C')
+        self.assertTrue(b.tree is not None)
+
+    def test_parens_for_sandwiched_single_operand_same_op_as_neighbors(self):
+        """Parens are omitted for an op the same as the adjacent clauses."""
+        b = self._bexpr_from_postfix_tokens(
+            ['A', 'B', 'and',
+             'C',
+             'D', 'E', 'and',
+             'and', 'and'])
+        self.assertEqual(
+            b.symbols,
+            ['A', 'B', 'C', 'D', 'E'])
+        self.assertEqual(
+            b.tokens,
+            ['A', 'and', 'B', 'and', 'C', 'and', 'D', 'and', 'E'])
+        self.assertEqual(
+            b.postfix_tokens,
+            ['A', 'B', 'and',
+             'C',
+             'D', 'E', 'and',
+             'and', 'and'])
+        self.assertEqual(
+            b.raw_expr,
+            'A and B and C and D and E')
+        self.assertTrue(b.tree is not None)

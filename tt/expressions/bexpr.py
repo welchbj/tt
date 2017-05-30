@@ -152,6 +152,11 @@ class BooleanExpression(object):
                 if (expr_node is parent.r_child and
                         this_operator == parent_operator):
                     include_parens = False
+                elif (expr_node is parent.l_child and
+                        this_operator == parent_operator and
+                        (parent.r_child.is_really_unary or
+                            this_operator == parent.r_child.operator)):
+                    include_parens = False
 
             if include_parens:
                 self._tokens.append('(')
