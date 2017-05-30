@@ -186,13 +186,13 @@ class TestBooleanExpressionInitFromTrees(unittest.TestCase):
             ['A', 'B'])
         self.assertEqual(
             b.tokens,
-            ['!', '(', 'A', 'iff', 'B', ')', 'and', '(', '0', 'and', '1', ')'])
+            ['!', '(', 'A', 'iff', 'B', ')', 'and', '0', 'and', '1'])
         self.assertEqual(
             b.postfix_tokens,
             ['A', 'B', 'iff', '!',
              '0', '1', 'and',
              'and'])
-        self.assertEqual(b.raw_expr, '!(A iff B) and (0 and 1)')
+        self.assertEqual(b.raw_expr, '!(A iff B) and 0 and 1')
         self.assertTrue(b.tree is not None)
 
     def test_parens_for_sandwiched_negated_chained_operator_clause(self):

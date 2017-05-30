@@ -150,8 +150,7 @@ class BooleanExpression(object):
                 this_operator = OPERATOR_MAPPING[operator_str]
                 parent_operator = OPERATOR_MAPPING[parent.symbol_name]
                 if (expr_node is parent.r_child and
-                        this_operator == parent_operator and
-                        parent.l_child.is_really_unary):
+                        this_operator == parent_operator):
                     include_parens = False
 
             if include_parens:
