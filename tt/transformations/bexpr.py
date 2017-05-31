@@ -64,6 +64,65 @@ def coalesce_negations(expr):
     return BooleanExpression(bexpr.tree.root.coalesce_negations())
 
 
+def distribute_ands(expr):
+    """Convert an expression to distribute ANDs over ORed clauses.
+
+    :param expr: The expression to transform.
+    :type expr: :class:`str <python:str>` or :class:`BooleanExpression \
+    <tt.expressions.bexpr.BooleanExpression>`
+
+    :returns: A new expression object, transformed to distribute ANDs over ORed
+        clauses.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
+
+    Here's a simple example::
+
+        >>> from tt import distribute_ands
+        >>> distribute_ands('A and (B or C or D)')
+        <BooleanExpression "(A and B) or (A and C) or (A and D)">
+
+    And an example involving distributing a sub-expression::
+
+        >>> distribute_ands('(A and B) and (C or D or E)')
+        <BooleanExpression "(A and B and C) or (A and B and D) or \
+(A and B and E)">
+
+    """
+    bexpr = _ensure_bexpr(expr)
+    return BooleanExpression(bexpr.tree.root.distribute_ands())
+
+
+def distribute_ors(expr):
+    """Convert an expression to distribute ORs over ANDed clauses.
+
+    :param expr: The expression to transform.
+    :type expr: :class:`str <python:str>` or :class:`BooleanExpression \
+    <tt.expressions.bexpr.BooleanExpression>`
+
+    :returns: A new expression object, transformed to distribute ORs over ANDed
+        clauses.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
+
+    Here's a simple example::
+
+        >>> from tt import distribute_ors
+        >>> distribute_ors('A or (B and C and D and E)')
+        <BooleanExpression "(A or B) and (A or C) and (A or D) and (A or E)">
+
+    And an example involving distributing a sub-expression::
+
+        >>> distribute_ors('(A or B) or (C and D)')
+        <BooleanExpression "(A or B or C) and (A or B or D)">
+
+    """
+    bexpr = _ensure_bexpr(expr)
+    return BooleanExpression(bexpr.tree.root.distribute_ors())
+
+
 def to_primitives(expr):
     """Convert an expression to a form with only primitive operators.
 
