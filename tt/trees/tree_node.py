@@ -25,9 +25,12 @@ class ExpressionTreeNode(object):
     """A base class for expression tree nodes.
 
     This class is extended within tt and is not meant to be used
-    directly. If you plan to extend it, note that descendants of this class
+    directly.
+
+    If you plan to extend it, note that descendants of this class
     must compute the ``_is_cnf``, ``_is_dnf``, and ``_is_really_unary`` boolean
-    attributes within their initialization.
+    attributes within their initialization. Additionally, descendants of this
+    class must implemented the ``__eq__`` magic method (but not ``__ne__``).
 
     """
 
@@ -254,6 +257,13 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement distribute_ors()')
 
+    def __eq__(self, other):
+        raise NotImplementedError(
+            'Expression tree nodes must implement __eq__')
+
+    def __ne__(self, other):
+        return not (self == other)
+
     def __str__(self):
         return self._str_helper()[:-1]
 
@@ -455,6 +465,13 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self._l_child.distribute_ors(),
             self._r_child.distribute_ors())
 
+    def __eq__(self, other):
+        if isinstance(other, BinaryOperatorExpressionTreeNode):
+            return (self._operator == other._operator and
+                    self._l_child == other._l_child and
+                    self._r_child == other._r_child)
+        return NotImplemented
+
     def _cnf_status(self):
         """Helper to determine CNF status of the tree rooted at this node.
 
@@ -588,6 +605,11 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             self._l_child.distribute_ors())
 
+    def __eq__(self, other):
+        if isinstance(other, UnaryOperatorExpressionTreeNode):
+            return self._l_child == other._l_child
+        return NotImplemented
+
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
 
@@ -625,3 +647,8 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
 
     def distribute_ors(self):
         return OperandExpressionTreeNode(self.symbol_name)
+
+    def __eq__(self, other):
+        if isinstance(other, OperandExpressionTreeNode):
+            return self.symbol_name == other.symbol_name
+        return NotImplemented
