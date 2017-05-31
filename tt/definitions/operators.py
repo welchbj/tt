@@ -186,6 +186,16 @@ BINARY_OPERATORS = {
 
 """
 
+NON_PRIMITIVE_OPERATORS = BINARY_OPERATORS - {TT_AND_OP, TT_OR_OP}
+"""The set of non-primitive operators available in tt.
+
+This includes all binary operators other than AND and OR.
+
+:type: Set{:class:`BooleanOperator`}
+
+"""
+
+
 SYMBOLIC_OPERATOR_MAPPING = {
     '~': TT_NOT_OP,
     '!': TT_NOT_OP,

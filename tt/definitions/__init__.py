@@ -11,6 +11,7 @@ from .operands import (  # noqa
 from .operators import (  # noqa
     BINARY_OPERATORS,
     MAX_OPERATOR_STR_LEN,
+    NON_PRIMITIVE_OPERATORS,
     TT_IMPL_OP,
     TT_NOT_OP,
     TT_XOR_OP,
