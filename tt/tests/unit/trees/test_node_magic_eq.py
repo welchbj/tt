@@ -1,10 +1,5 @@
 """Tests for tree node __eq__ (and __ne__) comparison."""
 
-from tt.trees import (
-    BinaryOperatorExpressionTreeNode,
-    OperandExpressionTreeNode,
-    UnaryOperatorExpressionTreeNode)
-
 from ._helpers import ExpressionTreeAndNodeTestCase
 
 
