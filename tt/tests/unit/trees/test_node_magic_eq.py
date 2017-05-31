@@ -1,5 +1,10 @@
 """Tests for tree node __eq__ (and __ne__) comparison."""
 
+from tt.trees import (
+    BinaryOperatorExpressionTreeNode,
+    OperandExpressionTreeNode,
+    UnaryOperatorExpressionTreeNode)
+
 from ._helpers import ExpressionTreeAndNodeTestCase
 
 
@@ -16,6 +21,30 @@ class TestNodeMagicEq(ExpressionTreeAndNodeTestCase):
         self.assertNotEqual(
             self.get_tree_root_from_expr_str(one),
             self.get_tree_root_from_expr_str(two))
+
+    def test_compare_unary_node_to_operand_node(self):
+        """Test that unary node != operand node."""
+        self.assert_not_equal_trees('~A', 'A')
+
+    def test_compare_unary_node_to_binary_node(self):
+        """Test that unary node != binary node."""
+        self.assert_not_equal_trees('~A', 'A and B')
+
+    def test_compare_operand_node_to_unary_node(self):
+        """Test that operand node != unary node."""
+        self.assert_not_equal_trees('A', '~A')
+
+    def test_compare_operand_node_to_binary_node(self):
+        """Test that operand node != binary node."""
+        self.assert_not_equal_trees('A', 'A nand B')
+
+    def test_compare_binary_node_to_operand_node(self):
+        """Test that binary node != operand node."""
+        self.assert_not_equal_trees('A xor B', 'A')
+
+    def test_compare_binary_node_to_unary_node(self):
+        """Test that unary node != binary node."""
+        self.assert_not_equal_trees('A -> B', 'A')
 
     def test_single_operand(self):
         """Test equality for trees of a single operand."""

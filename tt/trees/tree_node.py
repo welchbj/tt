@@ -470,7 +470,10 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             return (self._operator == other._operator and
                     self._l_child == other._l_child and
                     self._r_child == other._r_child)
-        return NotImplemented
+        elif isinstance(other, ExpressionTreeNode):
+            return False
+        else:
+            return NotImplemented
 
     def _cnf_status(self):
         """Helper to determine CNF status of the tree rooted at this node.
@@ -608,7 +611,10 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
     def __eq__(self, other):
         if isinstance(other, UnaryOperatorExpressionTreeNode):
             return self._l_child == other._l_child
-        return NotImplemented
+        elif isinstance(other, ExpressionTreeNode):
+            return False
+        else:
+            return NotImplemented
 
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
@@ -651,4 +657,7 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
     def __eq__(self, other):
         if isinstance(other, OperandExpressionTreeNode):
             return self.symbol_name == other.symbol_name
-        return NotImplemented
+        elif isinstance(other, ExpressionTreeNode):
+            return False
+        else:
+            return NotImplemented
