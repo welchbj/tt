@@ -562,9 +562,9 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
                 TT_NOT_OP, TT_AND_OP, TT_OR_OP)
 
             notted_l_child = UnaryOperatorExpressionTreeNode(
-                not_str, binary_node._l_child.apply_de_morgans())
+                not_str, binary_node._l_child).apply_de_morgans()
             notted_r_child = UnaryOperatorExpressionTreeNode(
-                not_str, binary_node._r_child.apply_de_morgans())
+                not_str, binary_node._r_child).apply_de_morgans()
 
             if op == TT_AND_OP:
                 return BinaryOperatorExpressionTreeNode(
