@@ -29,10 +29,10 @@ def apply_de_morgans(expr):
     to a negated AND and a negated OR::
 
         >>> from tt import apply_de_morgans
-        >>> apply_de_morgans('not (A or B)')
-        <BooleanExpression "not A and not B">
-        >>> apply_de_morgans('not (A and B)')
-        <BooleanExpression "not A or not B">
+        >>> apply_de_morgans(r'~(A /\ B)')
+        <BooleanExpression "~A \/ ~B">
+        >>> apply_de_morgans(r'~(A \/ B)')
+        <BooleanExpression "~A /\ ~B">
 
     """
     bexpr = _ensure_bexpr(expr)
@@ -77,11 +77,13 @@ def distribute_ands(expr):
 
     :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
 
-    Here's a simple example::
+    Here's a couple of simple examples::
 
         >>> from tt import distribute_ands
         >>> distribute_ands('A and (B or C or D)')
         <BooleanExpression "(A and B) or (A and C) or (A and D)">
+        >>> distribute_ands('(A or B) and C')
+        <BooleanExpression "(A and C) or (B and C)">
 
     And an example involving distributing a sub-expression::
 
@@ -107,11 +109,13 @@ def distribute_ors(expr):
 
     :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
 
-    Here's a simple example::
+    Here's a couple of simple examples::
 
         >>> from tt import distribute_ors
         >>> distribute_ors('A or (B and C and D and E)')
         <BooleanExpression "(A or B) and (A or C) and (A or D) and (A or E)">
+        >>> distribute_ors('(A and B) or C')
+        <BooleanExpression "(A or C) and (B or C)">
 
     And an example involving distributing a sub-expression::
 
