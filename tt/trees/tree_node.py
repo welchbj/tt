@@ -228,8 +228,8 @@ class ExpressionTreeNode(object):
             'Expression tree nodes must implement apply_de_morgans()')
 
     def distribute_ands(self):
-        """Return a transformed nodes, with ANDs distributed across ORed
-        sub-expressions.
+        """Return a transformed nodes, with ANDs recursively distributed across
+        ORed sub-expressions.
 
         Since nodes are immutable, the returned node, and all descendants, are
         new objects.
@@ -243,8 +243,8 @@ class ExpressionTreeNode(object):
             'Expression tree nodes must implement distribute_ands()')
 
     def distribute_ors(self):
-        """Return a transformed nodes, with ORs distributed across ANDed
-        sub-expressions.
+        """Return a transformed nodes, with ORs recursively distributed across
+        ANDed sub-expressions.
 
         Since nodes are immutable, the returned node, and all descendants, are
         new objects.
@@ -410,27 +410,46 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self._r_child.apply_de_morgans())
 
     def distribute_ands(self):
-        if (self._operator == TT_AND_OP and
-                isinstance(self._r_child, BinaryOperatorExpressionTreeNode) and
-                self._r_child.operator == TT_OR_OP):
+        if self._operator == TT_AND_OP:
             (or_str,) = self._get_op_strs(TT_OR_OP)
             and_str = self.symbol_name
 
-            child_to_distribute = self._l_child.distribute_ands()
-            child_distributed_upon = self._r_child._l_child.distribute_ands()
-            child_to_be_distributed_upon = \
-                self._r_child._r_child.distribute_ands()
+            if (isinstance(self._r_child, BinaryOperatorExpressionTreeNode) and
+                    self._r_child.operator == TT_OR_OP):
+                child_to_distribute = self._l_child.distribute_ands()
+                child_distributed_upon = \
+                    self._r_child._l_child.distribute_ands()
+                child_to_be_distributed_upon = \
+                    self._r_child._r_child.distribute_ands()
 
-            return BinaryOperatorExpressionTreeNode(
-                or_str,
-                BinaryOperatorExpressionTreeNode(
-                    and_str,
-                    child_to_distribute,
-                    child_distributed_upon),
-                BinaryOperatorExpressionTreeNode(
-                    and_str,
-                    child_to_distribute,
-                    child_to_be_distributed_upon).distribute_ands())
+                return BinaryOperatorExpressionTreeNode(
+                    or_str,
+                    BinaryOperatorExpressionTreeNode(
+                        and_str,
+                        child_to_distribute,
+                        child_distributed_upon).distribute_ands(),
+                    BinaryOperatorExpressionTreeNode(
+                        and_str,
+                        child_to_distribute,
+                        child_to_be_distributed_upon).distribute_ands())
+            elif (isinstance(self._l_child, BinaryOperatorExpressionTreeNode)
+                    and self._l_child.operator == TT_OR_OP):
+                child_to_distribute = self._r_child.distribute_ands()
+                child_distributed_upon = \
+                    self._l_child._l_child.distribute_ands()
+                child_to_be_distributed_upon = \
+                    self._l_child._r_child.distribute_ands()
+
+                return BinaryOperatorExpressionTreeNode(
+                    or_str,
+                    BinaryOperatorExpressionTreeNode(
+                        and_str,
+                        child_distributed_upon,
+                        child_to_distribute).distribute_ands(),
+                    BinaryOperatorExpressionTreeNode(
+                        and_str,
+                        child_to_be_distributed_upon,
+                        child_to_distribute).distribute_ands())
 
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
@@ -438,27 +457,46 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self._r_child.distribute_ands())
 
     def distribute_ors(self):
-        if (self._operator == TT_OR_OP and
-                isinstance(self._r_child, BinaryOperatorExpressionTreeNode) and
-                self._r_child.operator == TT_AND_OP):
+        if self._operator == TT_OR_OP:
             (and_str,) = self._get_op_strs(TT_AND_OP)
             or_str = self.symbol_name
 
-            child_to_distribute = self._l_child.distribute_ors()
-            child_distributed_upon = self._r_child._l_child.distribute_ors()
-            child_to_be_distributed_upon = \
-                self._r_child._r_child.distribute_ors()
+            if (isinstance(self._r_child, BinaryOperatorExpressionTreeNode) and
+                    self._r_child.operator == TT_AND_OP):
+                child_to_distribute = self._l_child.distribute_ors()
+                child_distributed_upon = \
+                    self._r_child._l_child.distribute_ors()
+                child_to_be_distributed_upon = \
+                    self._r_child._r_child.distribute_ors()
 
-            return BinaryOperatorExpressionTreeNode(
-                and_str,
-                BinaryOperatorExpressionTreeNode(
-                    or_str,
-                    child_to_distribute,
-                    child_distributed_upon),
-                BinaryOperatorExpressionTreeNode(
-                    or_str,
-                    child_to_distribute,
-                    child_to_be_distributed_upon).distribute_ors())
+                return BinaryOperatorExpressionTreeNode(
+                    and_str,
+                    BinaryOperatorExpressionTreeNode(
+                        or_str,
+                        child_to_distribute,
+                        child_distributed_upon).distribute_ors(),
+                    BinaryOperatorExpressionTreeNode(
+                        or_str,
+                        child_to_distribute,
+                        child_to_be_distributed_upon).distribute_ors())
+            elif (isinstance(self._l_child, BinaryOperatorExpressionTreeNode)
+                    and self._l_child.operator == TT_AND_OP):
+                child_to_distribute = self._r_child.distribute_ors()
+                child_distributed_upon = \
+                    self._l_child._l_child.distribute_ors()
+                child_to_be_distributed_upon = \
+                    self._l_child._r_child.distribute_ors()
+
+                return BinaryOperatorExpressionTreeNode(
+                    and_str,
+                    BinaryOperatorExpressionTreeNode(
+                        or_str,
+                        child_distributed_upon,
+                        child_to_distribute).distribute_ors(),
+                    BinaryOperatorExpressionTreeNode(
+                        or_str,
+                        child_to_be_distributed_upon,
+                        child_to_distribute).distribute_ors())
 
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
@@ -593,7 +631,6 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
                 return BinaryOperatorExpressionTreeNode(
                     and_str, notted_l_child, notted_r_child)
 
-        # default to returning a copy if child isn't AND or OR
         return UnaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.apply_de_morgans())

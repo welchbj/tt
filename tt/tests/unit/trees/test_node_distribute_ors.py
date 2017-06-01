@@ -94,8 +94,8 @@ class TestNodeDistributeOrs(ExpressionTreeAndNodeTestCase):
                 '          `----C',
                 '          `----D')))
 
-    def test_applicable_or(self):
-        """Test a case where we expect OR to be distributed."""
+    def test_applicable_or_distribute_from_left(self):
+        """Test a case where we expect OR to be distributed from the left."""
         root = self.get_tree_root_from_expr_str('A or (B and C and D)')
         dor = root.distribute_ors()
         self.assertTrue(dor is not root)
@@ -120,4 +120,34 @@ class TestNodeDistributeOrs(ExpressionTreeAndNodeTestCase):
                 '     |    `----C',
                 '     `----or',
                 '          `----A',
+                '          `----D')))
+
+    def test_applicable_or_distribute_from_right(self):
+        """Test a case where we expect OR to be distributed from the left."""
+        root = self.get_tree_root_from_expr_str('(A and B and C) or D')
+        dor = root.distribute_ors()
+        self.assertTrue(dor is not root)
+        self.assertTrue(dor.l_child.l_child is not root.l_child.l_child)
+        self.assertTrue(dor.r_child.l_child.l_child is not
+                        root.l_child.r_child)
+        self.assertTrue(dor.r_child.r_child.l_child is not
+                        root.l_child.r_child.r_child)
+        root_D_node = root.r_child
+        self.assertTrue(dor.l_child.r_child is not root_D_node)
+        self.assertTrue(dor.r_child.l_child.r_child is not root_D_node)
+        self.assertTrue(dor.r_child.r_child.r_child is not root_D_node)
+
+        self.assertEqual(
+            str(dor),
+            '\n'.join((
+                'and',
+                '`----or',
+                '|    `----A',
+                '|    `----D',
+                '`----and',
+                '     `----or',
+                '     |    `----B',
+                '     |    `----D',
+                '     `----or',
+                '          `----C',
                 '          `----D')))

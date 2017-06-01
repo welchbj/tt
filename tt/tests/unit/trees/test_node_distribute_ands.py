@@ -94,8 +94,8 @@ class TestNodeDistributeOrs(ExpressionTreeAndNodeTestCase):
                 '          `----C',
                 '          `----D')))
 
-    def test_applicable_and(self):
-        """Test a case where we expect AND to be distributed."""
+    def test_applicable_and_distribute_from_left(self):
+        """Test a case where we expect AND to be distributed from the left."""
         root = self.get_tree_root_from_expr_str('A and (B or C or D)')
         dor = root.distribute_ands()
         self.assertTrue(dor is not root)
@@ -120,4 +120,34 @@ class TestNodeDistributeOrs(ExpressionTreeAndNodeTestCase):
                 '     |    `----C',
                 '     `----and',
                 '          `----A',
+                '          `----D')))
+
+    def test_applicable_and_dsitribute_from_right(self):
+        """Test a case where we expect AND to be distributed from the right."""
+        root = self.get_tree_root_from_expr_str('(A or B or C) and D')
+        dor = root.distribute_ands()
+        self.assertTrue(dor is not root)
+        self.assertTrue(dor.l_child.l_child is not root.l_child.l_child)
+        self.assertTrue(dor.r_child.l_child.l_child is not
+                        root.l_child.r_child)
+        self.assertTrue(dor.r_child.r_child.l_child is not
+                        root.l_child.r_child.r_child)
+        root_D_node = root.r_child
+        self.assertTrue(dor.l_child.r_child is not root_D_node)
+        self.assertTrue(dor.r_child.l_child.r_child is not root_D_node)
+        self.assertTrue(dor.r_child.r_child.r_child is not root_D_node)
+
+        self.assertEqual(
+            str(dor),
+            '\n'.join((
+                'or',
+                '`----and',
+                '|    `----A',
+                '|    `----D',
+                '`----or',
+                '     `----and',
+                '     |    `----B',
+                '     |    `----D',
+                '     `----and',
+                '          `----C',
                 '          `----D')))
