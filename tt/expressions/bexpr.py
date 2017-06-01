@@ -62,6 +62,19 @@ class BooleanExpression(object):
         >>> BooleanExpression(tree.root.r_child)
         <BooleanExpression "C and D">
 
+    Expressions also implement the equality and inequality operators (``==``
+    and ``!=``). Equality is determined by the same semantic structure and the
+    same operand names; the string used to represent the operators in two
+    expressions is not taken into account. Here's a few examples::
+
+        >>> from tt import BooleanExpression as be
+        >>> be('A or B or C') == be('A or B or C')
+        True
+        >>> be('A or B or C') == be('A || B || C')
+        True
+        >>> be('A or B or C') == be('A or C or B')
+        False
+
     :param expr: The expression representation from which this object is
         derived.
     :type expr: :class:`str <python:str>`, :class:`BooleanExpressionTree\
@@ -321,6 +334,15 @@ class BooleanExpression(object):
 
         """
         return self._tree
+
+    def __eq__(self, other):
+        if isinstance(other, BooleanExpression):
+            return self._tree.root == other._tree.root
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        return not (self == other)
 
     def __str__(self):
         return self._raw_expr

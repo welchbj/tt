@@ -24,7 +24,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add :func:`to_primitives <tt.trees.tree_node.ExpressionTreeNode.to_primitives>`, :func:`coalesce_negations <tt.trees.tree_node.ExpressionTreeNode.coalesce_negations>`, :func:`distribute_ands <tt.trees.tree_node.ExpressionTreeNode.distribute_ands>`, :func:`distribute_ors <tt.trees.tree_node.ExpressionTreeNode.distribute_ors>`, and :func:`apply_de_morgans <tt.trees.tree_node.ExpressionTreeNode.apply_de_morgans>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Introduce high-level :mod:`transformations <tt.transformations>` interface, including transformation functions :func:`to_primitives <tt.transformations.bexpr.to_primitives>`, :func:`coalesce_negations <tt.transformations.bexpr.coalesce_negations>`, :func:`distribute_ands <tt.transformations.bexpr.distribute_ands>`, :func:`distribute_ors <tt.transformations.bexpr.distribute_ors>`, and :func:`apply_de_morgans <tt.transformations.bexpr.apply_de_morgans>`
     * Add :data:`BINARY_OPERATORS <tt.definitions.operators.BINARY_OPERATORS>` and :data:`NON_PRIMITIVE_OPERATORS <tt.definitions.operators.NON_PRIMITIVE_OPERATORS>`  sets to :mod:`definitions <tt.definitions>` module
-    * Add ``__eq__`` and ``__ne__`` implementations for derivatives of :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
+    * Add ``__eq__`` and ``__ne__`` implementations for :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` and derivatives of :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
 
 0.6.0
 `````
