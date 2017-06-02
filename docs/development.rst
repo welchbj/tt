@@ -69,7 +69,15 @@ For reference, check out this `comprehensive list of Windows compilers`_ necessa
 Releases
 --------
 
-Work for each release is done in a branch off of develop following the naming convention v{major}.{minor}.{micro}. When work for a version is complete, its branch is merged back into develop, which is subsequently merged into master. The master branch is then tagged with the release version number, following the scheme {major}.{minor}.{micro}. On tagged commits, the CI services will automatically build wheels and publish them to PyPI.
+Work for each release is done in a branch off of develop following the naming convention v{major}.{minor}.{micro}. When work for a version is complete, its branch is merged back into develop, which is subsequently merged into master. The master branch is then tagged with the release version number, following the scheme {major}.{minor}.{micro}.
+
+Wheels for Windows environments are provided on PyPI. To get the built wheels from the release build on AppVeyor, make sure you have the ``APPVEYOR_TOKEN`` environment variable set and run::
+
+    python ttasks.py pull-latest-win-wheels
+
+This should download the files into a ``dist`` folder in the top-level directory of the project. Once downloaded, you can upload the Wheels to PyPI with::
+
+    twine upload dist/*
 
 
 .. _unittest: https://docs.python.org/3/library/unittest.html

@@ -5,6 +5,7 @@ from __future__ import print_function
 import doctest
 import os
 import platform
+import requests
 import subprocess
 import sys
 import tt
@@ -15,10 +16,14 @@ from contextlib import contextmanager
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+DIST_DIR = os.path.join(HERE, 'dist')
 DOCS_DIR = os.path.join(HERE, 'docs')
 USER_GUIDE_DIR = os.path.join(DOCS_DIR, 'user_guide')
 TT_DIR = os.path.join(HERE, 'tt')
 TESTS_DIR = os.path.join(TT_DIR, 'tests')
+
+class AppVeyorApiError(Exception):
+    """An exception type for failed interactions with the AppVeyor API."""
 
 
 class SubprocessFailureError(Exception):
@@ -52,6 +57,57 @@ def _print_sys_info():
     print('Build:', py_build_info)
     print('OS:', os_info)
     print()
+
+
+def pull_latest_win_wheels():
+    """Download the latest artifact Windows wheels from AppVeyor."""
+    token = os.environ.get('APPVEYOR_TOKEN')
+    if token is None:
+        print('You must set the APPVEYOR_TOKEN environment variable;',
+              'quitting now', file=sys.stderr)
+        raise AppVeyorApiError
+
+    headers = {
+        'Authorization': 'Bearer ' + token,
+        'Content-type': 'application/json'
+    }
+    base_url = 'https://ci.appveyor.com/api'
+    project_url = base_url + '/projects/welchbj/tt'
+    artifacts_url_template = base_url + '/buildjobs/{}/artifacts'
+    single_artifact_url_template = artifacts_url_template + '/{}'
+
+    r = requests.get(project_url, headers=headers)
+    if r.status_code != 200:
+        print('Non-200 status code received from AppVeyor API; quitting now')
+        raise AppVeyorApiError
+
+    for job_dict in r.json()['build']['jobs']:
+        job_id, job_name = job_dict['jobId'], job_dict['name']
+        print('Processing job "', job_name, '"', sep='')
+
+        r = requests.get(artifacts_url_template.format(job_id),
+                         headers=headers)
+        if r.status_code != 200:
+            print('Non-200 status code received from AppVeyor API;',
+                  'quitting now')
+            raise AppVeyorApiError
+
+        artifact_filename = r.json()[0]['fileName'].split('/')[1]
+        local_filename = os.path.join(DIST_DIR, artifact_filename)
+        artifact_url = single_artifact_url_template.format(job_id,
+                                                           artifact_filename)
+
+        print('Downloading', artifact_filename, 'into', local_filename)
+        r = requests.get(artifact_url, stream=True, headers=headers)
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+
+        print('Done')
+        print()
+
+    print('All done!')
 
 
 def build_docs():
@@ -139,6 +195,7 @@ def test():
 
 TASKS = {
     'build-docs': build_docs,
+    'pull-latest-win-wheels': pull_latest_win_wheels,
     'serve-docs': serve_docs,
     'test': test
 }
@@ -190,7 +247,7 @@ def main(args=None):
         task = TASKS[opts.task]
         task()
         return 0
-    except (SubprocessFailureError, TestFailureError):
+    except (AppVeyorApiError, SubprocessFailureError, TestFailureError):
         return 1
     except Exception as e:
         print('Received unexpected exception; re-raising it.', file=sys.stderr)

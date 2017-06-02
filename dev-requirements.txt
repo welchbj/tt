@@ -2,6 +2,7 @@ alabaster==0.7.10
 appdirs==1.4.2
 Babel==2.3.4
 colorama==0.3.7
+Cython==0.25.2
 docutils==0.13.1
 flake8==3.3.0
 imagesize==0.7.1
@@ -11,6 +12,7 @@ MarkupSafe==0.23
 mccabe==0.6.1
 packaging==16.8
 pep8==1.7.0
+pkginfo==1.4.1
 pluggy==0.4.0
 py==1.4.32
 pycodestyle==2.3.1
@@ -19,9 +21,12 @@ Pygments==2.2.0
 pyparsing==2.2.0
 pytz==2016.10
 requests==2.13.0
+requests-toolbelt==0.8.0
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3
 tornado==4.4.2
 tox==2.6.0
+tqdm==4.14.0
+twine==1.9.1
 virtualenv==15.1.0
