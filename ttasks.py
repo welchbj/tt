@@ -21,6 +21,7 @@ USER_GUIDE_DIR = os.path.join(DOCS_DIR, 'user_guide')
 TT_DIR = os.path.join(HERE, 'tt')
 TESTS_DIR = os.path.join(TT_DIR, 'tests')
 
+
 class AppVeyorApiError(Exception):
     """An exception type for failed interactions with the AppVeyor API."""
 
