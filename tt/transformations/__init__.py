@@ -5,4 +5,5 @@ from .bexpr import (  # noqa
     distribute_ands,
     distribute_ors,
     coalesce_negations,
+    to_cnf,
     to_primitives)

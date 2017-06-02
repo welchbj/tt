@@ -127,6 +127,55 @@ def distribute_ors(expr):
     return BooleanExpression(bexpr.tree.root.distribute_ors())
 
 
+def to_cnf(expr):
+    """Convert an expression to conjunctive normal form (CNF).
+
+    This transformation only guarantees to produce an equivalent form of the
+    passed expression in conjunctive normal form; the transformed expression
+    may be an inefficent representation of the passed expression.
+
+    :param expr: The expression to transform.
+    :type expr: :class:`str <python:str>` or :class:`BooleanExpression \
+    <tt.expressions.bexpr.BooleanExpression>`
+
+    :returns: A new expression object, transformed to be in CNF.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
+
+    Here are a few examples::
+
+        >>> from tt import to_cnf
+        >>> b = to_cnf('(A nor B) impl C')
+        >>> b
+        <BooleanExpression "A or B or C">
+        >>> b.is_cnf
+        True
+        >>> b = to_cnf(r'~(~(A /\ B) /\ C /\ D)')
+        >>> b
+        <BooleanExpression "(A \/ ~C \/ ~D) /\ (B \/ ~C \/ ~D)">
+        >>> b.is_cnf
+        True
+
+    """
+    prev_node = _ensure_bexpr(expr).tree.root
+    if prev_node.is_cnf:
+        return BooleanExpression(prev_node)
+
+    next_node = prev_node.to_primitives().apply_de_morgans()
+    while next_node != prev_node:
+        prev_node = next_node
+        next_node = next_node.apply_de_morgans()
+
+    prev_node = next_node.coalesce_negations()
+    next_node = prev_node.distribute_ors()
+    while next_node != prev_node:
+        prev_node = next_node
+        next_node = next_node.distribute_ors()
+
+    return BooleanExpression(next_node)
+
+
 def to_primitives(expr):
     """Convert an expression to a form with only primitive operators.
 

@@ -521,21 +521,16 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
         :rtype: :class:`bool <python:bool>`
 
         """
-
         if not self._l_child.is_cnf or not self._r_child.is_cnf:
             return False
 
         if self._operator != TT_AND_OP and self._operator != TT_OR_OP:
             return False
 
-        if self._operator == TT_AND_OP:
-            if isinstance(self._l_child, BinaryOperatorExpressionTreeNode):
-                if self._l_child.operator != TT_OR_OP:
-                    return False
-
         if self._operator == TT_OR_OP:
             if isinstance(self._l_child, BinaryOperatorExpressionTreeNode):
-                return False
+                if self._l_child._operator != TT_OR_OP:
+                    return False
 
             if isinstance(self._r_child, BinaryOperatorExpressionTreeNode):
                 if self._r_child.operator != TT_OR_OP:
@@ -557,14 +552,10 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
         if self._operator != TT_AND_OP and self._operator != TT_OR_OP:
             return False
 
-        if self._operator == TT_OR_OP:
-            if isinstance(self._l_child, BinaryOperatorExpressionTreeNode):
-                if self._l_child.operator != TT_AND_OP:
-                    return False
-
         if self._operator == TT_AND_OP:
             if isinstance(self._l_child, BinaryOperatorExpressionTreeNode):
-                return False
+                if self._l_child._operator != TT_AND_OP:
+                    return False
 
             if isinstance(self._r_child, BinaryOperatorExpressionTreeNode):
                 if self._r_child.operator != TT_AND_OP:
