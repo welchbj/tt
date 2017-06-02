@@ -5,7 +5,6 @@ from __future__ import print_function
 import doctest
 import os
 import platform
-import requests
 import subprocess
 import sys
 import tt
@@ -61,6 +60,8 @@ def _print_sys_info():
 
 def pull_latest_win_wheels():
     """Download the latest artifact Windows wheels from AppVeyor."""
+    import requests
+
     token = os.environ.get('APPVEYOR_TOKEN')
     if token is None:
         print('You must set the APPVEYOR_TOKEN environment variable;',
