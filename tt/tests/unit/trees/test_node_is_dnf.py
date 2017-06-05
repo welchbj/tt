@@ -1,19 +1,19 @@
-"""Tests for DNF detection in expression trees."""
+"""Tests for DNF detection in tree nodes."""
 
 import unittest
 
-from tt.trees import BooleanExpressionTree
+from tt.trees import ExpressionTreeNode
 
 
-class TestExpressionTreeIsDnf(unittest.TestCase):
+class TestTreeNodeIsDnf(unittest.TestCase):
 
     def assert_is_dnf(self, postfix_tokens):
         """Assert the passed tokens are in disjunctive normal form."""
-        self.assertTrue(BooleanExpressionTree(postfix_tokens).is_dnf)
+        self.assertTrue(ExpressionTreeNode.build_tree(postfix_tokens).is_dnf)
 
     def assert_not_dnf(self, postfix_tokens):
         """Assert the passed tokens are not in disjunctive normal form."""
-        self.assertFalse(BooleanExpressionTree(postfix_tokens).is_dnf)
+        self.assertFalse(ExpressionTreeNode.build_tree(postfix_tokens).is_dnf)
 
     def test_is_dnf_single_operand(self):
         """Test that a single operand is recognized as in DNF."""

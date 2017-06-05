@@ -25,7 +25,7 @@ We can also always retrieve the original string we passed in via the ``raw_expr`
     >>> b.raw_expr
     '(A nand B) or (C and D)'
 
-During initialization, the :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` also does some work behind the scenes to build a basic understanding of the expression's structure. It re-orders the tokens into postfix order, and uses this representation to build a :class:`BooleanExpressionTree <tt.trees.expr_tree.BooleanExpressionTree>`. We can see this with::
+During initialization, the :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` also does some work behind the scenes to build a basic understanding of the expression's structure. It re-orders the tokens into postfix order, and uses this representation to build a :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`. We can see this with::
 
     >>> b.postfix_tokens
     ['A', 'B', 'nand', 'C', 'D', 'and', 'or']

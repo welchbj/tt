@@ -1,19 +1,19 @@
-"""Tests for CNF detection in expression trees."""
+"""Tests for CNF detection in tree nodes."""
 
 import unittest
 
-from tt.trees import BooleanExpressionTree
+from tt.trees import ExpressionTreeNode
 
 
-class TestExpressionTreeIsCnf(unittest.TestCase):
+class TestTreeNodeIsCnf(unittest.TestCase):
 
     def assert_is_cnf(self, postfix_tokens):
         """Assert the passed tokens are in conjunctive normal form."""
-        self.assertTrue(BooleanExpressionTree(postfix_tokens).is_cnf)
+        self.assertTrue(ExpressionTreeNode.build_tree(postfix_tokens).is_cnf)
 
     def assert_not_cnf(self, postfix_tokens):
         """Assert the passed tokens are not in conjunctive normal form."""
-        self.assertFalse(BooleanExpressionTree(postfix_tokens).is_cnf)
+        self.assertFalse(ExpressionTreeNode.build_tree(postfix_tokens).is_cnf)
 
     def test_is_cnf_single_operand(self):
         """Test CNF determination for single operand trees."""

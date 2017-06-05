@@ -14,7 +14,10 @@ from tt.definitions import (
     TT_OR_OP,
     TT_XOR_OP,
     TT_XNOR_OP)
-from tt.errors import RequiresNormalFormError
+from tt.errors import (
+    InvalidArgumentTypeError,
+    InvalidArgumentValueError,
+    RequiresNormalFormError)
 
 
 _DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
@@ -92,6 +95,52 @@ class ExpressionTreeNode(object):
 
         """
         return self._is_really_unary
+
+    @staticmethod
+    def build_tree(postfix_tokens):
+        """Build a tree from a list of expression tokens in postfix order.
+
+        This method does not check that the tokens are indeed in postfix order;
+        undefined behavior will ensue if you pass tokens in an order other than
+        postfix.
+
+        :param postfix_tokens: A list of string tokens from which to construct
+            the tree of expression nodes.
+        :type postfix_tokens: List[:class:`str <python:str>`]
+
+        :returns: The root node of the constructed tree.
+        :rtype: :class:`ExpressionTreeNode`
+
+        :raises InvalidArgumentTypeError: If ``postfix_tokens`` is not a list
+            of strings.
+        :raises InvalidArgumentValueError: If ``postfix_tokens`` is empty.
+
+        """
+        if (not isinstance(postfix_tokens, list) or
+                not all(isinstance(elt, str) for elt in postfix_tokens)):
+            raise InvalidArgumentTypeError(
+                'postfix_tokens must be a list of strings')
+        elif not postfix_tokens:
+            raise InvalidArgumentValueError('postfix_tokens cannot be empty')
+
+        stack = []
+        operators = OPERATOR_MAPPING.keys()
+
+        for token in postfix_tokens:
+            if token in operators:
+                if OPERATOR_MAPPING[token] == TT_NOT_OP:
+                    node = UnaryOperatorExpressionTreeNode(
+                        token, stack.pop())
+                else:
+                    right, left = stack.pop(), stack.pop()
+                    node = BinaryOperatorExpressionTreeNode(
+                        token, left, right)
+            else:
+                node = OperandExpressionTreeNode(token)
+
+            stack.append(node)
+
+        return stack.pop()
 
     def iter_clauses(self):
         """Iterate the clauses in the expression tree rooted at this node.

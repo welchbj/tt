@@ -23,7 +23,6 @@ from tt.errors import (
     UnbalancedParenError)
 from tt.trees import (
     BinaryOperatorExpressionTreeNode,
-    BooleanExpressionTree,
     ExpressionTreeNode,
     OperandExpressionTreeNode,
     UnaryOperatorExpressionTreeNode)
@@ -41,25 +40,25 @@ class BooleanExpression(object):
         >>> BooleanExpression('(A or B) iff (C and D)')
         <BooleanExpression "(A or B) iff (C and D)">
 
-    If you already have an instance of :class:`BooleanExpressionTree \
-    <tt.trees.expr_tree.BooleanExpressionTree>` laying around, you can make a
+    If you already have an instance of :class:`ExpressionTreeNode \
+    <tt.trees.tree_node.ExpressionTreeNode>` laying around, you can make a
     new expression object from that, too::
 
-        >>> from tt import BooleanExpressionTree
-        >>> tree = BooleanExpressionTree(
+        >>> from tt import ExpressionTreeNode
+        >>> tree_root = ExpressionTreeNode.build_tree(
         ...     ['A', 'B', 'or',
         ...      'C', 'D', 'and',
         ...      'iff'])
-        >>> BooleanExpression(tree)
+        >>> BooleanExpression(tree_root)
         <BooleanExpression "(A or B) iff (C and D)">
 
-    Additionally, any tree node can be used to build an expression object.
+    Additionally, any sub-tree node can be used to build an expression object.
     Continuing from above, let's make a new expression object for each of the
     sub-expressions wrapped in parentheses::
 
-        >>> BooleanExpression(tree.root.l_child)
+        >>> BooleanExpression(tree_root.l_child)
         <BooleanExpression "A or B">
-        >>> BooleanExpression(tree.root.r_child)
+        >>> BooleanExpression(tree_root.r_child)
         <BooleanExpression "C and D">
 
     Expressions also implement the equality and inequality operators (``==``
@@ -77,9 +76,8 @@ class BooleanExpression(object):
 
     :param expr: The expression representation from which this object is
         derived.
-    :type expr: :class:`str <python:str>`, :class:`BooleanExpressionTree\
-        <tt.trees.expr_tree.BooleanExpressionTree>`, or \
-        :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
+    :type expr: :class:`str <python:str>` or :class:`ExpressionTreeNode \
+        <tt.trees.tree_node.ExpressionTreeNode>`
 
     :raises BadParenPositionError: If the passed expression contains a
         parenthesis in an invalid position.
@@ -102,14 +100,11 @@ class BooleanExpression(object):
     def __init__(self, expr):
         if isinstance(expr, str):
             self._init_from_str(expr)
-        elif isinstance(expr, BooleanExpressionTree):
-            self._init_from_expr_node(expr.root)
         elif isinstance(expr, ExpressionTreeNode):
             self._init_from_expr_node(expr)
         else:
             raise InvalidArgumentTypeError(
-                'expr must be a str, BooleanExpressionTree, or '
-                'ExpressionTreeNode')
+                'expr must be a str or ExpressionTreeNode')
 
     def _init_from_expr_node(self, expr_node):
         """Initalize this object from an expression node."""
@@ -122,7 +117,7 @@ class BooleanExpression(object):
         with self._symbol_set_includes_constant_values():
             self._init_from_expr_node_recursive_helper(expr_node)
 
-        self._tree = BooleanExpressionTree(self._postfix_tokens)
+        self._tree = ExpressionTreeNode.build_tree(self._postfix_tokens)
 
     def _init_from_expr_node_recursive_helper(self, expr_node, parent=None):
         """Recursive helper for initializing from an expression node.
@@ -204,7 +199,7 @@ class BooleanExpression(object):
             self._tokenize()
             self._to_postfix()
 
-        self._tree = BooleanExpressionTree(self._postfix_tokens)
+        self._tree = ExpressionTreeNode.build_tree(self._postfix_tokens)
 
     @property
     def is_cnf(self):
@@ -316,10 +311,10 @@ class BooleanExpression(object):
 
     @property
     def tree(self):
-        """The expression tree representing this Boolean expression.
+        """The tree node representing the root of the tree of this expression.
 
-        :type: :class:`BooleanExpressionTree
-                       <tt.trees.expr_tree.BooleanExpressionTree>`
+        :type: :class:`ExpressionTreeNode \
+            <tt.trees.tree_node.ExpressionTreeNode>`
 
         .. code-block:: python
 
@@ -337,7 +332,7 @@ class BooleanExpression(object):
 
     def __eq__(self, other):
         if isinstance(other, BooleanExpression):
-            return self._tree.root == other._tree.root
+            return self._tree == other._tree
         else:
             return NotImplemented
 
@@ -444,7 +439,7 @@ class BooleanExpression(object):
             conjunctive or disjunctive normal form.
 
         """
-        for node in self._tree.root.iter_clauses():
+        for node in self._tree.iter_clauses():
             yield BooleanExpression(node)
 
     def iter_cnf_clauses(self):
@@ -468,7 +463,7 @@ class BooleanExpression(object):
             conjunctive normal form.
 
         """
-        for node in self._tree.root.iter_cnf_clauses():
+        for node in self._tree.iter_cnf_clauses():
             yield BooleanExpression(node)
 
     def iter_dnf_clauses(self):
@@ -492,7 +487,7 @@ class BooleanExpression(object):
             disjunctive normal form.
 
         """
-        for node in self._tree.root.iter_dnf_clauses():
+        for node in self._tree.iter_dnf_clauses():
             yield BooleanExpression(node)
 
     def _tokenize(self):

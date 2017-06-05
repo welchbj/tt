@@ -2,7 +2,7 @@
 
 import unittest
 
-from tt.trees import BooleanExpressionTree
+from tt.trees import ExpressionTreeNode
 
 
 class TestTreeNodeIsReallyUnary(unittest.TestCase):
@@ -10,35 +10,35 @@ class TestTreeNodeIsReallyUnary(unittest.TestCase):
     def test_single_operand(self):
         """Test unary detection of single operand."""
         for token in ('0', '1', 'token'):
-            t = BooleanExpressionTree([token])
-            self.assertTrue(t.root.is_really_unary)
+            t = ExpressionTreeNode.build_tree([token])
+            self.assertTrue(t.is_really_unary)
 
     def test_chained_unary_operators_ending_in_operand(self):
         """Test unary operators chained ending in an operand."""
-        t = BooleanExpressionTree(['A', '~'])
-        self.assertTrue(t.root.is_really_unary)
+        t = ExpressionTreeNode.build_tree(['A', '~'])
+        self.assertTrue(t.is_really_unary)
 
-        t = BooleanExpressionTree(['A', '~', '~'])
-        self.assertTrue(t.root.is_really_unary)
+        t = ExpressionTreeNode.build_tree(['A', '~', '~'])
+        self.assertTrue(t.is_really_unary)
 
-        t = BooleanExpressionTree(['A', '~', '~', '~'])
-        self.assertTrue(t.root.is_really_unary)
+        t = ExpressionTreeNode.build_tree(['A', '~', '~', '~'])
+        self.assertTrue(t.is_really_unary)
 
     def test_chained_unary_operators_with_binary_operator(self):
         """Test a chain of unary operators containing a binary operator."""
-        t = BooleanExpressionTree(['A', 'B', 'and', 'not'])
-        self.assertFalse(t.root.is_really_unary)
+        t = ExpressionTreeNode.build_tree(['A', 'B', 'and', 'not'])
+        self.assertFalse(t.is_really_unary)
 
-        t = BooleanExpressionTree(
+        t = ExpressionTreeNode.build_tree(
             ['A', 'B', 'or',
              'C', 'D', 'E', 'not', 'and', 'and', 'not',
              'xor'])
-        self.assertFalse(t.root.is_really_unary)
-        self.assertFalse(t.root.l_child.is_really_unary)
-        self.assertFalse(t.root.r_child.is_really_unary)
-        self.assertTrue(t.root.r_child.l_child.r_child.l_child.is_really_unary)
+        self.assertFalse(t.is_really_unary)
+        self.assertFalse(t.l_child.is_really_unary)
+        self.assertFalse(t.r_child.is_really_unary)
+        self.assertTrue(t.r_child.l_child.r_child.l_child.is_really_unary)
 
     def test_binary_operator(self):
         """Test an tree containing a binary operator."""
-        t = BooleanExpressionTree(['A', 'B', 'or'])
-        self.assertFalse(t.root.is_really_unary)
+        t = ExpressionTreeNode.build_tree(['A', 'B', 'or'])
+        self.assertFalse(t.is_really_unary)

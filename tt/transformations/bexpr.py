@@ -36,7 +36,7 @@ def apply_de_morgans(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.root.apply_de_morgans())
+    return BooleanExpression(bexpr.tree.apply_de_morgans())
 
 
 def coalesce_negations(expr):
@@ -61,7 +61,7 @@ def coalesce_negations(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.root.coalesce_negations())
+    return BooleanExpression(bexpr.tree.coalesce_negations())
 
 
 def distribute_ands(expr):
@@ -93,7 +93,7 @@ def distribute_ands(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.root.distribute_ands())
+    return BooleanExpression(bexpr.tree.distribute_ands())
 
 
 def distribute_ors(expr):
@@ -124,7 +124,7 @@ def distribute_ors(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.root.distribute_ors())
+    return BooleanExpression(bexpr.tree.distribute_ors())
 
 
 def to_cnf(expr):
@@ -158,7 +158,7 @@ def to_cnf(expr):
         True
 
     """
-    prev_node = _ensure_bexpr(expr).tree.root
+    prev_node = _ensure_bexpr(expr).tree
     if prev_node.is_cnf:
         return BooleanExpression(prev_node)
 
@@ -207,4 +207,4 @@ def to_primitives(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.root.to_primitives())
+    return BooleanExpression(bexpr.tree.to_primitives())

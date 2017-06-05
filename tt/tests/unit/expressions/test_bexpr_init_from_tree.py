@@ -1,15 +1,15 @@
-"""Test expression initialization from expression trees."""
+"""Test expression initialization from expression tree nodes."""
 
 import unittest
 
 from tt.expressions import BooleanExpression
-from tt.trees import BooleanExpressionTree
+from tt.trees import ExpressionTreeNode
 
 
 class TestBooleanExpressionInitFromTrees(unittest.TestCase):
 
     def _bexpr_from_postfix_tokens(self, postfix_tokens):
-        return BooleanExpression(BooleanExpressionTree(postfix_tokens))
+        return BooleanExpression(ExpressionTreeNode.build_tree(postfix_tokens))
 
     def test_single_operand(self):
         """Test from a single operand tree."""
