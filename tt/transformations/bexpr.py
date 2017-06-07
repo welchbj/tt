@@ -1,14 +1,15 @@
 """Transformation functions for expressions."""
 
+import tt.expressions
+
 from tt.errors import InvalidArgumentTypeError
-from tt.expressions import BooleanExpression
 
 
 def _ensure_bexpr(expr):
     """Return a BooleanExpression object or raise an error."""
     if isinstance(expr, str):
-        return BooleanExpression(expr)
-    elif isinstance(expr, BooleanExpression):
+        return tt.expressions.BooleanExpression(expr)
+    elif isinstance(expr, tt.expressions.BooleanExpression):
         return expr
     else:
         raise InvalidArgumentTypeError(
@@ -36,7 +37,7 @@ def apply_de_morgans(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.apply_de_morgans())
+    return tt.expressions.BooleanExpression(bexpr.tree.apply_de_morgans())
 
 
 def coalesce_negations(expr):
@@ -61,7 +62,7 @@ def coalesce_negations(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.coalesce_negations())
+    return tt.expressions.BooleanExpression(bexpr.tree.coalesce_negations())
 
 
 def distribute_ands(expr):
@@ -93,7 +94,7 @@ def distribute_ands(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.distribute_ands())
+    return tt.expressions.BooleanExpression(bexpr.tree.distribute_ands())
 
 
 def distribute_ors(expr):
@@ -124,7 +125,7 @@ def distribute_ors(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.distribute_ors())
+    return tt.expressions.BooleanExpression(bexpr.tree.distribute_ors())
 
 
 def to_cnf(expr):
@@ -160,7 +161,7 @@ def to_cnf(expr):
     """
     prev_node = _ensure_bexpr(expr).tree
     if prev_node.is_cnf:
-        return BooleanExpression(prev_node)
+        return tt.expressions.BooleanExpression(prev_node)
 
     next_node = prev_node.to_primitives().apply_de_morgans()
     while next_node != prev_node:
@@ -173,7 +174,7 @@ def to_cnf(expr):
         prev_node = next_node
         next_node = next_node.distribute_ors()
 
-    return BooleanExpression(next_node)
+    return tt.expressions.BooleanExpression(next_node)
 
 
 def to_primitives(expr):
@@ -207,4 +208,4 @@ def to_primitives(expr):
 
     """
     bexpr = _ensure_bexpr(expr)
-    return BooleanExpression(bexpr.tree.to_primitives())
+    return tt.expressions.BooleanExpression(bexpr.tree.to_primitives())

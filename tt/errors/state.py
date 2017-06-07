@@ -7,6 +7,24 @@ class StateError(TtError):
     """Base exception type for errors involving invalid state."""
 
 
+class AlreadyConstrainedSymbolError(StateError):
+    """An exception to be raised when trying to doubly constrain a symbol.
+
+    .. code-block:: python
+
+        >>> from tt import BooleanExpression
+        >>> b = BooleanExpression('A or B or C')
+        >>> with b.constrain(C=1):
+        ...     with b.constrain(C=0):
+        ...         pass
+        ...
+        Traceback (most recent call last):
+        tt.errors.state.AlreadyConstrainedSymbolError: Symbol "C" cannot be \
+constrained multiple times
+
+    """
+
+
 class AlreadyFullTableError(StateError):
     """An exception to be raised when attempting to fill an already-full table.
 

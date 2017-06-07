@@ -24,6 +24,7 @@ from .grammar import (  # noqa
     InvalidIdentifierError,
     UnbalancedParenError)
 from .state import (  # noqa
+    AlreadyConstrainedSymbolError,
     AlreadyFullTableError,
     RequiresFullTableError,
     RequiresNormalFormError)

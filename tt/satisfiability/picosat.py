@@ -23,7 +23,8 @@ def sat_one(clauses, assumptions=None):
     :type clauses: List[List[:class:`int <python:int>`]]
 
     :param assumptions: Assumed terms; same negation logic from ``clauses``
-        applies here.
+        applies here. Note that assumptions *cannot* be an empty list; leave it
+        as ``None`` if there are no assumptions to include.
     :type assumptions: List[:class:`int <python:int>`]
 
     :returns: If solution is found, a list of ints representing the terms of

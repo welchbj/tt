@@ -8,6 +8,7 @@ from tt._assertions import (
     assert_all_valid_keys,
     assert_iterable_contains_all_expr_symbols)
 from tt.definitions import (
+    boolean_variables_factory,
     CONSTANT_VALUES,
     DELIMITERS,
     is_valid_identifier,
@@ -15,12 +16,19 @@ from tt.definitions import (
     SYMBOLIC_OPERATOR_MAPPING,
     TT_NOT_OP)
 from tt.errors import (
+    AlreadyConstrainedSymbolError,
     BadParenPositionError,
     EmptyExpressionError,
     ExpressionOrderError,
     InvalidArgumentTypeError,
+    InvalidArgumentValueError,
     InvalidIdentifierError,
+    NoEvaluationVariationError,
     UnbalancedParenError)
+from tt.satisfiability import (
+    picosat)
+from tt.transformations import (
+    to_cnf)
 from tt.trees import (
     BinaryOperatorExpressionTreeNode,
     ExpressionTreeNode,
@@ -98,26 +106,31 @@ class BooleanExpression(object):
     """
 
     def __init__(self, expr):
+        if not isinstance(expr, (str, ExpressionTreeNode)):
+            raise InvalidArgumentTypeError(
+                'expr must be a str or ExpressionTreeNode')
+
+        self._symbols = []
+        self._symbol_set = set()
+        self._tokens = []
+        self._postfix_tokens = []
+
         if isinstance(expr, str):
             self._init_from_str(expr)
         elif isinstance(expr, ExpressionTreeNode):
             self._init_from_expr_node(expr)
-        else:
-            raise InvalidArgumentTypeError(
-                'expr must be a str or ExpressionTreeNode')
+
+        self._symbol_vals_factory = boolean_variables_factory(self._symbols)
+        self._tree = ExpressionTreeNode.build_tree(self._postfix_tokens)
+        self._constraints = {}
+        self._constrained_symbol_set = set()
 
     def _init_from_expr_node(self, expr_node):
         """Initalize this object from an expression node."""
-        self._symbols = []
-        self._symbol_set = set()
-        self._postfix_tokens = []
-        self._tokens = []
         self._raw_expr = ''
 
         with self._symbol_set_includes_constant_values():
             self._init_from_expr_node_recursive_helper(expr_node)
-
-        self._tree = ExpressionTreeNode.build_tree(self._postfix_tokens)
 
     def _init_from_expr_node_recursive_helper(self, expr_node, parent=None):
         """Recursive helper for initializing from an expression node.
@@ -189,17 +202,9 @@ class BooleanExpression(object):
         """Initalize this object from a raw expression string."""
         self._raw_expr = raw_expr_str
 
-        self._symbols = []
-        self._symbol_set = set()
-
-        self._tokens = []
-        self._postfix_tokens = []
-
         with self._symbol_set_includes_constant_values():
             self._tokenize()
             self._to_postfix()
-
-        self._tree = ExpressionTreeNode.build_tree(self._postfix_tokens)
 
     @property
     def is_cnf(self):
@@ -345,6 +350,231 @@ class BooleanExpression(object):
     def __repr__(self):
         return '<BooleanExpression "{}">'.format(self._raw_expr)
 
+    @contextmanager
+    def constrain(self, **kwargs):
+        """A context manager to impose satisfiability constraints.
+
+        This is the interface for adding assumptions to the satisfiability
+        solving functionality provided through the :func:`sat_one` and
+        :func:`sat_all` methods.
+
+        It should be noted that this context manager is only designed to work
+        with the satisfiability-related functionality of this class.
+        Constrained symbol values will not have an effect on non-sat methods of
+        this class. For example::
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(A or B) and (C or D)')
+            >>> with b.constrain(A=1):
+            ...     b.evaluate(A=0, B=1, C=1, D=0)
+            ...
+            True
+
+        This context manager returns a reference to the same object upon which
+        it is called. This behavior is designed with the following use case in
+        mind::
+
+            >>> from tt import BooleanExpression
+            >>> with BooleanExpression('A or B').constrain(A=1, B=0) as b:
+            ...     b.sat_one()
+            ...
+            <BooleanValues [A=1, B=0]>
+
+        :param kwargs: Keys are names of symbols in this expression; the
+            specified value for each of these keys will be added to the
+            ``constraints`` attribute of this object for the duration of the
+            context manager.
+
+        :returns: A reference to the same object that called this method
+            (i.e., ``self`` in the context of this method).
+        :rtype: :class:`BooleanExpression`
+
+        :raises AlreadyConstrainedSymbolError: If trying to constrain this
+            expression with multiple context managers.
+        :raises ExtraSymbolError: If a symbol not in this expression is passed
+            through ``kwargs``.
+        :raises InvalidArgumentValueError: If no contraints are specified
+            (i.e., ``kwargs`` is empty).
+        :raises InvalidBooleanValueError: If any values from ``kwargs`` are not
+            valid Boolean inputs.
+
+        """
+        if not kwargs:
+            raise InvalidArgumentValueError(
+                'Must specify at least one constraint')
+
+        assert_all_valid_keys(kwargs, self._symbol_set)
+
+        kwarg_key_set = set(kwargs.keys())
+        conflicts = self._constrained_symbol_set & kwarg_key_set
+        if conflicts:
+            symbols_str = ', '.join('"{}"'.format(s) for s in
+                                    sorted(conflicts))
+            raise AlreadyConstrainedSymbolError(
+                'Symbol' + (' ' if len(conflicts) == 1 else 's ') +
+                symbols_str + ' cannot be constrained multiple times')
+
+        self._constraints.update(kwargs)
+        self._constrained_symbol_set |= kwarg_key_set
+        yield self
+        self._constrained_symbol_set -= kwarg_key_set
+        self._constraints = {}
+
+    def sat_one(self):
+        """Find a combination of inputs that satisfies this expression.
+
+        Under the hood, this method is using the functionality exposed in tt's
+        :mod:`satisfiability.picosat <tt.satisfiability.picosat>` module.
+
+        Here's a simple example of satisfying an expression::
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('A xor 1')
+            >>> b.sat_one()
+            <BooleanValues [A=0]>
+
+        Don't forget about the utility provided by the :func:`constrain`
+        context manager::
+
+            >>> b = BooleanExpression('(A nand B) iff C')
+            >>> with b.constrain(A=1, C=1):
+            ...     b.sat_one()
+            ...
+            <BooleanValues [A=1, B=0, C=1]>
+
+        Finally, here's an example when the expression cannot be satisfied::
+
+            >>> with BooleanExpression('A xor 1').constrain(A=1) as b:
+            ...     b.sat_one() is None
+            ...
+            True
+
+        :returns: :func:`namedtuple <python:collections.namedtuple>`-like
+            object representing a satisfying set of values (see
+            :func:`boolean_variables_factory \
+            <tt.definitions.operands.boolean_variables_factory>` for more
+            information about the type of object returned); ``None``
+            will be returned if no satisfiable set of inputs exists.
+        :rtype: :func:`namedtuple <python:collections.namedtuple>`-like object
+            or ``None``
+
+        :raises NoEvaluationVariationError: If this is an expression of only
+            constants.
+
+        """
+        if not self._symbols:
+            raise NoEvaluationVariationError(
+                'Cannot attempt to satisfy an expression of only constants')
+
+        if not (self._symbol_set - self._constrained_symbol_set):
+            # shortcut if all symbols are constrained
+            if self.evaluate_unchecked(**self._constraints):
+                return self._symbol_vals_factory(**self._constraints)
+            else:
+                return None
+
+        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = \
+            self._to_picosat_clauses_assumptions_and_symbol_mappings()
+        if not assumptions:
+            # cannot pass empty list of assumptions to picosat
+            assumptions = None
+
+        picosat_result = picosat.sat_one(clauses, assumptions=assumptions)
+        if picosat_result is None:
+            return None
+
+        result_dict = self._picosat_result_as_dict(
+            picosat_result, symbol_to_index_map, index_to_symbol_map)
+        return self._symbol_vals_factory(**result_dict)
+
+    def sat_all(self):
+        """Find all combinations of inputs that satisfy this expression.
+
+        TODO: code examples
+        TODO: reference to picosat module
+
+        :returns: An iterator of
+            :func:`namedtuple <python:collections.namedtuple>`-like objects
+            representing satisfying combinations of inputs; if no satisfying
+            solutions exist, the iterator will be empty.
+        :rtype: Iterator[:func:`namedtuple <python:collections.namedtuple>`
+            -like objects]
+
+        :raises NoEvaluationVariationError: If this is an expression of only
+            constants.
+
+        """
+        # TODO
+        raise NotImplementedError
+
+    def _picosat_result_as_dict(self, results, symbol_to_index_map,
+                                index_to_symbol_map):
+        """Convert a PicoSAT result into a BooleanValues tuple."""
+        result_dict = {}
+        signed_symbol_indices = (index for index in results if abs(index) in
+                                 index_to_symbol_map)
+        for index in signed_symbol_indices:
+            symbol_name = index_to_symbol_map[abs(index)]
+            result_dict[symbol_name] = index > 0
+
+        return result_dict
+
+    def _to_picosat_clauses_assumptions_and_symbol_mappings(self):
+        """Return a PicoSAT-compatible representation and helpful metadata."""
+        cnf_expr = self if self.is_cnf else to_cnf(self)
+        index = 1
+        symbol_to_index_map = {}
+        index_to_symbol_map = {}
+        clauses = []
+        assumptions = []
+
+        for clause_root in cnf_expr.tree.iter_cnf_clauses():
+            clause_indices = []
+            for node in clause_root.iter_dnf_clauses():
+                is_negated = isinstance(node, UnaryOperatorExpressionTreeNode)
+                symbol_str = (node.l_child.symbol_name if is_negated else
+                              node.symbol_name)
+
+                if symbol_str in symbol_to_index_map:
+                    pos = symbol_to_index_map[symbol_str]
+                    if is_negated:
+                        clause_indices.append(-pos)
+                    else:
+                        clause_indices.append(pos)
+                elif symbol_str == '0':
+                    clause_indices.append(index)
+                    if is_negated:
+                        assumptions.append(index)
+                    else:
+                        assumptions.append(-index)
+                    index += 1
+                elif symbol_str == '1':
+                    clause_indices.append(index)
+                    if is_negated:
+                        assumptions.append(-index)
+                    else:
+                        assumptions.append(index)
+                    index += 1
+                else:
+                    symbol_to_index_map[symbol_str] = index
+                    index_to_symbol_map[index] = symbol_str
+                    if is_negated:
+                        clause_indices.append(-index)
+                    else:
+                        clause_indices.append(index)
+                    index += 1
+
+            clauses.append(clause_indices)
+
+        for symbol_str, assumed_val in self._constraints.items():
+            index = symbol_to_index_map[symbol_str]
+            if assumed_val:
+                assumptions.append(index)
+            else:
+                assumptions.append(-index)
+
+        return clauses, assumptions, symbol_to_index_map, index_to_symbol_map
+
     def evaluate(self, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
 
@@ -378,8 +608,8 @@ class BooleanExpression(object):
 
         """
         assert_all_valid_keys(kwargs, self._symbol_set)
-        assert_iterable_contains_all_expr_symbols(kwargs.keys(),
-                                                  self._symbol_set)
+        assert_iterable_contains_all_expr_symbols(
+            kwargs.keys(), self._symbol_set)
 
         return self.evaluate_unchecked(**kwargs)
 

@@ -13,6 +13,8 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 ```````````````````
 
     * Remove class ``BooleanExpressionTree`` in favor of working exclusively with instances of :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
+    * Add :exc:`AlreadyConstrainedSymbolError <tt.errors.state.AlreadyConstrainedSymbolError>`
+    * Add :func:`constrain <tt.expressions.bexpr.BooleanExpression.constrain>`, :func:`sat_one <tt.expressions.bexpr.BooleanExpression.sat_one>`, and :func:`sat_all <tt.expressions.bexpr.BooleanExpression.sat_all>` to :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
 
 0.6.1
 `````
