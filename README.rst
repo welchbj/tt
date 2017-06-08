@@ -3,7 +3,7 @@
 Synopsis
 --------
 
-tt is a Python library and command-line tool for working with Boolean expressions. Please check out the `project site`_ for more information.
+tt is a library aiming to provide a Pythonic toolkit for working with Boolean expressions. Please check out the `project site`_ for more information.
 
 Installation
 ------------
@@ -12,50 +12,101 @@ tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. You can get the latest rele
 
     pip install ttable
 
-Basic Usage
------------
+Features
+--------
 
-tt aims to provide a Pythonic interface for working with Boolean expressions. Here are some simple examples from the REPL::
+tt lets you do a few things with your prized Boolean expressions. Let's start by parsing one::
 
-    >>> from tt import BooleanExpression, TruthTable
-    >>> b = BooleanExpression('A xor (B and 1)')
+    >>> from tt import BooleanExpression
+    >>> b = BooleanExpression('A impl not (B nand C)')
     >>> b.tokens
-    ['A', 'xor', '(', 'B', 'and', '1', ')']
+    ['A', 'impl', 'not', '(', 'B', 'nand', 'C', ')']
     >>> b.symbols
-    ['A', 'B']
+    ['A', 'B', 'C']
     >>> print(b.tree)
-    xor
+    impl
     `----A
-    `----and
-         `----B
-         `----1
-    >>> b.evaluate(A=True, B=False)
+    `----not
+         `----nand
+              `----B
+              `----C
+
+Then transform it a couple of times::
+
+    >>> from tt import apply_de_morgans, to_cnf, to_primitives
+    >>> b = to_primitives(b)
+    >>> b
+    <BooleanExpression "not A or not (not B or not C)">
+    >>> b = apply_de_morgans(b)
+    >>> b
+    <BooleanExpression "not A or (not not B and not not C)">
+    >>> b = to_cnf(b)
+    >>> b
+    <BooleanExpression "(not A or B) and (not A or C)">
+
+Poke around its structure::
+
+    >>> b.is_cnf
     True
+    >>> b.is_dnf
+    False
+    >>> for clause in b.iter_clauses():
+    ...     print(clause)
+    ...
+    not A or B
+    not A or C
+
+Find a SAT solution::
+
+    >>> with b.constrain(A=1):
+    ...     b.sat_one()
+    ...
+    <BooleanValues [A=1, B=1, C=1]>
+
+Turn it into a truth table::
+
+    >>> from tt import TruthTable
     >>> t = TruthTable(b)
     >>> print(t)
-    +---+---+---+
-    | A | B |   |
-    +---+---+---+
-    | 0 | 0 | 0 |
-    +---+---+---+
-    | 0 | 1 | 1 |
-    +---+---+---+
-    | 1 | 0 | 1 |
-    +---+---+---+
-    | 1 | 1 | 0 |
-    +---+---+---+
-    >>> t = TruthTable(from_values='01xx')
-    >>> t.ordering
-    ['A', 'B']
-    >>> for inputs, result in t:
+    +---+---+---+---+
+    | A | B | C |   |
+    +---+---+---+---+
+    | 0 | 0 | 0 | 1 |
+    +---+---+---+---+
+    | 0 | 0 | 1 | 1 |
+    +---+---+---+---+
+    | 0 | 1 | 0 | 1 |
+    +---+---+---+---+
+    | 0 | 1 | 1 | 1 |
+    +---+---+---+---+
+    | 1 | 0 | 0 | 0 |
+    +---+---+---+---+
+    | 1 | 0 | 1 | 0 |
+    +---+---+---+---+
+    | 1 | 1 | 0 | 0 |
+    +---+---+---+---+
+    | 1 | 1 | 1 | 1 |
+    +---+---+---+---+
+
+And compare it to another truth table::
+
+    >>> other_table = TruthTable(from_values='111x00x1')
+    >>> other_table.ordering
+    ['A', 'B', 'C']
+    >>> for inputs, result in other_table:
     ...     print(inputs, '=>', result)
     ...
-    A=0, B=0 => False
-    A=0, B=1 => True
-    A=1, B=0 => x
-    A=1, B=1 => x
-    >>> t.equivalent_to(b)
+    A=0, B=0, C=0 => True
+    A=0, B=0, C=1 => True
+    A=0, B=1, C=0 => True
+    A=0, B=1, C=1 => x
+    A=1, B=0, C=0 => False
+    A=1, B=0, C=1 => False
+    A=1, B=1, C=0 => x
+    A=1, B=1, C=1 => True
+    >>> other_table.equivalent_to(t)
     True
+
 
 License
 -------
