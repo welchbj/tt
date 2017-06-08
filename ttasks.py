@@ -94,17 +94,16 @@ def pull_latest_win_wheels():
                   'quitting now')
             raise AppVeyorApiError
 
-        artifact_filename = r.json()[0]['fileName'].split('/')[1]
+        artifact_remote_path = r.json()[0]['fileName']
+        artifact_filename = artifact_remote_path.split('/')[1]
         local_filename = os.path.join(DIST_DIR, artifact_filename)
-        artifact_url = single_artifact_url_template.format(job_id,
-                                                           artifact_filename)
+        artifact_url = single_artifact_url_template.format(
+            job_id, artifact_remote_path)
 
-        print('Downloading', artifact_filename, 'into', local_filename)
-        r = requests.get(artifact_url, stream=True, headers=headers)
+        print('Downloading', artifact_url, 'into', local_filename)
+        r = requests.get(artifact_url, headers=headers)
         with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
+            f.write(r.content)
 
         print('Done')
         print()
