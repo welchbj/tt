@@ -27,8 +27,6 @@ from tt.errors import (
     UnbalancedParenError)
 from tt.satisfiability import (
     picosat)
-from tt.transformations import (
-    to_cnf)
 from tt.trees import (
     BinaryOperatorExpressionTreeNode,
     ExpressionTreeNode,
@@ -521,14 +519,14 @@ class BooleanExpression(object):
 
     def _to_picosat_clauses_assumptions_and_symbol_mappings(self):
         """Return a PicoSAT-compatible representation and helpful metadata."""
-        cnf_expr = self if self.is_cnf else to_cnf(self)
+        cnf_tree = self.tree if self.is_cnf else self.tree.to_cnf()
         index = 1
         symbol_to_index_map = {}
         index_to_symbol_map = {}
         clauses = []
         assumptions = []
 
-        for clause_root in cnf_expr.tree.iter_cnf_clauses():
+        for clause_root in cnf_tree.iter_cnf_clauses():
             clause_indices = []
             for node in clause_root.iter_dnf_clauses():
                 is_negated = isinstance(node, UnaryOperatorExpressionTreeNode)

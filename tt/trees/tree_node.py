@@ -233,6 +233,34 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement evaluate().')
 
+    def to_cnf(self):
+        """Return a transformed node, in conjunctive normal form.
+
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects.
+
+        :returns: An expression tree node with all operators transformed to
+            consist only of NOTs, ANDs, and ORs.
+        :rtype: :class:`ExpressionTreeNode`
+
+        """
+        prev_node = self.to_primitives()
+        if prev_node.is_cnf:
+            return prev_node
+
+        next_node = prev_node.apply_de_morgans()
+        while next_node != prev_node:
+            prev_node = next_node
+            next_node = next_node.apply_de_morgans()
+
+        prev_node = next_node.coalesce_negations()
+        next_node = prev_node.distribute_ors()
+        while next_node != prev_node:
+            prev_node = next_node
+            next_node = next_node.distribute_ors()
+
+        return next_node
+
     def to_primitives(self):
         """Return a transformed node, containing only NOTs, ANDs, and ORs.
 
