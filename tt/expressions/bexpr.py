@@ -488,8 +488,28 @@ class BooleanExpression(object):
     def sat_all(self):
         """Find all combinations of inputs that satisfy this expression.
 
-        TODO: code examples
-        TODO: reference to picosat module
+        Under the hood, this method is using the functionality exposed in tt's
+        :mod:`satisfiability.picosat <tt.satisfiability.picosat>` module.
+
+        Here's a simple example of iterating through a few SAT solutions::
+
+            >>> from tt import BooleanExpression
+            >>> b = BooleanExpression('(A xor B) and (C xor D)')
+            >>> for solution in b.sat_all():
+            ...     print(solution)
+            ...
+            A=0, B=1, C=0, D=1
+            A=0, B=1, C=1, D=0
+            A=1, B=0, C=1, D=0
+            A=1, B=0, C=0, D=1
+
+        We can also constrain away a few of those solutions::
+
+            >>> with b.constrain(A=1, C=0):
+            ...     for solution in b.sat_all():
+            ...         print(solution)
+            ...
+            A=1, B=0, C=0, D=1
 
         :returns: An iterator of
             :func:`namedtuple <python:collections.namedtuple>`-like objects
@@ -502,8 +522,30 @@ class BooleanExpression(object):
             constants.
 
         """
-        # TODO
-        raise NotImplementedError
+        if not self._symbols:
+            raise NoEvaluationVariationError(
+                'Cannot attempt to satisfy an expression of only constants')
+
+        if not (self._symbol_set - self._constrained_symbol_set):
+            # shortcut if all symbols are constrained
+            if self.evaluate_unchecked(**self._constraints):
+                yield self._symbol_vals_factory(**self._constraints)
+            else:
+                # empty iterator
+                while False:
+                    yield None
+            return
+
+        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = \
+            self._to_picosat_clauses_assumptions_and_symbol_mappings()
+        if not assumptions:
+            # cannot pass empty list of assumptions to picosat
+            assumptions = None
+
+        for picosat_sol in picosat.sat_all(clauses, assumptions=assumptions):
+            result_dict = self._picosat_result_as_dict(
+                picosat_sol, symbol_to_index_map, index_to_symbol_map)
+            yield self._symbol_vals_factory(**result_dict)
 
     def _picosat_result_as_dict(self, results, symbol_to_index_map,
                                 index_to_symbol_map):
