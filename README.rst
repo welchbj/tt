@@ -56,7 +56,18 @@ Poke around its structure::
     not A or B
     not A or C
 
-Find a SAT solution::
+Find all of its SAT solutions::
+
+    >>> for sat_solution in b.sat_all():
+    ...     print(sat_solution)
+    ...
+    A=0, B=1, C=1
+    A=0, B=1, C=0
+    A=0, B=0, C=1
+    A=0, B=0, C=0
+    A=1, B=1, C=1
+
+Or just find one::
 
     >>> with b.constrain(A=1):
     ...     b.sat_one()
