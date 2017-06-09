@@ -11,7 +11,6 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 
 0.6.2
 `````
-
     * Remove class ``BooleanExpressionTree`` in favor of working exclusively with instances of :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Add :exc:`AlreadyConstrainedSymbolError <tt.errors.state.AlreadyConstrainedSymbolError>`
     * Add :func:`sat_all <tt.satisfiability.picosat.sat_all>` to :mod:`picosat <tt.satisfiability.picosat>` interface
