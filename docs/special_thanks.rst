@@ -30,6 +30,12 @@ Thank you to the developers of the following third party libraries that are wrap
     * `PicoSAT`_
 
 
+Inspiration
+-----------
+
+Thanks goes to the developers of the `PyEDA`_ and `pycosat`_ libraries, whose interface and design are inspirations behind a lot of the functionality packed in tt.
+
+
 Open Source Projects & Libraries
 --------------------------------
 
@@ -68,6 +74,9 @@ tt relies on some well-written and well-documented projects and libraries for it
 .. _logic gate SVGs: https://www.mbeckler.org/inkscape/drawings/
 
 .. _PicoSAT: http://fmv.jku.at/picosat/
+
+.. _PyEDA: https://github.com/cjdrake/pyeda
+.. _pycosat: https://github.com/ContinuumIO/pycosat
 
 .. _Alabaster: http://alabaster.readthedocs.io/en/latest/
 .. _Babel: http://babel.pocoo.org/en/latest/

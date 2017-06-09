@@ -10,5 +10,7 @@ Exploring the topics listed below should give you an idea of how to use the tool
     user_guide/expression_basics
     user_guide/table_basics
 
+The user guide is a work in progress, with more to come soon!
+
 
 .. _issue on GitHub: https://github.com/welchbj/tt/issues/new

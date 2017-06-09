@@ -7,10 +7,10 @@ Check below for new features added in each release. Please note that release not
 0.6.x
 -----
 
-Features in the 0.6.x series of releases are focused on expanding functionality to include expression optimization, satisfiability, and transformations.
+Features in the 0.6.x series of releases are focused on expanding functionality to include expression satisfiability and transformations.
 
-0.6.2 (in progress)
-```````````````````
+0.6.2
+`````
 
     * Remove class ``BooleanExpressionTree`` in favor of working exclusively with instances of :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Add :exc:`AlreadyConstrainedSymbolError <tt.errors.state.AlreadyConstrainedSymbolError>`
