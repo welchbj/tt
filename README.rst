@@ -1,4 +1,4 @@
-|pypi| |nixbuild| |winbuild|
+|pypi| |pyversions| |docs| |nixbuild| |winbuild|
 
 Synopsis
 --------
@@ -131,6 +131,14 @@ tt uses the `MIT License`_.
 .. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
     :target: https://pypi.python.org/pypi/ttable
     :alt: tt's PyPI page
+
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/ttable.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/ttable
+    :alt: tt runs on Python 2.7, 3.3, 3.4, 3.5, and 3.6
+
+.. |docs| image:: https://img.shields.io/badge/docs-latest-c944ff.svg?style=flat-square
+    :target: http://tt.bwel.ch/en/latest/
+    :alt: tt documentation site
 
 .. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
     :target: https://travis-ci.org/welchbj/tt
