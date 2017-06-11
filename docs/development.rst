@@ -75,7 +75,11 @@ Wheels for Windows environments are provided on PyPI. To get the built wheels fr
 
     python ttasks.py pull-latest-win-wheels
 
-This should download the files into a ``dist`` folder in the top-level directory of the project. Once downloaded, you can upload the Wheels to PyPI with::
+Additionally, let's make sure to include a source bundle in this release::
+
+    python setup.py sdist
+
+Now, all of our wheels and the source tarball should be in the ``dist`` folder in the top-level directory of the project. You can upload these files to PyPI with::
 
     twine upload dist/*
 
