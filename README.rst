@@ -126,7 +126,7 @@ tt uses the `MIT License`_.
 
 
 .. _MIT License: https://opensource.org/licenses/MIT
-.. _project site: http://tt.bwel.ch
+.. _project site: http://tt.brianwel.ch
 
 .. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
     :target: https://pypi.python.org/pypi/ttable
@@ -137,7 +137,7 @@ tt uses the `MIT License`_.
     :alt: tt runs on Python 2.7, 3.3, 3.4, 3.5, and 3.6
 
 .. |docs| image:: https://img.shields.io/badge/docs-latest-c944ff.svg?style=flat-square
-    :target: http://tt.bwel.ch/en/latest/
+    :target: http://tt.brianwel.ch/en/latest/
     :alt: tt documentation site
 
 .. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
