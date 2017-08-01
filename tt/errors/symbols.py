@@ -4,12 +4,8 @@ from .base import TtError
 
 
 class SymbolError(TtError):
-    """An exception for errors occurring in symbol processing.
-
-    .. note::
-
-        This exception type should be sub-classed and is not meant to be raised
-        explicitly.
+    """An exception for errors occurring in symbol processing. This exception
+    type should be sub-classed and is not meant to be raised explicitly.
 
     """
 
@@ -17,15 +13,15 @@ class SymbolError(TtError):
 class DuplicateSymbolError(SymbolError):
     """An exception type for user-specified duplicate symbols.
 
-    .. code-block:: python
+    Here's an example where we try to pass duplicate symbols to the
+    ``ordering`` property of the :class:`TruthTable \
+    <tt.tables.truth_table.TruthTable>` class::
 
         >>> from tt import TruthTable
-        >>> try:
-        ...     t = TruthTable('A or B', ordering=['A', 'A', 'B'])
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.symbols.DuplicateSymbolError'>
+        >>> t = TruthTable('A or B', ordering=['A', 'A', 'B'])
+        Traceback (most recent call last):
+            ...
+        tt.errors.symbols.DuplicateSymbolError: Received duplicate symbols
 
     """
 
@@ -33,15 +29,13 @@ class DuplicateSymbolError(SymbolError):
 class ExtraSymbolError(SymbolError):
     """An exception for a passed token that is not a parsed symbol.
 
-    .. code-block:: python
+    Here's a quick table example::
 
         >>> from tt import TruthTable
-        >>> try:
-        ...     t = TruthTable('A or B', ordering=['A', 'B', 'C'])
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.symbols.ExtraSymbolError'>
+        >>> t = TruthTable('A or B', ordering=['A', 'B', 'C'])
+        Traceback (most recent call last):
+            ...
+        tt.errors.symbols.ExtraSymbolError: Received unexpected symbols: "C"
 
     """
 
@@ -52,12 +46,11 @@ class MissingSymbolError(SymbolError):
     .. code-block:: python
 
         >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression('A and B')
-        ...     b.evaluate(A=1)
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.symbols.MissingSymbolError'>
+        >>> b = BooleanExpression('A and B')
+        >>> b.evaluate(A=1)
+        Traceback (most recent call last):
+            ...
+        tt.errors.symbols.MissingSymbolError: Did not receive value for the \
+following symbols: "B"
 
     """

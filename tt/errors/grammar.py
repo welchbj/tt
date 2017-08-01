@@ -5,12 +5,9 @@ from .base import TtError
 
 class GrammarError(TtError):
 
-    """Base type for errors that occur in the handling of expression.
-
-    .. note::
-
-        This exception type should be sub-classed and is not meant to be raised
-        explicitly.
+    """Base type for errors that occur in the handling of expression. This
+    exception type should be sub-classed and is not meant to be raised
+    explicitly.
 
     """
 
@@ -23,10 +20,8 @@ class GrammarError(TtError):
     def expr_str(self):
         """The expression in which the exception occurred.
 
-        .. note::
-
-            This may be left as ``None``, in which case the expression will not
-            be propagated with the exception.
+        If this property is left as ``None``, the expression will not be
+        propagated with the exception.
 
         :type: :class:`str <python:str>`
 
@@ -37,10 +32,8 @@ class GrammarError(TtError):
     def error_pos(self):
         """The position in the expression where the error occurred.
 
-        .. note::
-
-            This may be left as ``None``, in which case there is no specific
-            location in the expression causing the exception.
+        If this property is left as ``None``, it can be assumed that there is
+        no specific location in the expression causing the exception.
 
         :type: :class:`int <python:int>`
 
@@ -51,15 +44,13 @@ class GrammarError(TtError):
 class BadParenPositionError(GrammarError):
     """An exception type for unexpected parentheses.
 
-    .. code-block:: python
+    Here's a quick and dirty example::
 
         >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression(') A or B')
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.grammar.BadParenPositionError'>
+        >>> b = BooleanExpression('A or B (')
+        Traceback (most recent call last):
+            ...
+        tt.errors.grammar.BadParenPositionError: Unexpected parenthesis
 
     """
 
@@ -67,15 +58,13 @@ class BadParenPositionError(GrammarError):
 class EmptyExpressionError(GrammarError):
     """An exception type for when an empty expression is received.
 
-    .. code-block:: python
+    Let's take a brief look::
 
         >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression('')
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.grammar.EmptyExpressionError'>
+        >>> b = BooleanExpression('')
+        Traceback (most recent call last):
+            ...
+        tt.errors.grammar.EmptyExpressionError: Empty expression is invalid
 
     """
 
@@ -83,34 +72,34 @@ class EmptyExpressionError(GrammarError):
 class ExpressionOrderError(GrammarError):
     """An exception type for unexpected operands or operators.
 
-    .. code-block:: python
+    Here's an example with an unexpected operator::
 
         >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression('A or or B')
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.grammar.ExpressionOrderError'>
+        >>> b = BooleanExpression('A or or B')
+        Traceback (most recent call last):
+            ...
+        tt.errors.grammar.ExpressionOrderError: Unexpected binary operator "or"
 
     """
 
 
 class InvalidIdentifierError(GrammarError):
-    """An exception type for invalid operand names.
+    """An exception type for invalid operand names. Invalid operand names are
+    determined via the :func:`is_valid_identifier \
+    <tt.definitions.operands.is_valid_identifier>` function.
 
-    .. code-block:: python
-
+    Here are a couple of examples, for both expressions and tables::
+BooleanExpression
         >>> from tt import BooleanExpression, TruthTable
-        >>> b = BooleanExpression('%A or B')
+        >>> b = BooleanExpression('__A xor B')
         Traceback (most recent call last):
             ...
-        tt.errors.grammar.InvalidIdentifierError: Invalid operand name "%A"
-        >>> t = TruthTable(from_values='0x11', ordering=['A', 'while'])
+        tt.errors.grammar.InvalidIdentifierError: Invalid operand name "__A"
+        >>> t = TruthTable(from_values='0x11', ordering=['for', 'operand'])
         Traceback (most recent call last):
             ...
-        tt.errors.grammar.InvalidIdentifierError: "while" in ordering is not \
-a valid symbol name
+        tt.errors.grammar.InvalidIdentifierError: "for" in ordering is not a \
+    valid symbol name
 
     """
 
@@ -118,14 +107,12 @@ a valid symbol name
 class UnbalancedParenError(GrammarError):
     """An exception type for unbalanced parentheses.
 
-    .. code-block:: python
+    Here's a short example::
 
         >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression('A or ((B)')
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.grammar.UnbalancedParenError'>
+        >>> b = BooleanExpression('A or B or C)')
+        Traceback (most recent call last):
+            ...
+        tt.errors.grammar.UnbalancedParenError: Unbalanced parenthesis
 
     """

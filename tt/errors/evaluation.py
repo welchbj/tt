@@ -4,29 +4,27 @@ from .base import TtError
 
 
 class EvaluationError(TtError):
-    """An exception type for errors occurring in expression evaluation.
-
-    .. note::
-
-        This exception type should be sub-classed and is not meant to be raised
-        explicitly.
+    """An exception type for errors occurring in expression evaluation. This
+    exception type should be sub-classed and is not meant to be raised
+    explicitly.
 
     """
 
 
 class InvalidBooleanValueError(EvaluationError):
-    """An exception for an invalid truth or don't care value passed.
+    """An exception for when an invalid truth or don't care value is passed.
 
-    .. code-block:: python
+    Here's an example where we attempt to evaluate a \
+    :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>` with
+    an invalid value passed through ``kwargs``::
 
         >>> from tt import BooleanExpression
-        >>> try:
-        ...     b = BooleanExpression('A or B')
-        ...     b.evaluate(A=1, B='brian')
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.evaluation.InvalidBooleanValueError'>
+        >>> b = BooleanExpression('A or B')
+        >>> b.evaluate(A=1, B='brian')
+        Traceback (most recent call last):
+            ...
+        tt.errors.evaluation.InvalidBooleanValueError: "brian" passed as \
+value for "B" is not a valid Boolean value
 
     """
 
@@ -34,14 +32,15 @@ class InvalidBooleanValueError(EvaluationError):
 class NoEvaluationVariationError(EvaluationError):
     """An exception type for when evaluation of an expression will not vary.
 
-    .. code-block:: python
+    Let's see an example where we attempt to make a :class:`TruthTable \
+    <tt.tables.truth_table.TruthTable>` from an expression that has no
+    symbols nor variation in its results::
 
         >>> from tt import TruthTable
-        >>> try:
-        ...     t = TruthTable('1 or 0')
-        ... except Exception as e:
-        ...     print(type(e))
-        ...
-        <class 'tt.errors.evaluation.NoEvaluationVariationError'>
+        >>> t = TruthTable('1 or 0')
+        Traceback (most recent call last):
+            ...
+        tt.errors.evaluation.NoEvaluationVariationError: This expression is \
+composed only of constant values
 
     """
