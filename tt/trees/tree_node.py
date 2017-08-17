@@ -32,8 +32,10 @@ class ExpressionTreeNode(object):
 
     If you plan to extend it, note that descendants of this class
     must compute the ``_is_cnf``, ``_is_dnf``, and ``_is_really_unary`` boolean
-    attributes within their initialization. Additionally, descendants of this
-    class must implemented the ``__eq__`` magic method (but not ``__ne__``).
+    attributes and the ``_non_negated_symbol_set`` and ``_negated_symbol_set``
+    set attributes within their initialization. Additionally, descendants of
+    this class must implemented the ``__eq__`` magic method (but not
+    ``__ne__``).
 
     """
 
@@ -86,6 +88,24 @@ class ExpressionTreeNode(object):
 
         """
         return self._is_dnf
+
+    @property
+    def non_negated_symbol_set(self):
+        """A set of the non-negated symbols present in the tree rooted here.
+
+        :type: Set[:class:`str <python:str>`]
+
+        """
+        return self._non_negated_symbol_set
+
+    @property
+    def negated_symbol_set(self):
+        """A set of the negated symbols present in the tree rooted here.
+
+        :type: Set[:class:`str <python:str>`]
+
+        """
+        return self._negated_symbol_set
 
     @property
     def is_really_unary(self):
@@ -395,6 +415,10 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
         self._is_cnf = self._cnf_status()
         self._is_dnf = self._dnf_status()
         self._is_really_unary = False
+        self._non_negated_symbol_set = \
+            l_child._non_negated_symbol_set | r_child._non_negated_symbol_set
+        self._negated_symbol_set = \
+            l_child._negated_symbol_set | r_child._negated_symbol_set
 
     @property
     def operator(self):
@@ -654,6 +678,16 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         self._is_dnf = self._is_cnf
         self._is_really_unary = l_child._is_really_unary
 
+        if self._is_really_unary:
+            # this node has the opposite of its children
+            self._non_negated_symbol_set, self._negated_symbol_set = (
+                set(l_child._negated_symbol_set),
+                set(l_child._non_negated_symbol_set))
+        else:
+            self._non_negated_symbol_set, self._negated_symbol_set = (
+                set(l_child._non_negated_symbol_set),
+                set(l_child._negated_symbol_set))
+
     @property
     def operator(self):
         """The actual operator object wrapped in this node.
@@ -735,6 +769,8 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         self._is_cnf = True
         self._is_dnf = True
         self._is_really_unary = True
+        self._non_negated_symbol_set = {self.symbol_name}
+        self._negated_symbol_set = set()
 
     def evaluate(self, input_dict):
         if self.symbol_name == '0':

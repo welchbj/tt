@@ -11,7 +11,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 
 0.6.3 (in progress)
 ```````````````````
-    * Nothing yet!
+    * Add :data:`non_negated_symbol_set <tt.trees.tree_node.ExpressionTreeNode.non_negated_symbol_set>` and :data:`negated_symbol_set <tt.trees.tree_node.ExpressionTreeNode.negated_symbol_set>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
 
 0.6.2
 `````
