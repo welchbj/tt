@@ -3,7 +3,7 @@
 Synopsis
 --------
 
-tt (**t**\ ruth **t**\ able) is a library aiming to provide a Pythonic toolkit for working with Boolean expressions. Please check out the `project site`_ for more information.
+tt (**t**\ ruth **t**\ able) is a library aiming to provide a Pythonic toolkit for working with Boolean expressions and truth tables. Please check out the `project site`_ for more information.
 
 Installation
 ------------
