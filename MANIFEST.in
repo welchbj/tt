@@ -2,5 +2,6 @@ include LICENSE.txt
 include README.rst
 
 graft docs
+graft tt/_clibs
 
 global-exclude *.py[cod]
