@@ -89,7 +89,7 @@ class InvalidIdentifierError(GrammarError):
     <tt.definitions.operands.is_valid_identifier>` function.
 
     Here are a couple of examples, for both expressions and tables::
-BooleanExpression
+
         >>> from tt import BooleanExpression, TruthTable
         >>> b = BooleanExpression('__A xor B')
         Traceback (most recent call last):
