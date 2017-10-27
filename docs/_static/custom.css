@@ -1,1 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Cabin|PT+Sans+Caption');
+
+::selection {
+    color: #fff;
+    background: #6062ff;
+}
