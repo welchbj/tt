@@ -2,7 +2,7 @@
 Development
 ===========
 
-If you'd like to help out with tt, we'd love to have you. Below are some helpful tips to development. Feel free to :doc:`reach out </author>` with any questions about development or getting involved.
+If you'd like to help out with the development of tt, we'd love to have you. Below are some helpful tips for working on this library. Feel free to :doc:`reach out </author>` with any questions about getting involved in this project.
 
 
 Managing with ``ttasks.py``
@@ -26,9 +26,9 @@ Testing is done with Python's `unittest`_ and `doctest`_ modules. All tests can 
 
     python ttasks.py test
 
-Note that while doc tests are used, this is mostly just to make sure the documentation examples are valid. The true behavior of the library and its public contract are enforced through the unit tests.
+Note that while doc tests are used, they are mainly to make sure the documentation examples are valid. The true behavior of the library and its public contract are enforced through the unit tests.
 
-Cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox`` from the top-level directory of the project; tox will run the unit tests against the compatible CPython runtimes. Additionally, the source is run through the `Flake8`_ linter. Whenever new code is pushed to the repo, this same set of `tox`_ tests is run on `AppVeyor`_ (for Windows builds). A separate configuration is used for `Travis CI`_, which tests on Linux.
+Local cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox .`` from the top-level directory of the project; tox will run the unit tests against the compatible CPython runtimes. Additionally, the source is run through the `Flake8`_ linter. Similar configurations are used on `AppVeyor`_ (for Windows builds) and `Travis CI`_. (for Mac and Linux builds).
 
 
 Coding Style
@@ -44,7 +44,7 @@ To build the docs from source, run the following::
 
     python ttasks.py build-docs
 
-If you're going to be working for a little bit, it's usually more convenient to boot up a live-reload server that will re-build the docs on any source file changes. To run one on port 5000 of your machine, run::
+If you're going to be working for a little bit, it's usually more convenient to boot up a live-reload server that will re-build the docs on any source file change. To run one on port 5000 of your machine, run::
 
     python ttasks.py serve-docs
 
@@ -71,11 +71,11 @@ Releases
 
 Work for each release is done in a branch off of develop following the naming convention v{major}.{minor}.{micro}. When work for a version is complete, its branch is merged back into develop, which is subsequently merged into master. The master branch is then tagged with the release version number, following the scheme {major}.{minor}.{micro}.
 
-Wheels for Windows environments are provided on PyPI. To get the built wheels from the release build on AppVeyor, make sure you have the ``APPVEYOR_TOKEN`` environment variable set and run::
+Wheels for Windows environments are provided for the library's users on PyPI. To download the built wheels from the latest build on AppVeyor, make sure you have the ``APPVEYOR_TOKEN`` environment variable set and run::
 
     python ttasks.py pull-latest-win-wheels
 
-Additionally, let's make sure to include a source bundle in this release::
+Additionally, when packaging for a release, make sure to include a source bundle::
 
     python setup.py sdist
 
