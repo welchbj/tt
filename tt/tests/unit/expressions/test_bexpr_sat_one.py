@@ -27,11 +27,11 @@ class TestExpressionSatOne(ExpressionTestCase):
 
     def test_cnf_expr(self):
         """Test satisfying an expr already in CNF."""
-        b = be('(A or B or C) and (D or E) or F or (G or H or I)')
-        with b.constrain(A=0, B=0, D=0, H=0, I=0):
+        b = be('(A or B or C) and (D or E) or F or (G or H or J)')
+        with b.constrain(A=0, B=0, D=0, H=0, J=0):
             res = b.sat_one()
             self.assertEqual(
-                'A=0, B=0, C=1, D=0, E=1, F=1, G=1, H=0, I=0', str(res))
+                'A=0, B=0, C=1, D=0, E=1, F=1, G=1, H=0, J=0', str(res))
 
     def test_dnf_expr(self):
         """Test satisfying an expr in DNF."""
