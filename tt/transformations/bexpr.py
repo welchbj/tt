@@ -39,6 +39,38 @@ def apply_de_morgans(expr):
     return BooleanExpression(bexpr.tree.apply_de_morgans())
 
 
+def apply_identity_law(expr):
+    """Convert an expression to a form with the Identity Law applied.
+
+    It should be noted that this transformation will also annihilate terms
+    when possible. One such case where this would be applicable is the
+    expression ``A and 0``, which would be transformed to the constant value
+    ``0``.
+
+    :returns: A new expression object, transformed so that the Identity Law
+        has been applied to applicable *ANDs* and *ORs*.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
+
+    Here are a few simple examples showing the behavior of this transformation
+    across all two-operand scenarios::
+
+        >>> from tt import apply_identity_law
+        >>> apply_identity_law('A and 1')
+        <BooleanExpression "A">
+        >>> apply_identity_law('A and 0')
+        <BooleanExpression "0">
+        >>> apply_identity_law('A or 0')
+        <BooleanExpression "A">
+        >>> apply_identity_law('A or 1')
+        <BooleanExpression "1">
+
+    """
+    bexpr = _ensure_bexpr(expr)
+    return BooleanExpression(bexpr.tree.apply_identity_law())
+
+
 def coalesce_negations(expr):
     """Convert an expression to a form with all negations condensed.
 

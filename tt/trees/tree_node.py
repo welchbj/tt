@@ -324,6 +324,43 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement apply_de_morgans()')
 
+    def apply_identity_law(self):
+        """Return a transformed node, with the Identity Law applied.
+
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects.
+
+        This transformation will achieve the following effects by applying the
+        Inverse Law to the *AND* and *OR* operators::
+
+            >>> from tt import BooleanExpression
+            >>> tree = BooleanExpression('A and 1').tree
+            >>> print(tree.apply_identity_law())
+            A
+            >>> tree = BooleanExpression('0 or B').tree
+            >>> print(tree.apply_identity_law())
+            B
+
+        It should also be noted that this transformation will also apply
+        the annihilator properties of the logical *AND* and *OR* operators. For
+        example::
+
+            >>> from tt import BooleanExpression
+            >>> tree = BooleanExpression('A and 0').tree
+            >>> print(tree.apply_identity_law())
+            0
+            >>> tree = BooleanExpression('1 or B').tree
+            >>> print(tree.apply_identity_law())
+            1
+
+        :returns: An expression tree node with AND and OR identities
+            simplified.
+        :rtype: :class:`ExpressionTreeNode`
+
+        """
+        raise NotImplementedError(
+            'Expression tree nodes must implement apply_identity_law()')
+
     def distribute_ands(self):
         """Return a transformed nodes, with ANDs recursively distributed across
         ORed sub-expressions.
@@ -509,6 +546,39 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             self._l_child.apply_de_morgans(),
             self._r_child.apply_de_morgans())
+
+    def apply_identity_law(self):
+        op_is_and = self._operator == TT_AND_OP
+        op_is_or = self._operator == TT_OR_OP
+
+        new_l_child = self._l_child.apply_identity_law()
+        if new_l_child.symbol_name == '1':
+            if op_is_and:
+                return self._r_child.apply_identity_law()
+            elif op_is_or:
+                return OperandExpressionTreeNode('1')
+        elif new_l_child.symbol_name == '0':
+            if op_is_and:
+                return OperandExpressionTreeNode('0')
+            elif op_is_or:
+                return self._r_child.apply_identity_law()
+
+        new_r_child = self._r_child.apply_identity_law()
+        if new_r_child.symbol_name == '1':
+            if op_is_and:
+                return new_l_child
+            elif op_is_or:
+                return OperandExpressionTreeNode('1')
+        elif new_r_child.symbol_name == '0':
+            if op_is_and:
+                return OperandExpressionTreeNode('0')
+            elif op_is_or:
+                return new_l_child
+
+        return BinaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            new_l_child,
+            new_r_child)
 
     def distribute_ands(self):
         if self._operator == TT_AND_OP:
@@ -737,6 +807,11 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             self._l_child.apply_de_morgans())
 
+    def apply_identity_law(self):
+        return UnaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_identity_law())
+
     def distribute_ands(self):
         return UnaryOperatorExpressionTreeNode(
             self.symbol_name,
@@ -787,6 +862,9 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def apply_de_morgans(self):
+        return OperandExpressionTreeNode(self.symbol_name)
+
+    def apply_identity_law(self):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def distribute_ands(self):
