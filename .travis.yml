@@ -16,21 +16,22 @@ matrix:
           env: RUN_FLAKE=1
 
         # 64-bit Mac OS X builds
-        - os: osx
-          language: generic
-          env: TT_PY_VER=py27
-        - os: osx
-          language: generic
-          env: TT_PY_VER=py33
-        - os: osx
-          language: generic
-          env: TT_PY_VER=py34
-        - os: osx
-          language: generic
-          env: TT_PY_VER=py35
-        - os: osx
-          language: generic
-          env: TT_PY_VER=py36
+        # ;; temporarily disabled since they take really long
+        # - os: osx
+        #   language: generic
+        #   env: TT_PY_VER=py27
+        # - os: osx
+        #   language: generic
+        #   env: TT_PY_VER=py33
+        # - os: osx
+        #   language: generic
+        #   env: TT_PY_VER=py34
+        # - os: osx
+        #   language: generic
+        #   env: TT_PY_VER=py35
+        # - os: osx
+        #   language: generic
+        #   env: TT_PY_VER=py36
 
 cache:
     - pip
