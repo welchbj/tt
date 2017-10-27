@@ -14,6 +14,7 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
     * Add :data:`non_negated_symbol_set <tt.trees.tree_node.ExpressionTreeNode.non_negated_symbol_set>` and :data:`negated_symbol_set <tt.trees.tree_node.ExpressionTreeNode.negated_symbol_set>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Add :func:`apply_identity_law <tt.trees.tree_node.ExpressionTreeNode.apply_identity_law>` transformation to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
     * Add :func:`apply_identity_law <tt.transformations.bexpr.apply_identity_law>` top-level transformation function
+    * Add functionality to the :func:`coalesce_negations <tt.transformations.bexpr.coalesce_negations>` transformation to apply negations on constant operands
 
 0.6.2
 `````

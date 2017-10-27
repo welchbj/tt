@@ -32,6 +32,22 @@ class TestNodeToPrimitives(ExpressionTreeAndNodeTestCase):
                     '`----A',
                     '`----B')))
 
+    def test_constant_operands(self):
+        """Test applying negations to constant operands."""
+        root = self.get_tree_root_from_expr_str('~0')
+        coalesced = root.coalesce_negations()
+        self.assertTrue(coalesced is not root)
+        self.assertEqual(
+            str(coalesced),
+            '1')
+
+        root = self.get_tree_root_from_expr_str('~1')
+        coalesced = root.coalesce_negations()
+        self.assertTrue(coalesced is not root)
+        self.assertEqual(
+            str(coalesced),
+            '0')
+
     def test_single_negation(self):
         """Test that no change occurs for a single negation."""
         root = self.get_tree_root_from_expr_str('~A')

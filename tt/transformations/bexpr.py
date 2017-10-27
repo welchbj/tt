@@ -86,10 +86,21 @@ def coalesce_negations(expr):
         >>> coalesce_negations('~~A or ~B or ~~~C or ~~~~D')
         <BooleanExpression "A or ~B or ~C or D">
 
-    This transformation works on expressions, too::
+    This transformation works on more complex expressions, too::
 
         >>> coalesce_negations('!!(A -> not not B) or ~(~(A xor B))')
         <BooleanExpression "(A -> B) or (A xor B)">
+
+    It should be noted that this transformation will also apply negations
+    to constant operands, as well. The behavior for this functionality is as
+    follows::
+
+        >>> coalesce_negations('~0')
+        <BooleanExpression "1">
+        >>> coalesce_negations('~1')
+        <BooleanExpression "0">
+        >>> coalesce_negations('~~~0 -> ~1 -> not 1')
+        <BooleanExpression "1 -> 0 -> 0">
 
     """
     bexpr = _ensure_bexpr(expr)

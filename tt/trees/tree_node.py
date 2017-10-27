@@ -779,6 +779,10 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
     def coalesce_negations(self):
         if isinstance(self._l_child, UnaryOperatorExpressionTreeNode):
             return self._l_child._l_child.coalesce_negations()
+        elif self._l_child.symbol_name == '0':
+            return OperandExpressionTreeNode('1')
+        elif self._l_child.symbol_name == '1':
+            return OperandExpressionTreeNode('0')
         else:
             return UnaryOperatorExpressionTreeNode(
                 self.symbol_name,

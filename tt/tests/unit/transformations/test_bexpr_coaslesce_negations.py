@@ -24,6 +24,31 @@ class TestCoalesceNegations(unittest.TestCase):
             BooleanExpression('~~A'),
             'A')
 
+    def test_only_constant_expressions(self):
+        """Test the transformation on negated expression objects."""
+        self.assert_coalesce_negations_transformation(
+            '1', '1')
+        self.assert_coalesce_negations_transformation(
+            '0', '0')
+        self.assert_coalesce_negations_transformation(
+            '~0', '1')
+        self.assert_coalesce_negations_transformation(
+            '~1', '0')
+        self.assert_coalesce_negations_transformation(
+            '~~1', '1')
+        self.assert_coalesce_negations_transformation(
+            '~~0', '0')
+        self.assert_coalesce_negations_transformation(
+            '!!!1', '0')
+        self.assert_coalesce_negations_transformation(
+            'not not not not not 0', '1')
+        self.assert_coalesce_negations_transformation(
+            '~1 and ~0', '0 and 1')
+        self.assert_coalesce_negations_transformation(
+            '~~~1 -> 0', '0 -> 0')
+        self.assert_coalesce_negations_transformation(
+            '~~~0 -> ~~0 -> ~0 -> 0', '1 -> 0 -> 1 -> 0')
+
     def test_negated_single_operand(self):
         """Test condensing negations on single operand expressions."""
         self.assert_coalesce_negations_transformation(
