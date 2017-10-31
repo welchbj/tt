@@ -2,6 +2,8 @@
 
 import itertools
 
+from collections import deque
+
 from tt.definitions import (
     MAX_OPERATOR_STR_LEN,
     OPERATOR_MAPPING,
@@ -35,7 +37,7 @@ class ExpressionTreeNode(object):
     attributes and the ``_non_negated_symbol_set`` and ``_negated_symbol_set``
     set attributes within their initialization. Additionally, descendants of
     this class must implemented the ``__eq__`` magic method (but not
-    ``__ne__``).
+    ``__ne__``) as well as the private ``_copy`` transformation.
 
     """
 
@@ -253,6 +255,11 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement evaluate().')
 
+    def _copy(self):
+        """Recursively return a copy of the tree rooted at this node."""
+        raise NotImplementedError(
+            'Expression tree nodes must implement _copy()')
+
     def to_cnf(self):
         """Return a transformed node, in conjunctive normal form.
 
@@ -360,6 +367,45 @@ class ExpressionTreeNode(object):
         """
         raise NotImplementedError(
             'Expression tree nodes must implement apply_identity_law()')
+
+    def apply_inverse_law(self):
+        """Return a transformed node, with the Inverse Law applied.
+
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects.
+
+        This transformation will apply the Inverse Law to *AND* and *OR*
+        expressions involving the negated and non-negated forms of a variable.
+        Here are a few examples::
+
+            >>> from tt import BooleanExpression
+            >>> tree = BooleanExpression('~A and A').tree
+            >>> print(tree.apply_inverse_law())
+            0
+            >>> tree = BooleanExpression('B or !B').tree
+            >>> print(tree.apply_inverse_law())
+            1
+
+        Note that this transformation will **not** reduce expressions of
+        constants; the transformation :func:`apply_identity_law \
+        <tt.trees.tree_node.ExpressionTreeNode.apply_identity_law>` will
+        probably do what you want in this case, though.
+
+        This transformation will also reduce expressions in CNF or DNF that
+        contain negated and non-negated forms of the same symbol. Let's take a
+        look::
+
+            >>> from tt import BooleanExpression
+            >>> tree = BooleanExpression('A or B or C or ~B').tree
+            >>> print(tree.apply_inverse_law())
+            1
+            >>> tree = BooleanExpression('A and B and C and !B').tree
+            >>> print(tree.apply_inverse_law())
+            0
+
+        """
+        raise NotImplementedError(
+            'Expression tree nodes must implement apply_inverse_law()')
 
     def distribute_ands(self):
         """Return a transformed nodes, with ANDs recursively distributed across
@@ -472,6 +518,12 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.l_child.evaluate(input_dict),
             self.r_child.evaluate(input_dict))
 
+    def _copy(self):
+        return BinaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child._copy(),
+            self._r_child._copy())
+
     def to_primitives(self):
         not_str, and_str, or_str = self._get_op_strs(
             TT_NOT_OP, TT_AND_OP, TT_OR_OP)
@@ -579,6 +631,50 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             new_l_child,
             new_r_child)
+
+    def apply_inverse_law(self):
+        negations_applied = self.coalesce_negations()
+        if negations_applied._is_cnf and negations_applied._is_dnf:
+            if self._negated_symbol_set & self._non_negated_symbol_set:
+                return OperandExpressionTreeNode(
+                    '1' if self._operator == TT_OR_OP else '0')
+        elif self._is_cnf:
+            and_str = self.symbol_name
+            transformed_clauses = deque()
+            for clause in self.iter_cnf_clauses():
+                if clause.negated_symbol_set & clause.non_negated_symbol_set:
+                    transformed_clauses.append(OperandExpressionTreeNode('1'))
+                else:
+                    transformed_clauses.append(clause._copy())
+
+            while len(transformed_clauses) > 1:
+                transformed_clauses.append(
+                    BinaryOperatorExpressionTreeNode(
+                        and_str,
+                        transformed_clauses.popleft(),
+                        transformed_clauses.popleft()))
+            return transformed_clauses.pop()
+        elif self._is_dnf:
+            or_str = self.symbol_name
+            transformed_clauses = deque()
+            for clause in self.iter_dnf_clauses():
+                if clause.negated_symbol_set & clause.non_negated_symbol_set:
+                    transformed_clauses.append(OperandExpressionTreeNode('0'))
+                else:
+                    transformed_clauses.append(clause._copy())
+
+            while len(transformed_clauses) > 1:
+                transformed_clauses.append(
+                    BinaryOperatorExpressionTreeNode(
+                        or_str,
+                        transformed_clauses.popleft(),
+                        transformed_clauses.popleft()))
+            return transformed_clauses.pop()
+
+        return BinaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_inverse_law(),
+            self._r_child.apply_inverse_law())
 
     def distribute_ands(self):
         if self._operator == TT_AND_OP:
@@ -772,6 +868,10 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         return self.operator.eval_func(
             self.l_child.evaluate(input_dict))
 
+    def _copy(self):
+        return UnaryOperatorExpressionTreeNode(
+            self.symbol_name, self._l_child._copy())
+
     def to_primitives(self):
         return UnaryOperatorExpressionTreeNode(
             self.symbol_name, self._l_child.to_primitives())
@@ -816,6 +916,11 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             self._l_child.apply_identity_law())
 
+    def apply_inverse_law(self):
+        return UnaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_inverse_law())
+
     def distribute_ands(self):
         return UnaryOperatorExpressionTreeNode(
             self.symbol_name,
@@ -859,6 +964,9 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         else:
             return input_dict[self.symbol_name]
 
+    def _copy(self):
+        return OperandExpressionTreeNode(self.symbol_name)
+
     def to_primitives(self):
         return OperandExpressionTreeNode(self.symbol_name)
 
@@ -869,6 +977,9 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def apply_identity_law(self):
+        return OperandExpressionTreeNode(self.symbol_name)
+
+    def apply_inverse_law(self):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def distribute_ands(self):

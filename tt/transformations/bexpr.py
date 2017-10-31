@@ -71,6 +71,41 @@ def apply_identity_law(expr):
     return BooleanExpression(bexpr.tree.apply_identity_law())
 
 
+def apply_inverse_law(expr):
+    """Convert an expression to a form with the Inverse Law applied.
+
+    :returns: A new expression object, transformed so that the Inverse Law
+        has been applied to applicable *ANDs* and *ORs*.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid type.
+
+    This transformation will apply the Identity Law to simple binary
+    expressions consisting of negated and non-negated forms of the same
+    operand. Let's take a look::
+
+        >>> from tt.transformations import apply_inverse_law
+        >>> apply_inverse_law('A and ~A')
+        <BooleanExpression "0">
+        >>> apply_inverse_law('A or B or ~B or C')
+        <BooleanExpression "1">
+
+    This transformation will also apply the behavior expected of the Inverse
+    Law when negated and non-negated forms of the same operand appear in the
+    same CNF or DNF clause in an expression. If you don't believe me, take a
+    look for yourself::
+
+        >>> from tt.transformations import apply_inverse_law
+        >>> apply_inverse_law('(A or B or ~A) -> (C and ~C)')
+        <BooleanExpression "1 -> 0">
+        >>> apply_inverse_law('(A or !!!A) xor (not C or not not C)')
+        <BooleanExpression "1 xor 1">
+
+    """
+    bexpr = _ensure_bexpr(expr)
+    return BooleanExpression(bexpr.tree.apply_inverse_law())
+
+
 def coalesce_negations(expr):
     """Convert an expression to a form with all negations condensed.
 

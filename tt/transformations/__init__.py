@@ -3,6 +3,7 @@
 from .bexpr import (  # noqa
     apply_de_morgans,
     apply_identity_law,
+    apply_inverse_law,
     distribute_ands,
     distribute_ors,
     coalesce_negations,
