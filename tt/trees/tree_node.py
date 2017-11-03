@@ -275,16 +275,49 @@ class ExpressionTreeNode(object):
         if prev_node.is_cnf:
             return prev_node
 
-        next_node = prev_node.apply_de_morgans()
-        while next_node != prev_node:
+        next_node = prev_node
+        while True:
             prev_node = next_node
             next_node = next_node.apply_de_morgans()
+            if next_node == prev_node:
+                break
 
         prev_node = next_node.coalesce_negations()
-        next_node = prev_node.distribute_ors()
-        while next_node != prev_node:
+        while True:
             prev_node = next_node
             next_node = next_node.distribute_ors()
+            if next_node == prev_node:
+                break
+
+        while True:
+            prev_node = next_node
+            next_node = prev_node.apply_inverse_law()
+            if next_node == prev_node:
+                break
+
+        while True:
+            prev_node = next_node
+            next_node = prev_node.apply_idempotent_law()
+            if next_node == prev_node:
+                break
+
+        while True:
+            prev_node = next_node
+            next_node = prev_node.apply_identity_law()
+            if next_node == prev_node:
+                break
+
+        while True:
+            prev_node = next_node
+            next_node = prev_node.apply_idempotent_law()
+            if next_node == prev_node:
+                break
+
+        while True:
+            prev_node = next_node
+            next_node = prev_node.coalesce_negations()
+            if next_node == prev_node:
+                break
 
         return next_node
 
@@ -729,12 +762,18 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
                     '1' if self._operator == TT_OR_OP else '0')
         elif self._is_cnf:
             and_str = self.symbol_name
+            inverted_clause_count = 0
             transformed_clauses = deque()
             for clause in self.iter_cnf_clauses():
                 if clause.negated_symbol_set & clause.non_negated_symbol_set:
+                    inverted_clause_count += 1
                     transformed_clauses.append(OperandExpressionTreeNode('1'))
                 else:
                     transformed_clauses.append(clause._copy())
+
+            if not inverted_clause_count:
+                # we didn't change anything, so just return ourselves
+                return self._copy()
 
             while len(transformed_clauses) > 1:
                 transformed_clauses.append(
@@ -745,12 +784,18 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             return transformed_clauses.pop()
         elif self._is_dnf:
             or_str = self.symbol_name
+            inverted_clause_count = 0
             transformed_clauses = deque()
             for clause in self.iter_dnf_clauses():
                 if clause.negated_symbol_set & clause.non_negated_symbol_set:
+                    inverted_clause_count += 1
                     transformed_clauses.append(OperandExpressionTreeNode('0'))
                 else:
                     transformed_clauses.append(clause._copy())
+
+            if not inverted_clause_count:
+                # we didn't change anything, so just return ourselves
+                return self._copy()
 
             while len(transformed_clauses) > 1:
                 transformed_clauses.append(

@@ -498,10 +498,10 @@ class BooleanExpression(object):
             >>> for solution in b.sat_all():
             ...     print(solution)
             ...
-            A=0, B=1, C=0, D=1
-            A=0, B=1, C=1, D=0
             A=1, B=0, C=1, D=0
             A=1, B=0, C=0, D=1
+            A=0, B=1, C=0, D=1
+            A=0, B=1, C=1, D=0
 
         We can also constrain away a few of those solutions::
 

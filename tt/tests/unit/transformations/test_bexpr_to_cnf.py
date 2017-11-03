@@ -46,7 +46,7 @@ class TestExpressionToCnf(unittest.TestCase):
         """Test simple xor expression."""
         self.assert_to_cnf_transformation(
             'A xor B',
-            '(A or not A) and (not B or not A) and (A or B) and (not B or B)')
+            '(not B or not A) and (A or B)')
 
     def test_negated_xor(self):
         """Test negated xor expression."""
@@ -58,7 +58,7 @@ class TestExpressionToCnf(unittest.TestCase):
         """Test simple xnor expression."""
         self.assert_to_cnf_transformation(
             'A xnor B',
-            '(A or not A) and (B or not A) and (A or not B) and (B or not B)')
+            '(B or not A) and (A or not B)')
 
     def test_negated_xnor(self):
         """Test negated xnor expression."""
@@ -166,10 +166,8 @@ class TestExpressionToCnf(unittest.TestCase):
             '(A or not D or E or F)')
         self.assert_to_cnf_transformation(
             '(A nand B) -> (C nor D) -> (E iff F)',
-            '(A \/ C \/ D \/ E or not E) /\ (A \/ C \/ D \/ F or not E) /\ '
-            '(A \/ C \/ D \/ E or not F) /\ (A \/ C \/ D \/ F or not F) /\ '
-            '(B \/ C \/ D \/ E or not E) /\ (B \/ C \/ D \/ F or not E) /\ '
-            '(B \/ C \/ D \/ E or not F) /\ (B \/ C \/ D \/ F or not F)')
+            '(A \/ C \/ D \/ F or not E) /\ (A \/ C \/ D \/ E or not F) /\ '
+            '(B \/ C \/ D \/ F or not E) /\ (B \/ C \/ D \/ E or not F)')
 
     def test_mix_of_primitive_operators(self):
         """Test expressions with mixed primitive operators."""
@@ -179,62 +177,32 @@ class TestExpressionToCnf(unittest.TestCase):
         self.assert_to_cnf_transformation(
             '(A and B and C) or not (A and D) or (A and (B or C) or '
             '(D and (E or F)))',
-            '(A or not A or not D or A or D) and '
-            '(A or not A or not D or B or C or D) and '
-            '(A or not A or not D or A or E or F) and '
-            '(A or not A or not D or B or C or E or F) and '
-            '(B or not A or not D or A or D) and '
-            '(B or not A or not D or B or C or D) and '
-            '(B or not A or not D or A or E or F) and '
-            '(B or not A or not D or B or C or E or F) and '
-            '(C or not A or not D or A or D) and '
-            '(C or not A or not D or B or C or D) and '
-            '(C or not A or not D or A or E or F) and '
-            '(C or not A or not D or B or C or E or F)')
+            '(C or not A or not D or B or E or F) and '
+            '(B or not A or not D or C or E or F)')
 
     def test_deeply_nested_mixed_operators(self):
         """Test expressions with deeply nested operators."""
         self.assert_to_cnf_transformation(
             '(A nand (B impl (D or E or F))) iff ~~~(A nor B nor C)',
-            '(not A or B or A) and (not A or not D or A) and '
-            '(not A or not E or A) and (not A or not F or A) and '
-            '(A \/ not B or A) and (A \/ not C or A) and '
-            '(not A or B or not B or D or E or F) and '
-            '(not A or not D or not B or D or E or F) and '
-            '(not A or not E or not B or D or E or F) and '
-            '(not A or not F or not B or D or E or F) and '
-            '(A \/ not B or not B or D or E or F) and '
+            '(A or not B) and (A or not C) and '
+            '(A or not B or D or E or F) and '
             '(A \/ not C or not B or D or E or F) and '
-            '(not A or B or not A) and (not A or not D or not A) and '
-            '(not A or not E or not A) and (not A or not F or not A) and '
-            '(A \/ not B or not A) and (A \/ not C or not A) and '
-            '(not A or B or B or C) and (not A or not D or B or C) and '
-            '(not A or not E or B or C) and (not A or not F or B or C) and '
-            '(A \/ not B or B or C) and (A \/ not C or B or C)')
+            '(not A or B) and (not A or not D) and (not A or not E) and '
+            '(not A or not F) and (not A or B or C) and '
+            '(not A or not D or B or C) and (not A or not E or B or C) and '
+            '(not A or not F or B or C)')
         self.assert_to_cnf_transformation(
             '(A nand ((B or C) iff (D nor E) iff (F or G or H)) nand C) nor D',
             'A and (not B or D or E or not F or not C) and '
-            '(not C or D or E or not F or not C) and '
+            '(not C or D or E or not F) and '
             '(not B or D or E or not G or not C) and '
-            '(not C or D or E or not G or not C) and '
+            '(not C or D or E or not G) and '
             '(not B or D or E or not H or not C) and '
-            '(not C or D or E or not H or not C) and '
+            '(not C or D or E or not H) and '
             '(not B or not D or F or G or H or not C) and '
-            '(not C or not D or F or G or H or not C) and '
+            '(not C or not D or F or G or H) and '
             '(not B or not E or F or G or H or not C) and '
-            '(not C or not E or F or G or H or not C) and '
-            '((B or C or not D or D or E or not C) and '
-            '(B or C or not E or D or E or not C)) and '
-            '(B or C or F or G or H or D or E or not C) and '
-            '((B or C or not D or not F or not C) and '
-            '(B or C or not E or not F or not C)) and '
-            '(B or C or F or G or H or not F or not C) and '
-            '((B or C or not D or not G or not C) and '
-            '(B or C or not E or not G or not C)) and '
-            '(B or C or F or G or H or not G or not C) and '
-            '((B or C or not D or not H or not C) and '
-            '(B or C or not E or not H or not C)) and '
-            '(B or C or F or G or H or not H or not C) and not D')
+            '(not C or not E or F or G or H) and not D')
 
     def test_deeply_nested_primitive_operators(self):
         """Test expressions with deeply nested primitive operators."""
