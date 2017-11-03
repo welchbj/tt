@@ -3,7 +3,7 @@
 Synopsis
 --------
 
-tt (**t**\ ruth **t**\ able) is a library aiming to provide a Pythonic toolkit for working with Boolean expressions and truth tables. Please check out the `project site`_ for more information.
+tt (**t**\ ruth **t**\ able) is a library aiming to provide a Pythonic toolkit for working with Boolean expressions and truth tables. Please see the `project site`_ for guides and documentation, or check out `bool.tools`_ for a simple web application powered by this library.
 
 Installation
 ------------
@@ -15,14 +15,12 @@ tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. You can get the latest rele
 Features
 --------
 
-tt lets you do a few things with your prized Boolean expressions. Let's start by parsing one::
+Parse expressions::
 
     >>> from tt import BooleanExpression
     >>> b = BooleanExpression('A impl not (B nand C)')
     >>> b.tokens
     ['A', 'impl', 'not', '(', 'B', 'nand', 'C', ')']
-    >>> b.symbols
-    ['A', 'B', 'C']
     >>> print(b.tree)
     impl
     `----A
@@ -31,92 +29,77 @@ tt lets you do a few things with your prized Boolean expressions. Let's start by
               `----B
               `----C
 
-Then transform it a couple of times::
+Transform expressions::
 
-    >>> from tt import apply_de_morgans, to_cnf, to_primitives
-    >>> b = to_primitives(b)
-    >>> b
-    <BooleanExpression "not A or not (not B or not C)">
-    >>> b = apply_de_morgans(b)
-    >>> b
-    <BooleanExpression "not A or (not not B and not not C)">
-    >>> b = to_cnf(b)
-    >>> b
-    <BooleanExpression "(not A or B) and (not A or C)">
+    >>> from tt import to_primitives, to_cnf
+    >>> to_primitives('A xor B')
+    <BooleanExpression "(A and not B) or (not A and B)">
+    >>> to_cnf('(A nand B) impl (C or D)')
+    <BooleanExpression "(A or C or D) and (B or C or D)">
 
-Poke around its structure::
+Evaluate expressions::
 
-    >>> b.is_cnf
-    True
-    >>> b.is_dnf
+    >>> b = BooleanExpression('(A /\ B) -> (C \/ D)')
+    >>> b.evaluate(A=1, B=1, C=0, D=0)
     False
-    >>> for clause in b.iter_clauses():
+    >>> b.evaluate(A=1, B=1, C=1, D=0)
+    True
+
+Interact with expression structure::
+
+    >>> b = BooleanExpression('(A and ~B and C) or (~C and D) or E')
+    >>> b.is_dnf
+    True
+    >>> for clause in b.iter_dnf_clauses():
     ...     print(clause)
     ...
-    not A or B
-    not A or C
+    A and ~B and C
+    ~C and D
+    E
 
-Find all of its SAT solutions::
+Exhaust SAT solutions::
 
+    >>> b = BooleanExpression('~(A or B) xor C')
     >>> for sat_solution in b.sat_all():
     ...     print(sat_solution)
     ...
     A=0, B=1, C=1
-    A=0, B=1, C=0
-    A=0, B=0, C=1
-    A=0, B=0, C=0
+    A=1, B=0, C=1
     A=1, B=1, C=1
+    A=0, B=0, C=0
 
-Or just find one::
+Find just a few::
 
     >>> with b.constrain(A=1):
-    ...     b.sat_one()
+    ...     for sat_solution in b.sat_all():
+    ...         print(sat_solution)
     ...
-    <BooleanValues [A=1, B=1, C=1]>
+    A=1, B=0, C=1
+    A=1, B=1, C=1
 
-Turn it into a truth table::
+Or just one::
+
+    >>> b.sat_one()
+    <BooleanValues [A=0, B=1, C=1]>
+
+Build truth tables::
 
     >>> from tt import TruthTable
-    >>> t = TruthTable(b)
+    >>> t = TruthTable('A iff B')
     >>> print(t)
-    +---+---+---+---+
-    | A | B | C |   |
-    +---+---+---+---+
-    | 0 | 0 | 0 | 1 |
-    +---+---+---+---+
-    | 0 | 0 | 1 | 1 |
-    +---+---+---+---+
-    | 0 | 1 | 0 | 1 |
-    +---+---+---+---+
-    | 0 | 1 | 1 | 1 |
-    +---+---+---+---+
-    | 1 | 0 | 0 | 0 |
-    +---+---+---+---+
-    | 1 | 0 | 1 | 0 |
-    +---+---+---+---+
-    | 1 | 1 | 0 | 0 |
-    +---+---+---+---+
-    | 1 | 1 | 1 | 1 |
-    +---+---+---+---+
+    +---+---+---+
+    | A | B |   |
+    +---+---+---+
+    | 0 | 0 | 1 |
+    +---+---+---+
+    | 0 | 1 | 0 |
+    +---+---+---+
+    | 1 | 0 | 0 |
+    +---+---+---+
+    | 1 | 1 | 1 |
+    +---+---+---+
 
-And compare it to another truth table::
-
-    >>> other_table = TruthTable(from_values='111x00x1')
-    >>> other_table.ordering
-    ['A', 'B', 'C']
-    >>> for inputs, result in other_table:
-    ...     print(inputs, '=>', result)
-    ...
-    A=0, B=0, C=0 => True
-    A=0, B=0, C=1 => True
-    A=0, B=1, C=0 => True
-    A=0, B=1, C=1 => x
-    A=1, B=0, C=0 => False
-    A=1, B=0, C=1 => False
-    A=1, B=1, C=0 => x
-    A=1, B=1, C=1 => True
-    >>> other_table.equivalent_to(t)
-    True
+And `much more`_!
 
 
 License
@@ -127,6 +110,8 @@ tt uses the `MIT License`_.
 
 .. _MIT License: https://opensource.org/licenses/MIT
 .. _project site: http://tt.brianwel.ch
+.. _bool.tools: http://www.bool.tools
+.. _much more: http://tt.brianwel.ch/en/stable/user_guide.html
 
 .. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
     :target: https://pypi.python.org/pypi/ttable
