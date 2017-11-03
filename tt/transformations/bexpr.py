@@ -71,6 +71,54 @@ def apply_identity_law(expr):
     return BooleanExpression(bexpr.tree.apply_identity_law())
 
 
+def apply_idempotent_law(expr):
+    """Convert an expression to a form with the Idempotent Law applied.
+
+    :returns: A new expression object, transformed so that the Idempotent Law
+        has been applied to applicable clauses.
+    :rtype: :class:`BooleanExpression <tt.expressions.bexpr.BooleanExpression>`
+
+    :raises InvalidArgumentTypeError: If ``expr`` is not a valid data type.
+
+    This transformation will apply the Idempotent Law to clauses of *AND* and
+    *OR* operators containing redundant operands. Here are a couple of simple
+    examples::
+
+        >>> from tt import apply_idempotent_law
+        >>> apply_idempotent_law('A and A')
+        <BooleanExpression "A">
+        >>> apply_idempotent_law('B or B')
+        <BooleanExpression "B">
+
+    This transformation will consider similarly-negated operands to be
+    redundant; for example::
+
+        >>> from tt import apply_idempotent_law
+        >>> apply_idempotent_law('~A and ~~~A')
+        <BooleanExpression "~A">
+        >>> apply_idempotent_law('B or ~B or ~~B or ~~~B or ~~~~B or ~~~~~B')
+        <BooleanExpression "B or ~B">
+
+    Let's also take a quick look at this transformation's ability to prune
+    redundant operands from CNF and DNF clauses::
+
+        >>> from tt import apply_idempotent_law
+        >>> apply_idempotent_law('(A and B and C and C and B) or (A and A)')
+        <BooleanExpression "(A and B and C) or A">
+
+    Of important note is that this transformation will not recursively apply
+    the Idempotent Law to operands that bubble up. Here's an example
+    illustrating this case::
+
+        >>> from tt import apply_idempotent_law
+        >>> apply_idempotent_law('(A or A) and (A or A)')
+        <BooleanExpression "A and A">
+
+    """
+    bexpr = _ensure_bexpr(expr)
+    return BooleanExpression(bexpr.tree.apply_idempotent_law())
+
+
 def apply_inverse_law(expr):
     """Convert an expression to a form with the Inverse Law applied.
 

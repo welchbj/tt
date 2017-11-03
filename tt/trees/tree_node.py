@@ -368,11 +368,61 @@ class ExpressionTreeNode(object):
         raise NotImplementedError(
             'Expression tree nodes must implement apply_identity_law()')
 
+    def apply_idempotent_law(self):
+        """Returns a transformed node, with the Idempotent Law applied.
+
+        Since nodes are immutable, the returned node, and all descendants, are
+        new objects
+
+        :returns: An expression tree node with the Idempotent Law applied to
+            *AND* and *OR* operators.
+        :rtype: :class:`ExpressionTreeNode`
+
+        This transformation will apply the Idempotent Law to *AND* and *OR*
+        expressions involving repeated operands. Here are a few examples::
+
+            >>> from tt import BooleanExpression
+            >>> tree = BooleanExpression('A and A').tree
+            >>> print(tree.apply_idempotent_law())
+            A
+            >>> tree = BooleanExpression('~B or ~~~B').tree
+            >>> print(tree.apply_idempotent_law())
+            ~
+            `----B
+
+        In the latter of the two above examples, we see that this
+        transformation will compare operands with negations condensed. This
+        transformation will also prune redundant operands from CNF and DNF
+        clauses. Let's take a look::
+
+            >>> from tt import BooleanExpression
+            >>> tree = BooleanExpression('A and B and B and C and ~C and ~~C \
+and D').tree
+            >>> print(tree.apply_idempotent_law())
+            and
+            `----and
+            |    `----and
+            |    |    `----and
+            |    |    |    `----A
+            |    |    |    `----B
+            |    |    `----C
+            |    `----~
+            |         `----C
+            `----D
+
+        """
+        raise NotImplementedError(
+            'Expression tree nodes must implement apply_idempotent_law()')
+
     def apply_inverse_law(self):
         """Return a transformed node, with the Inverse Law applied.
 
         Since nodes are immutable, the returned node, and all descendants, are
         new objects.
+
+        :returns: An expression tree node with the Inverse Law applied to
+            applicable clauses.
+        :rtype: :class:`ExpressionTreeNode`
 
         This transformation will apply the Inverse Law to *AND* and *OR*
         expressions involving the negated and non-negated forms of a variable.
@@ -631,6 +681,45 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             new_l_child,
             new_r_child)
+
+    def apply_idempotent_law(self):
+        negations_applied = self.coalesce_negations()
+        if negations_applied._is_cnf and negations_applied._is_dnf:
+            negated_symbols_added = set()
+            non_negated_symbols_added = set()
+            filtered_clauses = deque()
+
+            total_clause_count = 0
+            clause_iter = (negations_applied.iter_cnf_clauses() if
+                           self._operator == TT_AND_OP else
+                           negations_applied.iter_dnf_clauses())
+            for clause in clause_iter:
+                total_clause_count += 1
+                if isinstance(clause, OperandExpressionTreeNode):
+                    if clause.symbol_name in non_negated_symbols_added:
+                        continue
+                    non_negated_symbols_added |= clause.non_negated_symbol_set
+                    filtered_clauses.append(clause._copy())
+                elif clause._l_child.symbol_name not in negated_symbols_added:
+                    negated_symbols_added |= clause.negated_symbol_set
+                    filtered_clauses.append(clause._copy())
+
+            if len(filtered_clauses) == total_clause_count:
+                # no redundant operands were pruned
+                return self._copy()
+
+            while len(filtered_clauses) > 1:
+                filtered_clauses.appendleft(
+                    BinaryOperatorExpressionTreeNode(
+                        self.symbol_name,
+                        filtered_clauses.popleft(),
+                        filtered_clauses.popleft()))
+            return filtered_clauses.pop()
+
+        return BinaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_idempotent_law(),
+            self._r_child.apply_idempotent_law())
 
     def apply_inverse_law(self):
         negations_applied = self.coalesce_negations()
@@ -916,6 +1005,11 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
             self.symbol_name,
             self._l_child.apply_identity_law())
 
+    def apply_idempotent_law(self):
+        return UnaryOperatorExpressionTreeNode(
+            self.symbol_name,
+            self._l_child.apply_idempotent_law())
+
     def apply_inverse_law(self):
         return UnaryOperatorExpressionTreeNode(
             self.symbol_name,
@@ -977,6 +1071,9 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def apply_identity_law(self):
+        return OperandExpressionTreeNode(self.symbol_name)
+
+    def apply_idempotent_law(self):
         return OperandExpressionTreeNode(self.symbol_name)
 
     def apply_inverse_law(self):

@@ -2,6 +2,7 @@
 
 from .bexpr import (  # noqa
     apply_de_morgans,
+    apply_idempotent_law,
     apply_identity_law,
     apply_inverse_law,
     distribute_ands,
