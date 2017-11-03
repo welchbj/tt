@@ -72,6 +72,13 @@ class TestBooleanExpressionParsingExceptions(ExpressionTestCase):
             expected_exc_type=ExpressionOrderError,
             expected_error_pos=21)
 
+    def test_trailing_operator_with_whitespace(self):
+        """Test a trailing operator with whitespace trailing it."""
+        self.helper_test_tokenization_raises(
+            '(A or B) and ',
+            expected_exc_type=ExpressionOrderError,
+            expected_error_pos=9)
+
     def test_trailing_unary_plain_english_operator(self):
         """Test trailing unary plain English operator."""
         self.helper_test_tokenization_raises(

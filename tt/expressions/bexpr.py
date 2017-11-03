@@ -198,7 +198,7 @@ class BooleanExpression(object):
 
     def _init_from_str(self, raw_expr_str):
         """Initalize this object from a raw expression string."""
-        self._raw_expr = raw_expr_str
+        self._raw_expr = raw_expr_str.strip()
 
         with self._symbol_set_includes_constant_values():
             self._tokenize()
