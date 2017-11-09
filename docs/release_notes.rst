@@ -9,6 +9,10 @@ Check below for new features added in each release. Please note that release not
 
 Features in the 0.6.x series of releases are focused on expanding functionality to include expression satisfiability and transformations.
 
+0.6.4 (in progress)
+```````````````````
+    * Nothing quite yet!
+
 0.6.3
 `````
     * Add :data:`non_negated_symbol_set <tt.trees.tree_node.ExpressionTreeNode.non_negated_symbol_set>` and :data:`negated_symbol_set <tt.trees.tree_node.ExpressionTreeNode.negated_symbol_set>` to :class:`ExpressionTreeNode <tt.trees.tree_node.ExpressionTreeNode>`
