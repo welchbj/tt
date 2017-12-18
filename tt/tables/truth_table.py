@@ -531,7 +531,7 @@ class TruthTable(object):
         empty_result = (t for t in zip(self._result, _input_combos) if t[0] is None)
         for result, input_combo in empty_result:
             input_dict = dict(zip(self._ordering,input_combo))
-            if all( input_dict[k] == v for k,v in restrictions.items())
+            if all( input_dict[k] == v for k,v in restrictions.items()):
                 result = self._expr.evaluate_unchecked(**input_dict)
                 self._num_filled_slots += 1
 
