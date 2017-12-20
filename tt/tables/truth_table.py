@@ -527,17 +527,13 @@ class TruthTable(object):
         # pre-computing the ranges of indices for which the inputs will
         # be valid
         _input_combos = TruthTable.input_combos(len(self._ordering))
+
         for i, input_combo in enumerate(_input_combos):
-            input_dict = {symbol: input_combo[j] for j, symbol in
-                          enumerate(self._ordering)}
+            if self._results[i] is not None:
+                continue
 
-            skip = False
-            for k, v in restrictions.items():
-                if input_dict[k] != v:
-                    skip = True
-                    break
-
-            if not skip and self._results[i] is None:
+            input_dict = dict(zip(self._ordering, input_combo))
+            if all(input_dict[k] == v for k, v in restrictions.items()):
                 self._results[i] = self._expr.evaluate_unchecked(**input_dict)
                 self._num_filled_slots += 1
 
