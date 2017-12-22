@@ -38,7 +38,7 @@ html_sidebars = {
 html_theme_options = {
     'logo': 'logo.png',
     'logo_text_align': 'centered',
-    'description': 'the Boolean expression toolbox',
+    'description': 'logical tools for logic',
 
     'github_user': 'welchbj',
     'github_repo': 'tt',
@@ -54,9 +54,10 @@ html_theme_options = {
     'note_border': '#c4daff',
     'pre_bg': '#f9f4fc',
 
-    'font_family': "'PT Sans Caption', sans-serif",
-    'font_size': '0.9em',
-    'head_font_family': "'Cabin', sans-serif"
+    'font_family': "'Vollkorn', serif",
+    'font_size': '1.2em',
+    'code_font_size': '0.8em',
+    'head_font_family': "'Amaranth', sans-serif"
 }
 
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

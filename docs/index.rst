@@ -1,6 +1,6 @@
-===================================
-tt - the Boolean expression toolbox
-===================================
+===========================
+tt: logical tools for logic
+===========================
 
 Welcome to the documentation site for tt.
 
