@@ -4,6 +4,12 @@ Special Thanks
 
 A lot of free services and open source libraries have helped this project become possible. This page aims to give credit where its due; if you were left out, I'm sorry! Please let me know!
 
+Contributors
+------------
+
+Thank you to the following people who generously contributed their time and brainpower towards writing code that was merged into the library.
+
+    * `Thomas Applencourt`_
 
 Services
 --------
@@ -65,6 +71,7 @@ tt relies on some well-written and well-documented projects and libraries for it
     * `tox`_
     * `virtualenv`_
 
+.. _Thomas Applencourt: https://github.com/TApplencourt
 
 .. _Github: https://github.com/
 .. _Travis CI: https://travis-ci.org/
