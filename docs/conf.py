@@ -54,8 +54,8 @@ html_theme_options = {
     'note_border': '#c4daff',
     'pre_bg': '#f9f4fc',
 
-    'font_family': "'Vollkorn', serif",
-    'font_size': '1.2em',
+    'font_family': "'PT Sans Caption', sans-serif",
+    'font_size': '1.0em',
     'code_font_size': '0.8em',
     'head_font_family': "'Amaranth', sans-serif"
 }
