@@ -69,6 +69,7 @@ tt relies on some well-written and well-documented projects and libraries for it
     * `snowballstemmer`_
     * `Sphinx`_
     * `tox`_
+    * `twine`_
     * `virtualenv`_
 
 .. _Thomas Applencourt: https://github.com/TApplencourt
@@ -107,4 +108,5 @@ tt relies on some well-written and well-documented projects and libraries for it
 .. _snowballstemmer: https://github.com/shibukawa/snowball_py
 .. _Sphinx: http://www.sphinx-doc.org/en/latest/
 .. _tox: https://tox.readthedocs.io/en/latest/
+.. _twine: https://github.com/pypa/twine
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/
