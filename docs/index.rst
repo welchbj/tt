@@ -2,7 +2,7 @@
 tt: logical tools for logic
 ===========================
 
-Welcome to the documentation site for tt.
+Welcome to the documentation site for tt!
 
 -----
 
