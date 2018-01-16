@@ -1,19 +1,8 @@
 """Transformation functions for expressions."""
 
-from tt.errors import InvalidArgumentTypeError
 from tt.expressions import BooleanExpression
 
-
-def _ensure_bexpr(expr):
-    """Return a BooleanExpression object or raise an error."""
-    if isinstance(expr, str):
-        return BooleanExpression(expr)
-    elif isinstance(expr, BooleanExpression):
-        return expr
-    else:
-        raise InvalidArgumentTypeError(
-            'Transformations accept either a string or BooleanExpression '
-            'argument')
+from tt.transformations.utils import ensure_bexpr
 
 
 def apply_de_morgans(expr):
@@ -35,7 +24,7 @@ def apply_de_morgans(expr):
         <BooleanExpression "~A /\ ~B">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.apply_de_morgans())
 
 
@@ -67,7 +56,7 @@ def apply_identity_law(expr):
         <BooleanExpression "1">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.apply_identity_law())
 
 
@@ -115,7 +104,7 @@ def apply_idempotent_law(expr):
         <BooleanExpression "A and A">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.apply_idempotent_law())
 
 
@@ -140,8 +129,7 @@ def apply_inverse_law(expr):
 
     This transformation will also apply the behavior expected of the Inverse
     Law when negated and non-negated forms of the same operand appear in the
-    same CNF or DNF clause in an expression. If you don't believe me, take a
-    look for yourself::
+    same CNF or DNF clause in an expression::
 
         >>> from tt.transformations import apply_inverse_law
         >>> apply_inverse_law('(A or B or ~A) -> (C and ~C)')
@@ -150,7 +138,7 @@ def apply_inverse_law(expr):
         <BooleanExpression "1 xor 1">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.apply_inverse_law())
 
 
@@ -186,7 +174,7 @@ def coalesce_negations(expr):
         <BooleanExpression "1 -> 0 -> 0">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.coalesce_negations())
 
 
@@ -218,7 +206,7 @@ def distribute_ands(expr):
 (A and B and E)">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.distribute_ands())
 
 
@@ -249,7 +237,7 @@ def distribute_ors(expr):
         <BooleanExpression "(A or B or C) and (A or B or D)">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.distribute_ors())
 
 
@@ -284,7 +272,7 @@ def to_cnf(expr):
         True
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.to_cnf())
 
 
@@ -318,5 +306,5 @@ def to_primitives(expr):
         <BooleanExpression "(A /\ B) \/ (~A /\ ~B)">
 
     """
-    bexpr = _ensure_bexpr(expr)
+    bexpr = ensure_bexpr(expr)
     return BooleanExpression(bexpr.tree.to_primitives())

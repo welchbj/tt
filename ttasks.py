@@ -158,6 +158,7 @@ def test():
         tt.satisfiability.picosat,
         tt.tables.truth_table,
         tt.transformations.bexpr,
+        tt.transformations.utils,
         tt.trees.tree_node
     ]
 

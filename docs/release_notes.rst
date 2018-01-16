@@ -11,7 +11,8 @@ Features in the 0.6.x series of releases are focused on expanding functionality 
 
 0.6.4 (in progress)
 ```````````````````
-    * Nothing quite yet!
+    * Introduce the :mod:`transformations.utils <tt.transformations.utils>` module, including the :class:`RepeatableAction <tt.transformations.utils.RepeatableAction>`, :class:`ComposedTransformation <tt.transformations.utils.ComposedTransformation>`, :class:`AbstractTransformationModifier <tt.transformations.utils.AbstractTransformationModifier>` classes; the :class:`repeat <tt.transformations.utils.repeat>`, :class:`twice <tt.transformations.utils.twice>`, and :class:`forever <tt.transformations.utils.forever>` factory classes; and the :func:`tt_compose <tt.transformations.utils.tt_compose>` utility function
+    * Publicly expose the :func:`ensure_bexpr <tt.transformations.utils.ensure_bexpr>` in the :mod:`transformations.utils <tt.transformations.utils>` module
 
 0.6.3
 `````

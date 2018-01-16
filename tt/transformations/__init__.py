@@ -10,3 +10,13 @@ from .bexpr import (  # noqa
     coalesce_negations,
     to_cnf,
     to_primitives)
+
+from .utils import ( # noqa
+    AbstractTransformationModifier,
+    ComposedTransformation,
+    ensure_bexpr,
+    forever,
+    RepeatableAction,
+    repeat,
+    twice,
+    tt_compose)
