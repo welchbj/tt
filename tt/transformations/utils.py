@@ -129,7 +129,8 @@ least 1
             return NotImplemented
 
     def __str__(self):
-        return '{} times'.format(self._times)
+        return '{} time'.format(self._times) + (
+               '' if self._times == 1 else 's')
 
     def __repr__(self):
         return '<RepeatableAction [{}]>'.format(str(self))
