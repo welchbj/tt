@@ -449,6 +449,11 @@ def tt_compose(*fns):
 BooleanExpression>` object when called.
     :rtype: :data:`Callable <python:typing.Callable>`
 
+    :raises InvalidArgumentTypeError: If a modifier is ordered incorrectly or
+        a non-callable function is included in the sequence.
+    :raises InvalidArgumentValueError: If an insufficient number of arguments
+        is provided (must be at least 2).
+
     Let's say we wanted a transformation that would first convert all operators
     in our expression to their equivalent primitive form, and then apply De
     Morgan's Law twice::
