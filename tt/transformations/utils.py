@@ -223,9 +223,17 @@ ComposedTransformation.compose>` function.
         if not callable(fn):
             raise InvalidArgumentTypeError('`fn` must be callable')
 
+        if isinstance(next_transformation, ComposedTransformation):
+            self._next_transformation = next_transformation
+        elif next_transformation is None:
+            self._next_transformation = None
+        else:
+            raise InvalidArgumentTypeError(
+                '`next_transformation` must be of type '
+                '`ComposedTransformation` when used')
+
         self._fn = fn
         self._fn_name = getattr(fn, '__name__', str(fn))
-        self._next_transformation = next_transformation
         self._computed_hash = hash(
             (self._fn, self._next_transformation, self.times))
 
