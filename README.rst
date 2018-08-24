@@ -29,14 +29,6 @@ Parse expressions::
               `----B
               `----C
 
-Transform expressions::
-
-    >>> from tt import to_primitives, to_cnf
-    >>> to_primitives('A xor B')
-    <BooleanExpression "(A and not B) or (not A and B)">
-    >>> to_cnf('(A nand B) impl (C or D)')
-    <BooleanExpression "(A or C or D) and (B or C or D)">
-
 Evaluate expressions::
 
     >>> b = BooleanExpression('(A /\ B) -> (C \/ D)')
@@ -56,6 +48,25 @@ Interact with expression structure::
     A and ~B and C
     ~C and D
     E
+
+Apply expression transformations::
+
+    >>> from tt import to_primitives, to_cnf
+    >>> to_primitives('A xor B')
+    <BooleanExpression "(A and not B) or (not A and B)">
+    >>> to_cnf('(A nand B) impl (C or D)')
+    <BooleanExpression "(A or C or D) and (B or C or D)">
+
+Or create your own::
+
+    >>> from tt import tt_compose, apply_de_morgans, coalesce_negations, twice
+    >>> b = BooleanExpression('not (not (A or B))')
+    >>> f = tt_compose(apply_de_morgans, twice)
+    >>> f(b)
+    <BooleanExpression "not not A or not not B">
+    >>> g = tt_compose(f, coalesce_negations)
+    >>> g(b)
+    <BooleanExpression "A or B">
 
 Exhaust SAT solutions::
 
