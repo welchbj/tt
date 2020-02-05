@@ -112,6 +112,25 @@ Build truth tables::
 
 And `much more`_!
 
+Development (Windows)
+---------------------
+
+This section explains how to build a wheel from source.
+
+Install [MS Visual C++ Build Tools (VS 2019)](https://visualstudio.microsoft.com/de/visual-cpp-build-tools),
+during installation/update select/add components *MSVC v142 – VS 2019 C++-x64/x86-Buildtools (v14.24)* and
+*Windows 10 SDK (10.0.18362.0)*.
+
+Setup reproducible Python virtual environment:
+
+    pip install --user poetry==0.12
+    poetry install
+
+Build wheel for Windows which contains C extension modules:
+
+    poetry build
+
+The resulting wheel will be located in */dist* e.g. */dist/ttable-0.6.4-cp37-cp37m-win_amd64.whl*.
 
 License
 -------
