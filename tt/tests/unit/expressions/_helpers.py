@@ -63,7 +63,7 @@ class ExpressionTestCase(unittest.TestCase):
         try:
             b = BooleanExpression(expr)
             b.evaluate(**kwargs)
-        except expected_exc_type as e:
+        except expected_exc_type:
             did_catch = True
         except Exception as e:
             traceback.print_exc()

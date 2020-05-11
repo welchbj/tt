@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """Script for performing common tasks for the tt project."""
 
 from __future__ import print_function

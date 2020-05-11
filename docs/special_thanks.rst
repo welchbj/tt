@@ -10,13 +10,14 @@ Contributors
 Thank you to the following people who generously contributed their time and brainpower towards writing code that was merged into the library.
 
     * `Thomas Applencourt`_
+    * `Florian Kromer`_
 
 Services
 --------
 
 Thank you to the free hosting provided by these services!
 
-    * `Github`_
+    * `GitHub`_
     * `Travis CI`_
     * `AppVeyor`_
     * `Read the Docs`_
@@ -73,8 +74,9 @@ tt relies on some well-written and well-documented projects and libraries for it
     * `virtualenv`_
 
 .. _Thomas Applencourt: https://github.com/TApplencourt
+.. _Florian Kromer: https://github.com/fkromer
 
-.. _Github: https://github.com/
+.. _GitHub: https://github.com/
 .. _Travis CI: https://travis-ci.org/
 .. _AppVeyor: https://www.appveyor.com/
 .. _Read the Docs: https://readthedocs.org/

@@ -9,4 +9,5 @@
 -----------------------------
 
 .. automodule:: tt.tables.truth_table
+    :members:
     :exclude-members: __weakref__

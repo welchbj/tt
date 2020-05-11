@@ -9,4 +9,5 @@
 ----------------------------
 
 .. automodule:: tt.expressions.bexpr
+    :members:
     :exclude-members: __weakref__

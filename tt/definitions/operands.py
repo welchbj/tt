@@ -134,8 +134,8 @@ def boolean_variables_factory(symbols):
         >>> instance = factory(A=True, B=False)
         >>> instance._fields
         ('A', 'B')
-        >>> instance._asdict()
-        OrderedDict([('A', True), ('B', False)])
+        >>> dict(instance._asdict())
+        {'A': True, 'B': False}
 
     """
     class _bvf(namedtuple('_bvf', symbols)):

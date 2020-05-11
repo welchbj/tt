@@ -37,7 +37,7 @@ class TestToPrimitives(unittest.TestCase):
         self.assert_to_primitives_tranformation(
             '(A <-> B) -> C -> ~~~(A && !D) <-> ~!~(((E)))',
             r'~((A /\ B) \/ (~A /\ ~B)) \/ ~C \/ (~~~(A /\ !D) /\ ~!~E) \/ '
-            '(~~~~(A /\ !D) /\ ~~!~E)')
+            r'(~~~~(A /\ !D) /\ ~~!~E)')
 
     def test_compound_mixed_expression(self):
         """Test an expression of mixed symbolic and plain English operators."""

@@ -68,16 +68,16 @@ class TestApplyDeMorgans(unittest.TestCase):
         """Test the transformation on expressions of chained ANDs."""
         self.assert_apply_de_morgans_transformation(
             '~(A & B & C & D & E)',
-            '~A \/ ~B \/ ~C \/ ~D \/ ~E')
+            r'~A \/ ~B \/ ~C \/ ~D \/ ~E')
 
     def test_chained_or(self):
         """Test the transformation on expressions of chained ORs."""
         self.assert_apply_de_morgans_transformation(
             '~(A || B || C || D || E)',
-            '~A /\ ~B /\ ~C /\ ~D /\ ~E')
+            r'~A /\ ~B /\ ~C /\ ~D /\ ~E')
 
     def test_multi_level_negated_expressions(self):
         """Test that the transformation works on multiple levels of an expr."""
         self.assert_apply_de_morgans_transformation(
             '~(A and ~(B or ~(C and D) or D))',
-            '~A \/ ~(~B /\ ~(~C \/ ~D) /\ ~D)')
+            r'~A \/ ~(~B /\ ~(~C \/ ~D) /\ ~D)')

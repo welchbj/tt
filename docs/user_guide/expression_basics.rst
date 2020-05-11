@@ -122,7 +122,6 @@ As we saw in the above example, we caused an error from the ``tt.errors.grammar`
     <class 'tt.errors.grammar.ExpressionOrderError'>
     True
 
-
 :exc:`GrammarError <tt.errors.grammar.GrammarError>` is a unique type of exception in tt, as it provides attributes for accessing the specific position in the expression string that caused an error. This is best illustrated with an example::
 
     >>> try:

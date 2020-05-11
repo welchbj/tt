@@ -136,7 +136,7 @@ def main(args=None):
         func(opts)
 
         return 0
-    except EmptyExpressionError as e:
+    except EmptyExpressionError:
         print_err('Empty expressions are invalid!')
         return 1
     except GrammarError as e:

@@ -9,10 +9,11 @@ Check below for new features added in each release. Please note that release not
 
 Features in the 0.6.x series of releases are focused on expanding functionality to include expression satisfiability and transformations.
 
-0.6.4 (in progress)
-```````````````````
+0.6.4
+`````
     * Introduce the :mod:`transformations.utils <tt.transformations.utils>` module, including the :class:`RepeatableAction <tt.transformations.utils.RepeatableAction>`, :class:`ComposedTransformation <tt.transformations.utils.ComposedTransformation>`, :class:`AbstractTransformationModifier <tt.transformations.utils.AbstractTransformationModifier>` classes; the :class:`repeat <tt.transformations.utils.repeat>`, :class:`twice <tt.transformations.utils.twice>`, and :class:`forever <tt.transformations.utils.forever>` factory classes; and the :func:`tt_compose <tt.transformations.utils.tt_compose>` utility function
     * Publicly expose the :func:`ensure_bexpr <tt.transformations.utils.ensure_bexpr>` in the :mod:`transformations.utils <tt.transformations.utils>` module
+    * Drop support for all Python versions except 3.6, 3.7, and 3.8
 
 0.6.3
 `````
