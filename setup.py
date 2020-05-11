@@ -27,7 +27,7 @@ tt_description = ('A library and command-line tool for working with Boolean '
 tt_license = 'MIT'
 tt_author = 'Brian Welch'
 tt_author_email = 'welch18@vt.edu'
-tt_url = 'http://tt.brianwel.ch'
+tt_url = 'https://tt.brianwel.ch'
 tt_install_requires = []  # no dependencies. Wow!
 
 with codecs.open(version_file, encoding='utf-8') as f:
