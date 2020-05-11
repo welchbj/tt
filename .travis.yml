@@ -4,41 +4,19 @@ matrix:
     include:
         # 64-bit Linux builds
         - os: linux
-          python: 2.7
-        - os: linux
-          python: 3.3
-        - os: linux
-          python: 3.4
-        - os: linux
-          python: 3.5
-        - os: linux
           python: 3.6
+        - os: linux
+          python: 3.7
+        - os: linux
+          python: 3.8
           env: RUN_FLAKE=1
-
-        # 64-bit Mac OS X builds
-        # ;; temporarily disabled since they take really long
-        # - os: osx
-        #   language: generic
-        #   env: TT_PY_VER=py27
-        # - os: osx
-        #   language: generic
-        #   env: TT_PY_VER=py33
-        # - os: osx
-        #   language: generic
-        #   env: TT_PY_VER=py34
-        # - os: osx
-        #   language: generic
-        #   env: TT_PY_VER=py35
-        # - os: osx
-        #   language: generic
-        #   env: TT_PY_VER=py36
 
 cache:
     - pip
 
 before_install:
-    - chmod a+x ./ci/travis_install.sh
-    - chmod a+x ./ci/travis_run.sh
+    - chmod +x ./ci/travis_install.sh
+    - chmod +x ./ci/travis_run.sh
 
 install:
     - ./ci/travis_install.sh

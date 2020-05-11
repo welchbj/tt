@@ -8,7 +8,7 @@ tt (**t**\ ruth **t**\ able) is a library aiming to provide a Pythonic toolkit f
 Installation
 ------------
 
-tt is tested on CPython 2.7, 3.3, 3.4, 3.5, and 3.6. You can get the latest release from PyPI with::
+tt is tested on CPython 3.6, 3.7, and 3.8. You can get the latest release from PyPI with::
 
     pip install ttable
 
@@ -149,7 +149,7 @@ tt uses the `MIT License`_.
 
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/ttable.svg?style=flat-square
     :target: https://pypi.python.org/pypi/ttable
-    :alt: tt runs on Python 2.7, 3.3, 3.4, 3.5, and 3.6
+    :alt: tt runs on Python 3.6, 3.7, and 3.8
 
 .. |docs| image:: https://img.shields.io/badge/docs-latest-c944ff.svg?style=flat-square
     :target: https://tt.brianwel.ch/en/latest/

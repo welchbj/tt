@@ -57,11 +57,11 @@ tt contains some C-extensions that need to be built before the library is fully 
     python setup.py build
     python setup.py develop
 
-from the project's top-level directory. There are some dependencies required for compiling these extensions, which can be a little difficult to get up and running on Windows. You will need to install several different compilers:
+from the project's top-level directory. There are some dependencies required for compiling these extensions, which can be a little difficult to get up and running on Windows. Depending on what CPython version you are targeting, you may need to install several different compilers. The following list contains information for all entries corresponding to Python versions that are either currently or were once supported by this project:
 
     * `Microsoft Visual C++ 9.0`_ (for Python 2.7)
     * `Microsoft Visual C++ 10.0`_ (for Python 3.3 and 3.4)
-    * `Microsoft Visual C++ 14.0`_ (for Python 3.5 and 3.6)
+    * `Microsoft Visual C++ 14.0`_ (for Python 3.5, 3.6, 3.7, and 3.8)
 
 For reference, check out this `comprehensive list of Windows compilers`_ necessary for building Python and C-extensions. You may have some trouble installing the 7.1 SDK (which contains Visual C++ 10.0). `This stackoverflow answer`_ provides some possible solutions.
 
@@ -94,6 +94,6 @@ Now, all of our wheels and the source tarball should be in the ``dist`` folder i
 .. _editorconfig: http://editorconfig.org/
 .. _Microsoft Visual C++ 9.0: http://aka.ms/vcpython27
 .. _Microsoft Visual C++ 10.0: http://www.microsoft.com/download/details.aspx?id=8279
-.. _Microsoft Visual C++ 14.0: https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017
+.. _Microsoft Visual C++ 14.0: https://wiki.python.org/moin/WindowsCompilers#Microsoft_Visual_C.2B-.2B-_14.2_standalone:_Build_Tools_for_Visual_Studio_2019_.28x86.2C_x64.2C_ARM.2C_ARM64.29
 .. _comprehensive list of Windows compilers: https://wiki.python.org/moin/WindowsCompilers
 .. _This stackoverflow answer: http://stackoverflow.com/a/32534158/2225145
