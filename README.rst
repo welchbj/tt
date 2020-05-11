@@ -155,7 +155,7 @@ tt uses the `MIT License`_.
     :target: https://tt.brianwel.ch/en/latest/
     :alt: tt documentation site
 
-.. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=mac%2Flinux%20build
+.. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=linux%20build
     :target: https://travis-ci.org/welchbj/tt
     :alt: Linux build on Travis CI
 
