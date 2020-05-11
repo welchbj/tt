@@ -13,7 +13,6 @@ except ImportError:
 
 # directories/files
 here = os.path.abspath(os.path.dirname(__file__))
-readme_file = os.path.join(here, 'README.rst')
 tt_dir = os.path.join(here, 'tt')
 
 clibs_dir = os.path.join(tt_dir, '_clibs')
@@ -34,8 +33,7 @@ with codecs.open(version_file, encoding='utf-8') as f:
     exec(f.read())  # loads __version__ and __version_info__
     tt_version = __version__  # noqa
 
-with codecs.open(readme_file, encoding='utf-8') as f:
-    tt_long_description = f.read()
+tt_long_description = 'Please see the project site for more details.'
 
 tt_entry_points = {
     'console_scripts': ['tt = tt.__main__:main']
