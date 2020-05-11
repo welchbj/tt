@@ -66,7 +66,7 @@ class TruthTableTestCase(unittest.TestCase):
 
         try:
             TruthTable(expr, **kwargs)
-        except expected_exc_type as e:
+        except expected_exc_type:
             did_catch = True
         except Exception as e:
             traceback.print_exc()
@@ -96,7 +96,7 @@ class TruthTableTestCase(unittest.TestCase):
         try:
             t = TruthTable(expr, fill_all=False)
             t.fill(**kwargs)
-        except expected_exc_type as e:
+        except expected_exc_type:
             did_catch = True
         except Exception as e:
             traceback.print_exc()
