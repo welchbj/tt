@@ -8,7 +8,7 @@ from tt.errors.arguments import (
 
 if os.environ.get('READTHEDOCS') != 'True':
     from tt._clibs import picosat as _c_picosat
-    VERSION = 965  #_TODO: c_picosat.VERSION
+    VERSION = _c_picosat.VERSION
 
 
 def sat_one(clauses, assumptions=None):
