@@ -166,8 +166,8 @@ class TestExpressionToCnf(unittest.TestCase):
             '(A or not D or E or F)')
         self.assert_to_cnf_transformation(
             '(A nand B) -> (C nor D) -> (E iff F)',
-            '(A \/ C \/ D \/ F or not E) /\ (A \/ C \/ D \/ E or not F) /\ '
-            '(B \/ C \/ D \/ F or not E) /\ (B \/ C \/ D \/ E or not F)')
+            r'(A \/ C \/ D \/ F or not E) /\ (A \/ C \/ D \/ E or not F) /\ '
+            r'(B \/ C \/ D \/ F or not E) /\ (B \/ C \/ D \/ E or not F)')
 
     def test_mix_of_primitive_operators(self):
         """Test expressions with mixed primitive operators."""
@@ -186,7 +186,7 @@ class TestExpressionToCnf(unittest.TestCase):
             '(A nand (B impl (D or E or F))) iff ~~~(A nor B nor C)',
             '(A or not B) and (A or not C) and '
             '(A or not B or D or E or F) and '
-            '(A \/ not C or not B or D or E or F) and '
+            r'(A \/ not C or not B or D or E or F) and '
             '(not A or B) and (not A or not D) and (not A or not E) and '
             '(not A or not F) and (not A or B or C) and '
             '(not A or not D or B or C) and (not A or not E or B or C) and '

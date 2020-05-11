@@ -18,10 +18,10 @@ def apply_de_morgans(expr):
     to a negated AND and a negated OR::
 
         >>> from tt import apply_de_morgans
-        >>> apply_de_morgans(r'~(A /\ B)')
-        <BooleanExpression "~A \/ ~B">
-        >>> apply_de_morgans(r'~(A \/ B)')
-        <BooleanExpression "~A /\ ~B">
+        >>> apply_de_morgans('~(A /\\ B)')
+        <BooleanExpression "~A \\/ ~B">
+        >>> apply_de_morgans('~(A \\/ B)')
+        <BooleanExpression "~A /\\ ~B">
 
     """
     bexpr = ensure_bexpr(expr)
@@ -265,9 +265,9 @@ def to_cnf(expr):
         <BooleanExpression "A or B or C">
         >>> b.is_cnf
         True
-        >>> b = to_cnf(r'~(~(A /\ B) /\ C /\ D)')
+        >>> b = to_cnf(r'~(~(A /\\ B) /\\ C /\\ D)')
         >>> b
-        <BooleanExpression "(A \/ ~C \/ ~D) /\ (B \/ ~C \/ ~D)">
+        <BooleanExpression "(A \\/ ~C \\/ ~D) /\\ (B \\/ ~C \\/ ~D)">
         >>> b.is_cnf
         True
 
@@ -303,7 +303,7 @@ def to_primitives(expr):
     And another example of if-and-only-if (using symbolic operators)::
 
         >>> to_primitives('A <-> B')
-        <BooleanExpression "(A /\ B) \/ (~A /\ ~B)">
+        <BooleanExpression "(A /\\ B) \\/ (~A /\\ ~B)">
 
     """
     bexpr = ensure_bexpr(expr)

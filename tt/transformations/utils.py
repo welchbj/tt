@@ -163,9 +163,9 @@ class ComposedTransformation(RepeatableAction):
         >>> f
         <ComposedTransformation [to_primitives -> coalesce_negations]>
         >>> to_primitives('~A <-> ~B')
-        <BooleanExpression "(~A /\ ~B) \/ (~~A /\ ~~B)">
+        <BooleanExpression "(~A /\\ ~B) \\/ (~~A /\\ ~~B)">
         >>> f('~A <-> ~B')
-        <BooleanExpression "(~A /\ ~B) \/ (A /\ B)">
+        <BooleanExpression "(~A /\\ ~B) \\/ (A /\\ B)">
 
     This fairly simple example gives us an idea of how to compose functions
     using the :func:`tt_compose` helper. A few operators make manual
@@ -475,7 +475,7 @@ BooleanExpression>` object when called.
         >>> f
         <ComposedTransformation [to_primitives -> apply_de_morgans (2 times)]>
         >>> f('~A <-> ~B')
-        <BooleanExpression "(~A /\ ~B) \/ (~~A /\ ~~B)">
+        <BooleanExpression "(~A /\\ ~B) \\/ (~~A /\\ ~~B)">
 
     Composed transformations can be nested, too. Let's add some functionality
     to our composed transformation so that all redundant negations are
@@ -486,7 +486,7 @@ BooleanExpression>` object when called.
         <ComposedTransformation [to_primitives -> apply_de_morgans (2 times)\
  -> coalesce_negations]>
         >>> g('~A <-> ~B')
-        <BooleanExpression "(~A /\ ~B) \/ (A /\ B)">
+        <BooleanExpression "(~A /\\ ~B) \\/ (A /\\ B)">
 
     """
     if len(fns) < 2:
