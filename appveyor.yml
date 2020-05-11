@@ -15,7 +15,7 @@ build: off
 
 test_script:
     - "%PYTHON%\\python.exe ttasks.py test"
-    - "if \"%RUN_FLAKE%\"==\"1\" %PYTHON%\\Scripts\\flake8.exe ."
+    - "if \"%RUN_FLAKE%\"==\"1\" %PYTHON%\\Scripts\\flake8.exe tt"
 
 after_test:
     - "%PYTHON%\\python.exe setup.py bdist_wheel"
