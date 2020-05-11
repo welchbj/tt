@@ -9,9 +9,11 @@
 -------------------
 
 .. automodule:: tt.cli.core
+    :members:
 
 
 ``cli.utils`` module
 --------------------
 
 .. automodule:: tt.cli.utils
+    :members:

@@ -9,4 +9,5 @@
 --------------------------
 
 .. automodule:: tt.trees.tree_node
+    :members:
     :exclude-members: __weakref__

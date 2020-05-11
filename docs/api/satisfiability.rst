@@ -9,3 +9,4 @@
 ---------------------------------
 
 .. automodule:: tt.satisfiability.picosat
+    :members:
