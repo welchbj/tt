@@ -22,7 +22,7 @@ typedef struct {
     PyObject_HEAD
     PicoSAT * picosat;
     PyObject * assumptions;
-    signed char _temp_mem;
+    signed char * _temp_mem;
 } soliter_obj;
 
 
