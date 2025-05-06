@@ -21,7 +21,7 @@ DIST_DIR = os.path.join(HERE, 'dist')
 DOCS_DIR = os.path.join(HERE, 'docs')
 USER_GUIDE_DIR = os.path.join(DOCS_DIR, 'user_guide')
 TT_DIR = os.path.join(HERE, 'tt')
-TESTS_DIR = os.path.join(TT_DIR, 'tests')
+TESTS_DIR = os.path.join(HERE, 'tests')
 
 
 class AppVeyorApiError(Exception):
