@@ -33,7 +33,11 @@ Testing is done with Python's `unittest`_ and `doctest`_ modules. All tests can 
 
 Note that while doc tests are used, their main purpose is to ensure the documentation examples are valid rather than extensively test functionality. The true behavior of the library and its public contract are enforced through the unit tests.
 
-Local cross-Python version testing is achieved through `tox`_. To run changes against the reference and style tests, simply invoke ``tox .`` from the top-level directory of the project; tox will run the unit tests against the compatible CPython runtimes.
+Local cross-Python version testing is achieved through `uv`_::
+
+    uv run --python 3.11 ttasks.py test
+    uv run --python 3.12 ttasks.py test
+    uv run --python 3.13 ttasks.py test
 
 
 Coding Style
@@ -66,7 +70,10 @@ If you're going to be working for a little while, it's usually more convenient t
 Releases
 --------
 
-TODO: Describe uv-based workflow
+Releases are managed with ``uv``::
+
+    uv build
+    uv publish
 
 
 .. _uv: https://docs.astral.sh/uv/
