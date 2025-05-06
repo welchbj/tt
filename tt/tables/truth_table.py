@@ -9,11 +9,13 @@ from string import ascii_uppercase as ALPHABET
 
 from tt._assertions import (
     assert_all_valid_keys,
-    assert_iterable_contains_all_expr_symbols)
+    assert_iterable_contains_all_expr_symbols,
+)
 from tt.definitions import (
     boolean_variables_factory,
     DONT_CARE_VALUE,
-    is_valid_identifier)
+    is_valid_identifier,
+)
 from tt.errors import (
     AlreadyFullTableError,
     ConflictingArgumentsError,
@@ -25,7 +27,8 @@ from tt.errors import (
     MissingSymbolError,
     NoEvaluationVariationError,
     RequiredArgumentError,
-    RequiresFullTableError)
+    RequiresFullTableError,
+)
 from tt.expressions import BooleanExpression
 
 
@@ -33,7 +36,6 @@ _DEFAULT_CELL_PADDING = 1
 
 
 class TruthTable(object):
-
     """A class representing a truth table.
 
     There are two ways to fill a table: either populated from an expression or
@@ -135,14 +137,13 @@ class TruthTable(object):
 
     """
 
-    def __init__(self, expr=None, from_values=None, fill_all=True,
-                 ordering=None):
+    def __init__(self, expr=None, from_values=None, fill_all=True, ordering=None):
         if expr is not None and from_values is not None:
             raise ConflictingArgumentsError(
-                '`expr` and `from_values` are mutually exclusive arguments')
+                "`expr` and `from_values` are mutually exclusive arguments"
+            )
         elif expr is None and from_values is None:
-            raise RequiredArgumentError(
-                'Must specify either `expr` or `from_values`')
+            raise RequiredArgumentError("Must specify either `expr` or `from_values`")
 
         self._num_filled_slots = 0
 
@@ -160,41 +161,44 @@ class TruthTable(object):
             self._expr = expr
         else:
             raise InvalidArgumentTypeError(
-                'Arg `expr` must be of type `str` or `BooleanExpression`')
+                "Arg `expr` must be of type `str` or `BooleanExpression`"
+            )
 
         if ordering is None:
             self._ordering = self._expr.symbols
         else:
-            assert_iterable_contains_all_expr_symbols(
-                ordering, set(self._expr.symbols))
+            assert_iterable_contains_all_expr_symbols(ordering, set(self._expr.symbols))
             self._ordering = ordering
 
         if not self._ordering:
             raise NoEvaluationVariationError(
-                'This expression is composed only of constant values')
+                "This expression is composed only of constant values"
+            )
 
-        self._results = [None for _ in range(2**len(self._ordering))]
+        self._results = [None for _ in range(2 ** len(self._ordering))]
         if fill_all:
             self.fill()
 
     def _init_from_values(self, from_values, ordering):
         if isinstance(from_values, str):
-            valid = {'0', '1', DONT_CARE_VALUE}
+            valid = {"0", "1", DONT_CARE_VALUE}
             if not from_values:
-                raise InvalidArgumentValueError(
-                    'Cannot specify an empty string')
+                raise InvalidArgumentValueError("Cannot specify an empty string")
             elif not all(value in valid for value in from_values):
                 raise InvalidBooleanValueError(
-                    'Invalid Boolean/don\'t care value specified')
+                    "Invalid Boolean/don't care value specified"
+                )
         else:
             raise InvalidArgumentTypeError(
-                '`from_values` must either be a string or list of strings')
+                "`from_values` must either be a string or list of strings"
+            )
 
         num_values = len(from_values)
         if (num_values & (num_values - 1)) != 0:
             # assert that number of input values is a power of 2
             raise InvalidArgumentValueError(
-                'Must specify a number of input values that is a power of 2')
+                "Must specify a number of input values that is a power of 2"
+            )
 
         user_gave_symbols = ordering is not None
         if not user_gave_symbols:
@@ -202,38 +206,43 @@ class TruthTable(object):
             num_required_symbols = int(log(num_values, 2))
             self._ordering = TruthTable.generate_symbols(num_required_symbols)
         elif not isinstance(ordering, list):
-            raise InvalidArgumentTypeError('`ordering` must be a list')
+            raise InvalidArgumentTypeError("`ordering` must be a list")
         elif not all(isinstance(elt, str) for elt in ordering):
-            raise InvalidArgumentTypeError(
-                '`ordering` must only contain strings')
+            raise InvalidArgumentTypeError("`ordering` must only contain strings")
         else:
             # validate user-provided ordering/symbols
             num_symbols = len(ordering)
             if not num_symbols:
                 raise InvalidArgumentValueError(
-                    'If specifying `ordering`, it must be non-empty')
+                    "If specifying `ordering`, it must be non-empty"
+                )
 
             num_expected_values = 2**num_symbols
             if num_values < num_expected_values:
                 raise ExtraSymbolError(
-                    'Too many symbols provided for the specified values')
+                    "Too many symbols provided for the specified values"
+                )
             elif num_values > num_expected_values:
                 raise MissingSymbolError(
-                    'Too few symbols provided for the specified values')
+                    "Too few symbols provided for the specified values"
+                )
 
             # verify all symbols are valid identifiers
             for symbol_name in ordering:
                 if not is_valid_identifier(symbol_name):
                     raise InvalidIdentifierError(
                         '"{}" in ordering is not a valid symbol name'.format(
-                            symbol_name),
-                        None, None)
+                            symbol_name
+                        ),
+                        None,
+                        None,
+                    )
 
             self._ordering = ordering
 
         self._expr = None
 
-        bool_dict = {'0': False, '1': True, DONT_CARE_VALUE: DONT_CARE_VALUE}
+        bool_dict = {"0": False, "1": True, DONT_CARE_VALUE: DONT_CARE_VALUE}
         self._results = [bool_dict[v] for v in from_values]
         self._num_filled_slots = len(self._results)
 
@@ -355,7 +364,7 @@ class TruthTable(object):
         filled_row_count = 0
         rows = []
         rows.append(row_sep)
-        rows.append(self._get_as_table_row(self._ordering + [' '], col_widths))
+        rows.append(self._get_as_table_row(self._ordering + [" "], col_widths))
         rows.append(row_sep)
 
         _input_combos = TruthTable.input_combos(len(self._ordering))
@@ -375,9 +384,9 @@ class TruthTable(object):
             filled_row_count += 1
 
         if not filled_row_count:
-            return 'Empty!'
+            return "Empty!"
         else:
-            return '\n'.join(rows)
+            return "\n".join(rows)
 
     def __iter__(self):
         _input_combos = TruthTable.input_combos(len(self._ordering))
@@ -453,11 +462,13 @@ class TruthTable(object):
             other_table = TruthTable(other)
         else:
             raise InvalidArgumentTypeError(
-                'other must be a BooleanExpression, TruthTable, or str')
+                "other must be a BooleanExpression, TruthTable, or str"
+            )
 
         if not self.is_full or not other_table.is_full:
             raise RequiresFullTableError(
-                'Equivalence can only be checked on full truth tables')
+                "Equivalence can only be checked on full truth tables"
+            )
 
         if other is self:
             return True
@@ -516,7 +527,7 @@ class TruthTable(object):
 
         """
         if self.is_full:
-            raise AlreadyFullTableError('Cannot fill an already-full table')
+            raise AlreadyFullTableError("Cannot fill an already-full table")
 
         assert_all_valid_keys(kwargs, set(self._ordering))
 
@@ -588,12 +599,12 @@ class TruthTable(object):
         """
         num_repeats = 1
 
-        while num_symbols > len(ALPHABET)**num_repeats:
+        while num_symbols > len(ALPHABET) ** num_repeats:
             num_repeats += 1
 
         # generate symbols for the user based on the uppercase alphabet
         symbol_product = itertools.product(ALPHABET, repeat=num_repeats)
-        symbol_pool = (''.join(elts) for elts in symbol_product)
+        symbol_pool = ("".join(elts) for elts in symbol_product)
         return list(itertools.islice(symbol_pool, num_symbols))
 
     def _get_as_table_row(self, items, col_widths):
@@ -610,15 +621,12 @@ class TruthTable(object):
         :rtype: :class:`str <python:str>`
 
         """
-        row = '|'
+        row = "|"
         for item, col_width in zip(items, col_widths):
             total_pad_len = col_width - len(item)
             left_pad_len = total_pad_len // 2
             right_pad_len = total_pad_len - left_pad_len
-            row += (left_pad_len * ' ' +
-                    item +
-                    right_pad_len * ' '
-                    + '|')
+            row += left_pad_len * " " + item + right_pad_len * " " + "|"
 
         return row
 
@@ -635,8 +643,7 @@ class TruthTable(object):
 
         """
         tot_padding = 2 * padding
-        symbol_widths = [tot_padding + len(symbol) for
-                         symbol in self._ordering]
+        symbol_widths = [tot_padding + len(symbol) for symbol in self._ordering]
         return symbol_widths + [tot_padding + 1]
 
     def _get_row_sep(self, col_widths):
@@ -650,4 +657,4 @@ class TruthTable(object):
         :rtype: :class:`str <python:str>`
 
         """
-        return '+' + '+'.join('-' * i for i in col_widths) + '+'
+        return "+" + "+".join("-" * i for i in col_widths) + "+"

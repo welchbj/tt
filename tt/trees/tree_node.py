@@ -15,18 +15,19 @@ from tt.definitions import (
     TT_NOT_OP,
     TT_OR_OP,
     TT_XOR_OP,
-    TT_XNOR_OP)
+    TT_XNOR_OP,
+)
 from tt.errors import (
     InvalidArgumentTypeError,
     InvalidArgumentValueError,
-    RequiresNormalFormError)
+    RequiresNormalFormError,
+)
 
 
 _DEFAULT_INDENT_SIZE = MAX_OPERATOR_STR_LEN + 1
 
 
 class ExpressionTreeNode(object):
-
     """A base class for expression tree nodes.
 
     This class is extended within tt and is not meant to be used
@@ -138,12 +139,12 @@ class ExpressionTreeNode(object):
         :raises InvalidArgumentValueError: If ``postfix_tokens`` is empty.
 
         """
-        if (not isinstance(postfix_tokens, list) or
-                not all(isinstance(elt, str) for elt in postfix_tokens)):
-            raise InvalidArgumentTypeError(
-                'postfix_tokens must be a list of strings')
+        if not isinstance(postfix_tokens, list) or not all(
+            isinstance(elt, str) for elt in postfix_tokens
+        ):
+            raise InvalidArgumentTypeError("postfix_tokens must be a list of strings")
         elif not postfix_tokens:
-            raise InvalidArgumentValueError('postfix_tokens cannot be empty')
+            raise InvalidArgumentValueError("postfix_tokens cannot be empty")
 
         stack = []
         operators = OPERATOR_MAPPING.keys()
@@ -151,12 +152,10 @@ class ExpressionTreeNode(object):
         for token in postfix_tokens:
             if token in operators:
                 if OPERATOR_MAPPING[token] == TT_NOT_OP:
-                    node = UnaryOperatorExpressionTreeNode(
-                        token, stack.pop())
+                    node = UnaryOperatorExpressionTreeNode(token, stack.pop())
                 else:
                     right, left = stack.pop(), stack.pop()
-                    node = BinaryOperatorExpressionTreeNode(
-                        token, left, right)
+                    node = BinaryOperatorExpressionTreeNode(token, left, right)
             else:
                 node = OperandExpressionTreeNode(token)
 
@@ -186,8 +185,8 @@ class ExpressionTreeNode(object):
                 yield node
         else:
             raise RequiresNormalFormError(
-                'Must be in conjunctive or disjunctive normal form to '
-                'iterate clauses')
+                "Must be in conjunctive or disjunctive normal form to iterate clauses"
+            )
 
     def iter_cnf_clauses(self):
         """Iterate the clauses in conjunctive normal form order.
@@ -202,12 +201,15 @@ class ExpressionTreeNode(object):
         """
         if not self._is_cnf:
             raise RequiresNormalFormError(
-                'Must be in conjunctive normal form to iterate CNF clauses')
-        elif (isinstance(self, BinaryOperatorExpressionTreeNode) and
-                self._operator == TT_AND_OP):
+                "Must be in conjunctive normal form to iterate CNF clauses"
+            )
+        elif (
+            isinstance(self, BinaryOperatorExpressionTreeNode)
+            and self._operator == TT_AND_OP
+        ):
             child_iter = itertools.chain(
-                self._l_child.iter_cnf_clauses(),
-                self._r_child.iter_cnf_clauses())
+                self._l_child.iter_cnf_clauses(), self._r_child.iter_cnf_clauses()
+            )
             for node in child_iter:
                 yield node
         else:
@@ -226,12 +228,15 @@ class ExpressionTreeNode(object):
         """
         if not self._is_dnf:
             raise RequiresNormalFormError(
-                'Must be in conjunctive normal form to iterate DNF clauses')
-        elif (isinstance(self, BinaryOperatorExpressionTreeNode) and
-                self._operator == TT_OR_OP):
+                "Must be in conjunctive normal form to iterate DNF clauses"
+            )
+        elif (
+            isinstance(self, BinaryOperatorExpressionTreeNode)
+            and self._operator == TT_OR_OP
+        ):
             child_iter = itertools.chain(
-                self._l_child.iter_dnf_clauses(),
-                self._r_child.iter_dnf_clauses())
+                self._l_child.iter_dnf_clauses(), self._r_child.iter_dnf_clauses()
+            )
             for node in child_iter:
                 yield node
         else:
@@ -252,13 +257,11 @@ class ExpressionTreeNode(object):
         :rtype: :class:`bool <python:bool>`
 
         """
-        raise NotImplementedError(
-            'Expression tree nodes must implement evaluate().')
+        raise NotImplementedError("Expression tree nodes must implement evaluate().")
 
     def _copy(self):
         """Recursively return a copy of the tree rooted at this node."""
-        raise NotImplementedError(
-            'Expression tree nodes must implement _copy()')
+        raise NotImplementedError("Expression tree nodes must implement _copy()")
 
     def to_cnf(self):
         """Return a transformed node, in conjunctive normal form.
@@ -333,7 +336,8 @@ class ExpressionTreeNode(object):
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement to_primitives()')
+            "Expression tree nodes must implement to_primitives()"
+        )
 
     def coalesce_negations(self):
         """Return a transformed node, with consecutive negations coalesced.
@@ -348,7 +352,8 @@ class ExpressionTreeNode(object):
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement coalesce_negations()')
+            "Expression tree nodes must implement coalesce_negations()"
+        )
 
     def apply_de_morgans(self):
         """Return a transformed node, with De Morgan's Law applied.
@@ -362,7 +367,8 @@ class ExpressionTreeNode(object):
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement apply_de_morgans()')
+            "Expression tree nodes must implement apply_de_morgans()"
+        )
 
     def apply_identity_law(self):
         """Return a transformed node, with the Identity Law applied.
@@ -399,7 +405,8 @@ class ExpressionTreeNode(object):
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement apply_identity_law()')
+            "Expression tree nodes must implement apply_identity_law()"
+        )
 
     def apply_idempotent_law(self):
         """Returns a transformed node, with the Idempotent Law applied.
@@ -445,7 +452,8 @@ and D').tree
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement apply_idempotent_law()')
+            "Expression tree nodes must implement apply_idempotent_law()"
+        )
 
     def apply_inverse_law(self):
         """Return a transformed node, with the Inverse Law applied.
@@ -488,7 +496,8 @@ and D').tree
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement apply_inverse_law()')
+            "Expression tree nodes must implement apply_inverse_law()"
+        )
 
     def distribute_ands(self):
         """Return a transformed nodes, with ANDs recursively distributed across
@@ -503,7 +512,8 @@ and D').tree
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement distribute_ands()')
+            "Expression tree nodes must implement distribute_ands()"
+        )
 
     def distribute_ors(self):
         """Return a transformed nodes, with ORs recursively distributed across
@@ -518,11 +528,11 @@ and D').tree
 
         """
         raise NotImplementedError(
-            'Expression tree nodes must implement distribute_ors()')
+            "Expression tree nodes must implement distribute_ors()"
+        )
 
     def __eq__(self, other):
-        raise NotImplementedError(
-            'Expression tree nodes must implement __eq__')
+        raise NotImplementedError("Expression tree nodes must implement __eq__")
 
     def __ne__(self, other):
         return not (self == other)
@@ -530,34 +540,33 @@ and D').tree
     def __str__(self):
         return self._str_helper()[:-1]
 
-    def _str_helper(self, depth=0, indent_size=_DEFAULT_INDENT_SIZE,
-                    stem_list=[]):
+    def _str_helper(self, depth=0, indent_size=_DEFAULT_INDENT_SIZE, stem_list=[]):
         """Helper method for __str__."""
-        ret = ''
+        ret = ""
 
         if depth > 0:
-            trunk = ('{}' + (indent_size - 1) * ' ') * (depth - 1)
+            trunk = ("{}" + (indent_size - 1) * " ") * (depth - 1)
             trunk = trunk.format(*stem_list)
-            stem = '`' + (indent_size - 1) * '-'
+            stem = "`" + (indent_size - 1) * "-"
             ret += trunk + stem + self._symbol_name
         else:
             ret += self._symbol_name
 
-        ret += '\n'
+        ret += "\n"
 
-        l_child_stem = '|' if self._r_child is not None else ' '
+        l_child_stem = "|" if self._r_child is not None else " "
 
         if self._l_child is not None:
             ret += self._l_child._str_helper(
-                depth=depth+1,
+                depth=depth + 1,
                 indent_size=indent_size,
-                stem_list=stem_list + [l_child_stem])
+                stem_list=stem_list + [l_child_stem],
+            )
 
         if self.r_child is not None:
             ret += self.r_child._str_helper(
-                depth=depth+1,
-                indent_size=indent_size,
-                stem_list=stem_list + [' '])
+                depth=depth + 1, indent_size=indent_size, stem_list=stem_list + [" "]
+            )
 
         return ret
 
@@ -570,21 +579,23 @@ and D').tree
 
 
 class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
-
     """An expression tree node for binary operators."""
 
     def __init__(self, operator_str, l_child, r_child):
         super(BinaryOperatorExpressionTreeNode, self).__init__(
-            operator_str, l_child, r_child)
+            operator_str, l_child, r_child
+        )
 
         self._operator = OPERATOR_MAPPING[operator_str]
         self._is_cnf = self._cnf_status()
         self._is_dnf = self._dnf_status()
         self._is_really_unary = False
-        self._non_negated_symbol_set = \
+        self._non_negated_symbol_set = (
             l_child._non_negated_symbol_set | r_child._non_negated_symbol_set
-        self._negated_symbol_set = \
+        )
+        self._negated_symbol_set = (
             l_child._negated_symbol_set | r_child._negated_symbol_set
+        )
 
     @property
     def operator(self):
@@ -598,25 +609,23 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
     def evaluate(self, input_dict):
         return self.operator.eval_func(
-            self.l_child.evaluate(input_dict),
-            self.r_child.evaluate(input_dict))
+            self.l_child.evaluate(input_dict), self.r_child.evaluate(input_dict)
+        )
 
     def _copy(self):
         return BinaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child._copy(),
-            self._r_child._copy())
+            self.symbol_name, self._l_child._copy(), self._r_child._copy()
+        )
 
     def to_primitives(self):
-        not_str, and_str, or_str = self._get_op_strs(
-            TT_NOT_OP, TT_AND_OP, TT_OR_OP)
+        not_str, and_str, or_str = self._get_op_strs(TT_NOT_OP, TT_AND_OP, TT_OR_OP)
 
         if self._operator == TT_IMPL_OP:
             return BinaryOperatorExpressionTreeNode(
                 or_str,
-                UnaryOperatorExpressionTreeNode(
-                    not_str, self._l_child.to_primitives()),
-                self._r_child.to_primitives())
+                UnaryOperatorExpressionTreeNode(not_str, self._l_child.to_primitives()),
+                self._r_child.to_primitives(),
+            )
         elif self._operator == TT_XOR_OP:
             new_l_child = self._l_child.to_primitives()
             new_r_child = self._r_child.to_primitives()
@@ -626,29 +635,31 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
                 BinaryOperatorExpressionTreeNode(
                     and_str,
                     new_l_child,
-                    UnaryOperatorExpressionTreeNode(not_str, new_r_child)),
+                    UnaryOperatorExpressionTreeNode(not_str, new_r_child),
+                ),
                 BinaryOperatorExpressionTreeNode(
                     and_str,
                     UnaryOperatorExpressionTreeNode(not_str, new_l_child),
-                    new_r_child))
+                    new_r_child,
+                ),
+            )
         elif self._operator == TT_XNOR_OP:
             new_l_prim = self._l_child.to_primitives()
             new_r_prim = self._r_child.to_primitives()
 
             return BinaryOperatorExpressionTreeNode(
                 or_str,
-                BinaryOperatorExpressionTreeNode(
-                    and_str,
-                    new_l_prim,
-                    new_r_prim),
+                BinaryOperatorExpressionTreeNode(and_str, new_l_prim, new_r_prim),
                 BinaryOperatorExpressionTreeNode(
                     and_str,
                     UnaryOperatorExpressionTreeNode(not_str, new_l_prim),
-                    UnaryOperatorExpressionTreeNode(not_str, new_r_prim)))
+                    UnaryOperatorExpressionTreeNode(not_str, new_r_prim),
+                ),
+            )
         elif self._operator == TT_AND_OP:
             return BinaryOperatorExpressionTreeNode(
-                and_str,
-                self._l_child.to_primitives(), self._r_child.to_primitives())
+                and_str, self._l_child.to_primitives(), self._r_child.to_primitives()
+            )
         elif self._operator == TT_NAND_OP:
             new_l_child = self._l_child.to_primitives()
             new_r_child = self._r_child.to_primitives()
@@ -656,11 +667,12 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             return BinaryOperatorExpressionTreeNode(
                 or_str,
                 UnaryOperatorExpressionTreeNode(not_str, new_l_child),
-                UnaryOperatorExpressionTreeNode(not_str, new_r_child))
+                UnaryOperatorExpressionTreeNode(not_str, new_r_child),
+            )
         elif self._operator == TT_OR_OP:
             return BinaryOperatorExpressionTreeNode(
-                or_str,
-                self._l_child.to_primitives(), self._r_child.to_primitives())
+                or_str, self._l_child.to_primitives(), self._r_child.to_primitives()
+            )
         elif self._operator == TT_NOR_OP:
             new_l_child = self._l_child.to_primitives()
             new_r_child = self._r_child.to_primitives()
@@ -668,52 +680,54 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             return BinaryOperatorExpressionTreeNode(
                 and_str,
                 UnaryOperatorExpressionTreeNode(not_str, new_l_child),
-                UnaryOperatorExpressionTreeNode(not_str, new_r_child))
+                UnaryOperatorExpressionTreeNode(not_str, new_r_child),
+            )
 
     def coalesce_negations(self):
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.coalesce_negations(),
-            self._r_child.coalesce_negations())
+            self._r_child.coalesce_negations(),
+        )
 
     def apply_de_morgans(self):
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.apply_de_morgans(),
-            self._r_child.apply_de_morgans())
+            self._r_child.apply_de_morgans(),
+        )
 
     def apply_identity_law(self):
         op_is_and = self._operator == TT_AND_OP
         op_is_or = self._operator == TT_OR_OP
 
         new_l_child = self._l_child.apply_identity_law()
-        if new_l_child.symbol_name == '1':
+        if new_l_child.symbol_name == "1":
             if op_is_and:
                 return self._r_child.apply_identity_law()
             elif op_is_or:
-                return OperandExpressionTreeNode('1')
-        elif new_l_child.symbol_name == '0':
+                return OperandExpressionTreeNode("1")
+        elif new_l_child.symbol_name == "0":
             if op_is_and:
-                return OperandExpressionTreeNode('0')
+                return OperandExpressionTreeNode("0")
             elif op_is_or:
                 return self._r_child.apply_identity_law()
 
         new_r_child = self._r_child.apply_identity_law()
-        if new_r_child.symbol_name == '1':
+        if new_r_child.symbol_name == "1":
             if op_is_and:
                 return new_l_child
             elif op_is_or:
-                return OperandExpressionTreeNode('1')
-        elif new_r_child.symbol_name == '0':
+                return OperandExpressionTreeNode("1")
+        elif new_r_child.symbol_name == "0":
             if op_is_and:
-                return OperandExpressionTreeNode('0')
+                return OperandExpressionTreeNode("0")
             elif op_is_or:
                 return new_l_child
 
         return BinaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            new_l_child,
-            new_r_child)
+            self.symbol_name, new_l_child, new_r_child
+        )
 
     def apply_idempotent_law(self):
         negations_applied = self.coalesce_negations()
@@ -723,9 +737,11 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             filtered_clauses = deque()
 
             total_clause_count = 0
-            clause_iter = (negations_applied.iter_cnf_clauses() if
-                           self._operator == TT_AND_OP else
-                           negations_applied.iter_dnf_clauses())
+            clause_iter = (
+                negations_applied.iter_cnf_clauses()
+                if self._operator == TT_AND_OP
+                else negations_applied.iter_dnf_clauses()
+            )
             for clause in clause_iter:
                 total_clause_count += 1
                 if isinstance(clause, OperandExpressionTreeNode):
@@ -746,20 +762,24 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
                     BinaryOperatorExpressionTreeNode(
                         self.symbol_name,
                         filtered_clauses.popleft(),
-                        filtered_clauses.popleft()))
+                        filtered_clauses.popleft(),
+                    )
+                )
             return filtered_clauses.pop()
 
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.apply_idempotent_law(),
-            self._r_child.apply_idempotent_law())
+            self._r_child.apply_idempotent_law(),
+        )
 
     def apply_inverse_law(self):
         negations_applied = self.coalesce_negations()
         if negations_applied._is_cnf and negations_applied._is_dnf:
             if self._negated_symbol_set & self._non_negated_symbol_set:
                 return OperandExpressionTreeNode(
-                    '1' if self._operator == TT_OR_OP else '0')
+                    "1" if self._operator == TT_OR_OP else "0"
+                )
         elif self._is_cnf:
             and_str = self.symbol_name
             inverted_clause_count = 0
@@ -767,7 +787,7 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             for clause in self.iter_cnf_clauses():
                 if clause.negated_symbol_set & clause.non_negated_symbol_set:
                     inverted_clause_count += 1
-                    transformed_clauses.append(OperandExpressionTreeNode('1'))
+                    transformed_clauses.append(OperandExpressionTreeNode("1"))
                 else:
                     transformed_clauses.append(clause._copy())
 
@@ -780,7 +800,9 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
                     BinaryOperatorExpressionTreeNode(
                         and_str,
                         transformed_clauses.popleft(),
-                        transformed_clauses.popleft()))
+                        transformed_clauses.popleft(),
+                    )
+                )
             return transformed_clauses.pop()
         elif self._is_dnf:
             or_str = self.symbol_name
@@ -789,7 +811,7 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
             for clause in self.iter_dnf_clauses():
                 if clause.negated_symbol_set & clause.non_negated_symbol_set:
                     inverted_clause_count += 1
-                    transformed_clauses.append(OperandExpressionTreeNode('0'))
+                    transformed_clauses.append(OperandExpressionTreeNode("0"))
                 else:
                     transformed_clauses.append(clause._copy())
 
@@ -802,113 +824,116 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
                     BinaryOperatorExpressionTreeNode(
                         or_str,
                         transformed_clauses.popleft(),
-                        transformed_clauses.popleft()))
+                        transformed_clauses.popleft(),
+                    )
+                )
             return transformed_clauses.pop()
 
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.apply_inverse_law(),
-            self._r_child.apply_inverse_law())
+            self._r_child.apply_inverse_law(),
+        )
 
     def distribute_ands(self):
         if self._operator == TT_AND_OP:
             (or_str,) = self._get_op_strs(TT_OR_OP)
             and_str = self.symbol_name
 
-            if (isinstance(self._r_child, BinaryOperatorExpressionTreeNode) and
-                    self._r_child.operator == TT_OR_OP):
+            if (
+                isinstance(self._r_child, BinaryOperatorExpressionTreeNode)
+                and self._r_child.operator == TT_OR_OP
+            ):
                 child_to_distribute = self._l_child.distribute_ands()
-                child_distributed_upon = \
-                    self._r_child._l_child.distribute_ands()
-                child_to_be_distributed_upon = \
-                    self._r_child._r_child.distribute_ands()
+                child_distributed_upon = self._r_child._l_child.distribute_ands()
+                child_to_be_distributed_upon = self._r_child._r_child.distribute_ands()
 
                 return BinaryOperatorExpressionTreeNode(
                     or_str,
                     BinaryOperatorExpressionTreeNode(
-                        and_str,
-                        child_to_distribute,
-                        child_distributed_upon).distribute_ands(),
+                        and_str, child_to_distribute, child_distributed_upon
+                    ).distribute_ands(),
                     BinaryOperatorExpressionTreeNode(
-                        and_str,
-                        child_to_distribute,
-                        child_to_be_distributed_upon).distribute_ands())
-            elif (isinstance(self._l_child, BinaryOperatorExpressionTreeNode)
-                    and self._l_child.operator == TT_OR_OP):
+                        and_str, child_to_distribute, child_to_be_distributed_upon
+                    ).distribute_ands(),
+                )
+            elif (
+                isinstance(self._l_child, BinaryOperatorExpressionTreeNode)
+                and self._l_child.operator == TT_OR_OP
+            ):
                 child_to_distribute = self._r_child.distribute_ands()
-                child_distributed_upon = \
-                    self._l_child._l_child.distribute_ands()
-                child_to_be_distributed_upon = \
-                    self._l_child._r_child.distribute_ands()
+                child_distributed_upon = self._l_child._l_child.distribute_ands()
+                child_to_be_distributed_upon = self._l_child._r_child.distribute_ands()
 
                 return BinaryOperatorExpressionTreeNode(
                     or_str,
                     BinaryOperatorExpressionTreeNode(
-                        and_str,
-                        child_distributed_upon,
-                        child_to_distribute).distribute_ands(),
+                        and_str, child_distributed_upon, child_to_distribute
+                    ).distribute_ands(),
                     BinaryOperatorExpressionTreeNode(
-                        and_str,
-                        child_to_be_distributed_upon,
-                        child_to_distribute).distribute_ands())
+                        and_str, child_to_be_distributed_upon, child_to_distribute
+                    ).distribute_ands(),
+                )
 
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.distribute_ands(),
-            self._r_child.distribute_ands())
+            self._r_child.distribute_ands(),
+        )
 
     def distribute_ors(self):
         if self._operator == TT_OR_OP:
             (and_str,) = self._get_op_strs(TT_AND_OP)
             or_str = self.symbol_name
 
-            if (isinstance(self._r_child, BinaryOperatorExpressionTreeNode) and
-                    self._r_child.operator == TT_AND_OP):
+            if (
+                isinstance(self._r_child, BinaryOperatorExpressionTreeNode)
+                and self._r_child.operator == TT_AND_OP
+            ):
                 child_to_distribute = self._l_child.distribute_ors()
-                child_distributed_upon = \
-                    self._r_child._l_child.distribute_ors()
-                child_to_be_distributed_upon = \
-                    self._r_child._r_child.distribute_ors()
+                child_distributed_upon = self._r_child._l_child.distribute_ors()
+                child_to_be_distributed_upon = self._r_child._r_child.distribute_ors()
 
                 return BinaryOperatorExpressionTreeNode(
                     and_str,
                     BinaryOperatorExpressionTreeNode(
-                        or_str,
-                        child_to_distribute,
-                        child_distributed_upon).distribute_ors(),
+                        or_str, child_to_distribute, child_distributed_upon
+                    ).distribute_ors(),
                     BinaryOperatorExpressionTreeNode(
-                        or_str,
-                        child_to_distribute,
-                        child_to_be_distributed_upon).distribute_ors())
-            elif (isinstance(self._l_child, BinaryOperatorExpressionTreeNode)
-                    and self._l_child.operator == TT_AND_OP):
+                        or_str, child_to_distribute, child_to_be_distributed_upon
+                    ).distribute_ors(),
+                )
+            elif (
+                isinstance(self._l_child, BinaryOperatorExpressionTreeNode)
+                and self._l_child.operator == TT_AND_OP
+            ):
                 child_to_distribute = self._r_child.distribute_ors()
-                child_distributed_upon = \
-                    self._l_child._l_child.distribute_ors()
-                child_to_be_distributed_upon = \
-                    self._l_child._r_child.distribute_ors()
+                child_distributed_upon = self._l_child._l_child.distribute_ors()
+                child_to_be_distributed_upon = self._l_child._r_child.distribute_ors()
 
                 return BinaryOperatorExpressionTreeNode(
                     and_str,
                     BinaryOperatorExpressionTreeNode(
-                        or_str,
-                        child_distributed_upon,
-                        child_to_distribute).distribute_ors(),
+                        or_str, child_distributed_upon, child_to_distribute
+                    ).distribute_ors(),
                     BinaryOperatorExpressionTreeNode(
-                        or_str,
-                        child_to_be_distributed_upon,
-                        child_to_distribute).distribute_ors())
+                        or_str, child_to_be_distributed_upon, child_to_distribute
+                    ).distribute_ors(),
+                )
 
         return BinaryOperatorExpressionTreeNode(
             self.symbol_name,
             self._l_child.distribute_ors(),
-            self._r_child.distribute_ors())
+            self._r_child.distribute_ors(),
+        )
 
     def __eq__(self, other):
         if isinstance(other, BinaryOperatorExpressionTreeNode):
-            return (self._operator == other._operator and
-                    self._l_child == other._l_child and
-                    self._r_child == other._r_child)
+            return (
+                self._operator == other._operator
+                and self._l_child == other._l_child
+                and self._r_child == other._r_child
+            )
         elif isinstance(other, ExpressionTreeNode):
             return False
         else:
@@ -966,12 +991,10 @@ class BinaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
 
 class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
-
     """An expression tree node for unary operators."""
 
     def __init__(self, operator_str, l_child):
-        super(UnaryOperatorExpressionTreeNode, self).__init__(
-            operator_str, l_child)
+        super(UnaryOperatorExpressionTreeNode, self).__init__(operator_str, l_child)
 
         self._operator = OPERATOR_MAPPING[operator_str]
         self._is_cnf = isinstance(self.l_child, OperandExpressionTreeNode)
@@ -982,11 +1005,13 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
             # this node has the opposite of its children
             self._non_negated_symbol_set, self._negated_symbol_set = (
                 set(l_child._negated_symbol_set),
-                set(l_child._non_negated_symbol_set))
+                set(l_child._non_negated_symbol_set),
+            )
         else:
             self._non_negated_symbol_set, self._negated_symbol_set = (
                 set(l_child._non_negated_symbol_set),
-                set(l_child._negated_symbol_set))
+                set(l_child._negated_symbol_set),
+            )
 
     @property
     def operator(self):
@@ -999,76 +1024,78 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
         return self._operator
 
     def evaluate(self, input_dict):
-        return self.operator.eval_func(
-            self.l_child.evaluate(input_dict))
+        return self.operator.eval_func(self.l_child.evaluate(input_dict))
 
     def _copy(self):
-        return UnaryOperatorExpressionTreeNode(
-            self.symbol_name, self._l_child._copy())
+        return UnaryOperatorExpressionTreeNode(self.symbol_name, self._l_child._copy())
 
     def to_primitives(self):
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name, self._l_child.to_primitives())
+            self.symbol_name, self._l_child.to_primitives()
+        )
 
     def coalesce_negations(self):
         if isinstance(self._l_child, UnaryOperatorExpressionTreeNode):
             return self._l_child._l_child.coalesce_negations()
-        elif self._l_child.symbol_name == '0':
-            return OperandExpressionTreeNode('1')
-        elif self._l_child.symbol_name == '1':
-            return OperandExpressionTreeNode('0')
+        elif self._l_child.symbol_name == "0":
+            return OperandExpressionTreeNode("1")
+        elif self._l_child.symbol_name == "1":
+            return OperandExpressionTreeNode("0")
         else:
             return UnaryOperatorExpressionTreeNode(
-                self.symbol_name,
-                self._l_child.coalesce_negations())
+                self.symbol_name, self._l_child.coalesce_negations()
+            )
 
     def apply_de_morgans(self):
         if isinstance(self._l_child, BinaryOperatorExpressionTreeNode):
             binary_node = self._l_child
             op = binary_node._operator
-            not_str, and_str, or_str = self._get_op_strs(
-                TT_NOT_OP, TT_AND_OP, TT_OR_OP)
+            not_str, and_str, or_str = self._get_op_strs(TT_NOT_OP, TT_AND_OP, TT_OR_OP)
 
             notted_l_child = UnaryOperatorExpressionTreeNode(
-                not_str, binary_node._l_child).apply_de_morgans()
+                not_str, binary_node._l_child
+            ).apply_de_morgans()
             notted_r_child = UnaryOperatorExpressionTreeNode(
-                not_str, binary_node._r_child).apply_de_morgans()
+                not_str, binary_node._r_child
+            ).apply_de_morgans()
 
             if op == TT_AND_OP:
                 return BinaryOperatorExpressionTreeNode(
-                    or_str, notted_l_child, notted_r_child)
+                    or_str, notted_l_child, notted_r_child
+                )
             elif op == TT_OR_OP:
                 return BinaryOperatorExpressionTreeNode(
-                    and_str, notted_l_child, notted_r_child)
+                    and_str, notted_l_child, notted_r_child
+                )
 
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child.apply_de_morgans())
+            self.symbol_name, self._l_child.apply_de_morgans()
+        )
 
     def apply_identity_law(self):
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child.apply_identity_law())
+            self.symbol_name, self._l_child.apply_identity_law()
+        )
 
     def apply_idempotent_law(self):
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child.apply_idempotent_law())
+            self.symbol_name, self._l_child.apply_idempotent_law()
+        )
 
     def apply_inverse_law(self):
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child.apply_inverse_law())
+            self.symbol_name, self._l_child.apply_inverse_law()
+        )
 
     def distribute_ands(self):
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child.distribute_ands())
+            self.symbol_name, self._l_child.distribute_ands()
+        )
 
     def distribute_ors(self):
         return UnaryOperatorExpressionTreeNode(
-            self.symbol_name,
-            self._l_child.distribute_ors())
+            self.symbol_name, self._l_child.distribute_ors()
+        )
 
     def __eq__(self, other):
         if isinstance(other, UnaryOperatorExpressionTreeNode):
@@ -1080,7 +1107,6 @@ class UnaryOperatorExpressionTreeNode(ExpressionTreeNode):
 
 
 class OperandExpressionTreeNode(ExpressionTreeNode):
-
     """An expression tree node for operands.
 
     Nodes of this type will always be leaves in an expression tree.
@@ -1096,9 +1122,9 @@ class OperandExpressionTreeNode(ExpressionTreeNode):
         self._negated_symbol_set = set()
 
     def evaluate(self, input_dict):
-        if self.symbol_name == '0':
+        if self.symbol_name == "0":
             return False
-        elif self.symbol_name == '1':
+        elif self.symbol_name == "1":
             return True
         else:
             return input_dict[self.symbol_name]

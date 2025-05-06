@@ -5,9 +5,7 @@ import re
 from collections import namedtuple
 from keyword import kwlist
 
-from tt.errors import (
-    InvalidArgumentTypeError,
-    InvalidArgumentValueError)
+from tt.errors import InvalidArgumentTypeError, InvalidArgumentValueError
 
 
 BOOLEAN_VALUES = {0, 1, True, False}
@@ -18,7 +16,7 @@ BOOLEAN_VALUES = {0, 1, True, False}
 """
 
 
-DONT_CARE_VALUE = 'x'
+DONT_CARE_VALUE = "x"
 """The don't care string identifier.
 
 :type: :class:`str <python:str>`
@@ -27,7 +25,7 @@ DONT_CARE_VALUE = 'x'
 
 
 # False and True are not considered keywords in Python 2
-_tt_keywords = set(kwlist) | {'False', 'True'}
+_tt_keywords = set(kwlist) | {"False", "True"}
 
 
 def is_valid_identifier(identifier_name):
@@ -72,18 +70,18 @@ a string
 
     """
     if not isinstance(identifier_name, str):
-        raise InvalidArgumentTypeError('identifier_name must be a string')
+        raise InvalidArgumentTypeError("identifier_name must be a string")
 
     if not identifier_name:
-        raise InvalidArgumentValueError('identifier_name cannot be empty')
+        raise InvalidArgumentValueError("identifier_name cannot be empty")
 
-    if identifier_name.startswith('_'):
+    if identifier_name.startswith("_"):
         return False
 
     if identifier_name in _tt_keywords:
         return False
 
-    identifier_re = re.compile(r'^[^\d\W]\w*\Z', re.UNICODE)
+    identifier_re = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)
     if re.match(identifier_re, identifier_name) is None:
         return False
 
@@ -138,17 +136,18 @@ def boolean_variables_factory(symbols):
         {'A': True, 'B': False}
 
     """
-    class _bvf(namedtuple('_bvf', symbols)):
+
+    class _bvf(namedtuple("_bvf", symbols)):
         __slots__ = ()
 
         def __str__(self):
             pairs = []
             for field, val in self._asdict().items():
                 val = int(val) if isinstance(val, bool) else val
-                pairs.append(field + '=' + str(val))
-            return ', '.join(pairs)
+                pairs.append(field + "=" + str(val))
+            return ", ".join(pairs)
 
         def __repr__(self):
-            return '<BooleanValues [{}]>'.format(str(self))
+            return "<BooleanValues [{}]>".format(str(self))
 
     return _bvf

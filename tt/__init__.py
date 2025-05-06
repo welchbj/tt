@@ -1,14 +1,14 @@
-from .definitions import *  # noqa
-from .errors import *  # noqa
-from .expressions import *  # noqa
-from .tables import *  # noqa
-from .transformations import *  # noqa
-from .trees import *  # noqa
+from .definitions import *
+from .errors import *
+from .expressions import *
+from .tables import *
+from .transformations import *
+from .trees import *
+from .satisfiability import picosat
 
-from .satisfiability import picosat  # noqa
-
-# expose library version and version info tuple
+# Expose library version and version info tuple.
 from .version import __version__ as _version, __version_info__ as _version_info
+
 __version__ = _version
 VERSION = _version
 __version_info__ = _version_info

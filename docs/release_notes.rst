@@ -4,6 +4,16 @@ Release Notes
 
 Check below for new features added in each release. Please note that release notes were not recorded before version 0.5.0.
 
+0.7.x
+-----
+
+The 0.7.x series of releases are focused on conforming the project with modern Python development practices.
+
+0.7.0
+`````
+
+* TODO
+
 0.6.x
 -----
 

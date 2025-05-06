@@ -4,9 +4,7 @@ import functools
 
 from collections import deque
 
-from tt.errors import (
-    InvalidArgumentValueError,
-    InvalidArgumentTypeError)
+from tt.errors import InvalidArgumentValueError, InvalidArgumentTypeError
 from tt.expressions import BooleanExpression
 
 
@@ -29,13 +27,12 @@ BooleanExpression>` or :class:`str <python:str>`
         return expr
     else:
         raise InvalidArgumentTypeError(
-            'Transformations accept either a string or BooleanExpression '
-            'argument')
+            "Transformations accept either a string or BooleanExpression argument"
+        )
 
 
 @functools.total_ordering
 class RepeatableAction(object):
-
     """A mixin for describing actions that can be repeated.
 
     This class is meant to be used as a mixin when simple access to a ``times``
@@ -86,11 +83,11 @@ least 1
 
     """
 
-    __slots__ = ('_times',)
+    __slots__ = ("_times",)
 
     def __init__(self, times=_DEFAULT_TIMES):
         if times < 1:
-            raise InvalidArgumentValueError('`times` must be at least 1')
+            raise InvalidArgumentValueError("`times` must be at least 1")
 
         self._times = times
 
@@ -129,15 +126,13 @@ least 1
             return NotImplemented
 
     def __str__(self):
-        return '{} time'.format(self._times) + (
-               '' if self._times == 1 else 's')
+        return "{} time".format(self._times) + ("" if self._times == 1 else "s")
 
     def __repr__(self):
-        return '<RepeatableAction [{}]>'.format(str(self))
+        return "<RepeatableAction [{}]>".format(str(self))
 
 
 class ComposedTransformation(RepeatableAction):
-
     """An encapsulation of composed transformation functions.
 
     This class opens up a world of functionality consisting of buildable (i.e.,
@@ -221,7 +216,7 @@ ComposedTransformation.compose>` function.
         RepeatableAction.__init__(self, times)
 
         if not callable(fn):
-            raise InvalidArgumentTypeError('`fn` must be callable')
+            raise InvalidArgumentTypeError("`fn` must be callable")
 
         if isinstance(next_transformation, ComposedTransformation):
             self._next_transformation = next_transformation
@@ -229,13 +224,13 @@ ComposedTransformation.compose>` function.
             self._next_transformation = None
         else:
             raise InvalidArgumentTypeError(
-                '`next_transformation` must be of type '
-                '`ComposedTransformation` when used')
+                "`next_transformation` must be of type "
+                "`ComposedTransformation` when used"
+            )
 
         self._fn = fn
-        self._fn_name = getattr(fn, '__name__', str(fn))
-        self._computed_hash = hash(
-            (self._fn, self._next_transformation, self.times))
+        self._fn_name = getattr(fn, "__name__", str(fn))
+        self._computed_hash = hash((self._fn, self._next_transformation, self.times))
 
     def __call__(self, expr):
         bexpr = ensure_bexpr(expr)
@@ -280,25 +275,27 @@ ComposedTransformation.compose>` function.
         ret = self._fn_name
 
         if self._times > 1:
-            ret += ' ({})'.format(RepeatableAction.__str__(self))
+            ret += " ({})".format(RepeatableAction.__str__(self))
 
         if self._next_transformation is not None:
-            ret += ' -> '
+            ret += " -> "
             ret += str(self._next_transformation)
 
         return ret
 
     def __repr__(self):
-        return '<ComposedTransformation [{}]>'.format(str(self))
+        return "<ComposedTransformation [{}]>".format(str(self))
 
     def __hash__(self):
         return self._computed_hash
 
     def __eq__(self, other):
         if isinstance(other, ComposedTransformation):
-            return (self._fn == other._fn and
-                    self._next_transformation == other._next_transformation and
-                    self.times == other.times)
+            return (
+                self._fn == other._fn
+                and self._next_transformation == other._next_transformation
+                and self.times == other.times
+            )
         else:
             return NotImplemented
 
@@ -325,16 +322,19 @@ ComposedTransformation.compose>` function.
         """
         if isinstance(other, ComposedTransformation):
             return ComposedTransformation(
-                self._fn, next_transformation=other, times=self.times)
+                self._fn, next_transformation=other, times=self.times
+            )
         elif callable(other):
             return ComposedTransformation(
-                self._fn, next_transformation=ComposedTransformation(other))
+                self._fn, next_transformation=ComposedTransformation(other)
+            )
         elif isinstance(other, AbstractTransformationModifier):
             return other.modify(self)
         else:
             raise InvalidArgumentTypeError(
-                'compose() expects arguments to either be callable or to '
-                'be of instance AbstractTransformationModifier')
+                "compose() expects arguments to either be callable or to "
+                "be of instance AbstractTransformationModifier"
+            )
 
     @property
     def fn(self):
@@ -371,7 +371,6 @@ bexpr.BooleanExpression>` class.
 
 
 class AbstractTransformationModifier(object):
-
     def modify(self, other):
         """Modify a transformation composition or other modifier.
 
@@ -386,12 +385,11 @@ class AbstractTransformationModifier(object):
 
         """
         raise NotImplementedError(
-            'Descendants of AbstractTransformationModifier must implement '
-            '`modify()`')
+            "Descendants of AbstractTransformationModifier must implement `modify()`"
+        )
 
 
 class repeat(AbstractTransformationModifier, RepeatableAction):
-
     """Factory for a repeating transformation modifier.
 
     This factory method is largely meant to provide repeating modifier for the
@@ -415,12 +413,14 @@ class repeat(AbstractTransformationModifier, RepeatableAction):
         if isinstance(other, ComposedTransformation):
             modified_times = other.times * self._times
             return ComposedTransformation(
-                other.fn, next_transformation=other.next_transformation,
-                times=modified_times)
+                other.fn,
+                next_transformation=other.next_transformation,
+                times=modified_times,
+            )
         else:
             raise InvalidArgumentTypeError(
-                'modify() expects `other` to be of type '
-                '`ComposedTransformation`')
+                "modify() expects `other` to be of type `ComposedTransformation`"
+            )
 
 
 twice = repeat(2)
@@ -431,7 +431,7 @@ twice = repeat(2)
 """
 
 
-forever = repeat(float('inf'))
+forever = repeat(float("inf"))
 """A repeating modifier to perform a transformation forever.
 
 :type: :class:`repeat`
@@ -490,17 +490,18 @@ BooleanExpression>` object when called.
 
     """
     if len(fns) < 2:
-        raise InvalidArgumentValueError(
-            '`tt_compose()` expects at least two arguments')
+        raise InvalidArgumentValueError("`tt_compose()` expects at least two arguments")
 
     first_fn = fns[0]
     if isinstance(first_fn, AbstractTransformationModifier):
         raise InvalidArgumentTypeError(
-            '`tt_compose()` sequence cannot begin with a composition modifier')
+            "`tt_compose()` sequence cannot begin with a composition modifier"
+        )
     elif not callable(first_fn):
         raise InvalidArgumentTypeError(
-            '`tt_compose()` sequence must begin with a callable '
-            'transformation function or composition')
+            "`tt_compose()` sequence must begin with a callable "
+            "transformation function or composition"
+        )
 
     modified_compositions = deque()
     curr_composition = ComposedTransformation(first_fn)
@@ -513,8 +514,9 @@ BooleanExpression>` object when called.
             curr_composition = ComposedTransformation(fn)
         else:
             raise InvalidArgumentTypeError(
-                '`tt_compose()` sequence must consist solely of callable '
-                'transformation functions and transformation modifiers')
+                "`tt_compose()` sequence must consist solely of callable "
+                "transformation functions and transformation modifiers"
+            )
 
     modified_compositions.append(curr_composition)
 
