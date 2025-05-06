@@ -1,7 +1,5 @@
 """Python wrapper around the _clibs PicoSAT extension."""
 
-import os
-
 from tt.errors.arguments import InvalidArgumentTypeError, InvalidArgumentValueError
 
 try:
