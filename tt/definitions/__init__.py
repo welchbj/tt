@@ -2,12 +2,14 @@
 
 from .grammar import (  # noqa
     CONSTANT_VALUES,
-    DELIMITERS)
+    DELIMITERS,
+)
 from .operands import (  # noqa
     BOOLEAN_VALUES,
     boolean_variables_factory,
     DONT_CARE_VALUE,
-    is_valid_identifier)
+    is_valid_identifier,
+)
 from .operators import (  # noqa
     BINARY_OPERATORS,
     MAX_OPERATOR_STR_LEN,
@@ -22,4 +24,5 @@ from .operators import (  # noqa
     TT_NOR_OP,
     OPERATOR_MAPPING,
     PLAIN_ENGLISH_OPERATOR_MAPPING,
-    SYMBOLIC_OPERATOR_MAPPING)
+    SYMBOLIC_OPERATOR_MAPPING,
+)

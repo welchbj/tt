@@ -2,7 +2,6 @@
 
 
 class TtError(Exception):
-
     """Base exception type for tt errors. This exception type should be
     sub-classed and is not meant to be raised explicitly.
 

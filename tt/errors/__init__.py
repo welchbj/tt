@@ -13,22 +13,27 @@ from .arguments import (  # noqa
     ConflictingArgumentsError,
     InvalidArgumentTypeError,
     InvalidArgumentValueError,
-    RequiredArgumentError)
-from .evaluation import(  # noqa
+    RequiredArgumentError,
+)
+from .evaluation import (  # noqa
     InvalidBooleanValueError,
-    NoEvaluationVariationError)
+    NoEvaluationVariationError,
+)
 from .grammar import (  # noqa
     BadParenPositionError,
     EmptyExpressionError,
     ExpressionOrderError,
     InvalidIdentifierError,
-    UnbalancedParenError)
+    UnbalancedParenError,
+)
 from .state import (  # noqa
     AlreadyConstrainedSymbolError,
     AlreadyFullTableError,
     RequiresFullTableError,
-    RequiresNormalFormError)
+    RequiresNormalFormError,
+)
 from .symbols import (  # noqa
     DuplicateSymbolError,
     ExtraSymbolError,
-    MissingSymbolError)
+    MissingSymbolError,
+)

@@ -6,10 +6,9 @@ from ._helpers import TruthTableTestCase
 
 
 class TestTruthTableMagicAccessMethods(TruthTableTestCase):
-
     def test_table_iter_unfilled(self):
         """Test iterating through a table that has not been filled."""
-        t = TruthTable('A or B', fill_all=False)
+        t = TruthTable("A or B", fill_all=False)
         count = 0
 
         for inputs, result in t:
@@ -19,7 +18,7 @@ class TestTruthTableMagicAccessMethods(TruthTableTestCase):
 
     def test_table_iter_partially_filled(self):
         """Test iterating through a table that is partially filled."""
-        t = TruthTable('A xor C', fill_all=False)
+        t = TruthTable("A xor C", fill_all=False)
         t.fill(C=1)
         count = 0
 
@@ -39,7 +38,7 @@ class TestTruthTableMagicAccessMethods(TruthTableTestCase):
 
     def test_table_iter_completely_filled(self):
         """Test iterating through a table that is completely full."""
-        t = TruthTable('B nand D')
+        t = TruthTable("B nand D")
         count = 0
 
         for inputs, result in t:
@@ -66,7 +65,7 @@ class TestTruthTableMagicAccessMethods(TruthTableTestCase):
 
     def test_table_getitem(self):
         """Test indexing the table to get its results."""
-        t = TruthTable('A or B', fill_all=False)
+        t = TruthTable("A or B", fill_all=False)
         for i in range(4):
             self.assertEqual(None, t[i])
 
@@ -80,8 +79,8 @@ class TestTruthTableMagicAccessMethods(TruthTableTestCase):
         self.assertEqual(t[0b10], True)
         self.assertEqual(t[0b11], True)
 
-        t = TruthTable(from_values='1xx1')
+        t = TruthTable(from_values="1xx1")
         self.assertEqual(t[0b00], True)
-        self.assertEqual(t[0b01], 'x')
-        self.assertEqual(t[0b10], 'x')
+        self.assertEqual(t[0b01], "x")
+        self.assertEqual(t[0b10], "x")
         self.assertEqual(t[0b11], True)

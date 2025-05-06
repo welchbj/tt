@@ -4,7 +4,6 @@ from .base import TtError
 
 
 class GrammarError(TtError):
-
     """Base type for errors that occur in the handling of expression. This
     exception type should be sub-classed and is not meant to be raised
     explicitly.

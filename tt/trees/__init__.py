@@ -10,4 +10,5 @@ from .tree_node import (  # noqa
     BinaryOperatorExpressionTreeNode,
     ExpressionTreeNode,
     OperandExpressionTreeNode,
-    UnaryOperatorExpressionTreeNode)
+    UnaryOperatorExpressionTreeNode,
+)

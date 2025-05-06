@@ -11,11 +11,11 @@ from tt.definitions import (
     TT_NOR_OP,
     TT_OR_OP,
     TT_XNOR_OP,
-    TT_XOR_OP)
+    TT_XOR_OP,
+)
 
 
 class TestDefinedOperatorSets(unittest.TestCase):
-
     def test_binary_operators_is_proper_size(self):
         """Ensure the set is of the expected size."""
         self.assertEqual(7, len(BINARY_OPERATORS))

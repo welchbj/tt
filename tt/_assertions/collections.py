@@ -5,7 +5,8 @@ from tt.errors import (
     DuplicateSymbolError,
     ExtraSymbolError,
     InvalidBooleanValueError,
-    MissingSymbolError)
+    MissingSymbolError,
+)
 
 
 def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):
@@ -35,19 +36,19 @@ def assert_iterable_contains_all_expr_symbols(iter_of_strs, reference_set):
     passed_symbol_list = list(iter_of_strs)
     passed_symbol_set = set(passed_symbol_list)
     if len(passed_symbol_list) != len(passed_symbol_set):
-        raise DuplicateSymbolError('Received duplicate symbols')
+        raise DuplicateSymbolError("Received duplicate symbols")
 
     passed_excess_set = passed_symbol_set - reference_set
     reference_excess_set = reference_set - passed_symbol_set
 
     if reference_excess_set:
-        msg = 'Did not receive value for the following symbols: '
-        msg += ', '.join('"{}"'.format(sym) for sym in reference_excess_set)
+        msg = "Did not receive value for the following symbols: "
+        msg += ", ".join('"{}"'.format(sym) for sym in reference_excess_set)
         raise MissingSymbolError(msg)
 
     if passed_excess_set:
-        msg = 'Received unexpected symbols: '
-        msg += ', '.join('"{}"'.format(sym) for sym in passed_excess_set)
+        msg = "Received unexpected symbols: "
+        msg += ", ".join('"{}"'.format(sym) for sym in passed_excess_set)
         raise ExtraSymbolError(msg)
 
 
@@ -77,10 +78,11 @@ def assert_all_valid_keys(symbol_input_dict, symbol_set):
     """
     for k, v in symbol_input_dict.items():
         if k not in symbol_set:
-            raise ExtraSymbolError(
-                '"{}" is not a symbol in this expression'.format(k))
+            raise ExtraSymbolError('"{}" is not a symbol in this expression'.format(k))
 
         if v not in BOOLEAN_VALUES:
             raise InvalidBooleanValueError(
-                '"{}" passed as value for "{}" is not a valid Boolean '
-                'value'.format(v, k))
+                '"{}" passed as value for "{}" is not a valid Boolean value'.format(
+                    v, k
+                )
+            )

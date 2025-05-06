@@ -2,17 +2,11 @@
 
 import unittest
 
-from tt.errors import (
-    InvalidArgumentTypeError,
-    InvalidArgumentValueError)
-from tt.satisfiability.picosat import (
-    sat_all,
-    sat_one,
-    VERSION)
+from tt.errors import InvalidArgumentTypeError, InvalidArgumentValueError
+from tt.satisfiability.picosat import sat_all, sat_one, VERSION
 
 
 class TestPicosat(unittest.TestCase):
-
     def test_version(self):
         """Test the PicoSAT library version."""
         self.assertEqual(965, VERSION)
@@ -23,9 +17,9 @@ class TestPicosat(unittest.TestCase):
 
     def test_sat_one_single_clause_assumptions_satisfiable(self):
         """Test a single clause with assumptions, ensuring solution found."""
-        self.assertEqual([1, 2, -3, -4],
-                         sat_one([[1, 4], [2, 3], [1, -3], [-3]],
-                                 assumptions=[-4]))
+        self.assertEqual(
+            [1, 2, -3, -4], sat_one([[1, 4], [2, 3], [1, -3], [-3]], assumptions=[-4])
+        )
 
     def test_sat_one_assumptions_single_clause_not_satisfiable(self):
         """Assert no solution found for an infeasible assumption."""
@@ -50,8 +44,7 @@ class TestPicosat(unittest.TestCase):
 
     def test_sat_one_assumptions_not_in_clauses(self):
         """Test that assumptions not in clauses are still in the solution."""
-        self.assertEqual([1, -2, 3, 4],
-                         sat_one([[1, 2], [-2]], assumptions=[3, 4]))
+        self.assertEqual([1, -2, 3, 4], sat_one([[1, 2], [-2]], assumptions=[3, 4]))
 
     def test_sat_all_without_assumptions_not_satisfiable(self):
         """Test sat_all w/o assumptions that produces no solutions."""
@@ -72,11 +65,7 @@ class TestPicosat(unittest.TestCase):
     def test_sat_all_without_assumptions_satisfiable_multiple_sols(self):
         """Test sat_all w/o assumptions producing multiple solutions."""
         count = 0
-        expected = [
-            [-1, -2, 3, -4],
-            [-1, 2, -3, -4],
-            [1, 2, -3, -4],
-            [1, -2, -3, -4]]
+        expected = [[-1, -2, 3, -4], [-1, 2, -3, -4], [1, 2, -3, -4], [1, -2, -3, -4]]
         for solution in sat_all([[1, 2, 3, 4], [-2, -3], [-4], [-1, -3]]):
             self.assertIn(solution, expected)
             count += 1
@@ -93,8 +82,7 @@ class TestPicosat(unittest.TestCase):
         """Test sat_all w/ assumptions producing a single solution."""
         count = 0
         expected = [-1, 2, -3, -4, 5]
-        for solution in sat_all([[1, 2], [2, 3], [3, 4, 5]],
-                                assumptions=[-1, -3, -4]):
+        for solution in sat_all([[1, 2], [2, 3], [3, 4, 5]], assumptions=[-1, -3, -4]):
             self.assertEqual(expected, solution)
             count += 1
         self.assertEqual(1, count)
@@ -102,11 +90,10 @@ class TestPicosat(unittest.TestCase):
     def test_sat_all_with_assumptions_satisfiable_multiple_sols(self):
         """Test sat_all w/ assumptions producing multiple solutions."""
         count = 0
-        expected = [
-            [1, -2, 3, -4, 5],
-            [1, -2, 3, -4, -5]]
-        for solution in sat_all([[1, 2, 3, 4, 5], [-1, -2], [-3, -4]],
-                                assumptions=[1, 3]):
+        expected = [[1, -2, 3, -4, 5], [1, -2, 3, -4, -5]]
+        for solution in sat_all(
+            [[1, 2, 3, 4, 5], [-1, -2], [-3, -4]], assumptions=[1, 3]
+        ):
             self.assertIn(solution, expected)
             count += 1
         self.assertEqual(2, count)
@@ -154,10 +141,10 @@ class TestPicosat(unittest.TestCase):
     def test_passing_non_int_inner_list_clauses(self):
         """Test an error is raised when passing a non-int in clauses."""
         with self.assertRaises(InvalidArgumentTypeError):
-            sat_one([[1, 2, 3], [-2], ['string']])
+            sat_one([[1, 2, 3], [-2], ["string"]])
 
         with self.assertRaises(InvalidArgumentTypeError):
-            sat_all([[1, 2, 3], [-2], ['string']])
+            sat_all([[1, 2, 3], [-2], ["string"]])
 
     def test_passing_zeroes_inner_list_clauses(self):
         """Test an error is raised when zeroes are passed in clauses."""
@@ -170,10 +157,10 @@ class TestPicosat(unittest.TestCase):
     def test_passing_list_of_non_ints_assumptions(self):
         """Test an error is raised when non-ints are passed in assumptions."""
         with self.assertRaises(InvalidArgumentTypeError):
-            sat_one([[1, -2], [-1]], assumptions=[1, 'string'])
+            sat_one([[1, -2], [-1]], assumptions=[1, "string"])
 
         with self.assertRaises(InvalidArgumentTypeError):
-            sat_all([[1, -2], [-1]], assumptions=[1, 'string'])
+            sat_all([[1, -2], [-1]], assumptions=[1, "string"])
 
     def test_passing_list_containing_zeroes_assumptions(self):
         """Test an error is rasied when zeroes are passed in assumptions."""

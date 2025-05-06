@@ -9,9 +9,10 @@ from .bexpr import (  # noqa
     distribute_ors,
     coalesce_negations,
     to_cnf,
-    to_primitives)
+    to_primitives,
+)
 
-from .utils import ( # noqa
+from .utils import (  # noqa
     AbstractTransformationModifier,
     ComposedTransformation,
     ensure_bexpr,
@@ -19,4 +20,5 @@ from .utils import ( # noqa
     RepeatableAction,
     repeat,
     twice,
-    tt_compose)
+    tt_compose,
+)

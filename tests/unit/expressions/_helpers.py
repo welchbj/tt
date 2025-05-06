@@ -7,7 +7,6 @@ from tt.expressions import BooleanExpression
 
 
 class ExpressionTestCase(unittest.TestCase):
-
     """An extended TestCase with helpers for testing expressions."""
 
     def assert_is_cnf(self, expr_str):
@@ -44,8 +43,7 @@ class ExpressionTestCase(unittest.TestCase):
         result = b.evaluate(**kwargs)
         self.assertEqual(result, expected_result)
 
-    def helper_test_evaluate_raises(self, expr, expected_exc_type=None,
-                                    **kwargs):
+    def helper_test_evaluate_raises(self, expr, expected_exc_type=None, **kwargs):
         """Helper for testing the improper use of the ``evaluate`` function.
 
 
@@ -67,18 +65,26 @@ class ExpressionTestCase(unittest.TestCase):
             did_catch = True
         except Exception as e:
             traceback.print_exc()
-            self.fail('Received exception of type ' + type(e).__name__ +
-                      ' but was expecting type ' + expected_exc_type.__name__ +
-                      '.')
+            self.fail(
+                "Received exception of type "
+                + type(e).__name__
+                + " but was expecting type "
+                + expected_exc_type.__name__
+                + "."
+            )
             did_catch = True
 
         if not did_catch:
-            self.fail('No exception thrown.')
+            self.fail("No exception thrown.")
 
-    def helper_test_tokenization(self, expr, expected_tokens=None,
-                                 expected_postfix_tokens=None,
-                                 expected_symbols=None,
-                                 expected_tree_str=None):
+    def helper_test_tokenization(
+        self,
+        expr,
+        expected_tokens=None,
+        expected_postfix_tokens=None,
+        expected_symbols=None,
+        expected_tree_str=None,
+    ):
         """Helper for testing tokenization on valid expressions.
 
         :param expr: The expression for which to create a new
@@ -108,9 +114,9 @@ class ExpressionTestCase(unittest.TestCase):
         self.assertEqual(expected_symbols, b.symbols)
         self.assertEqual(expected_tree_str, str(b.tree))
 
-    def helper_test_tokenization_raises(self, expr,
-                                        expected_exc_type=None,
-                                        expected_error_pos=None):
+    def helper_test_tokenization_raises(
+        self, expr, expected_exc_type=None, expected_error_pos=None
+    ):
         """Helper for testing tokenization on invalid expressions.
 
         :param expr: The expression for which to create a new
@@ -137,10 +143,14 @@ class ExpressionTestCase(unittest.TestCase):
             did_catch = True
         except Exception as e:
             traceback.print_exc()
-            self.fail('Received exception of type ' + type(e).__name__ +
-                      ' but was expecting type ' + expected_exc_type.__name__ +
-                      '.')
+            self.fail(
+                "Received exception of type "
+                + type(e).__name__
+                + " but was expecting type "
+                + expected_exc_type.__name__
+                + "."
+            )
             did_catch = True
 
         if not did_catch:
-            self.fail('No exception thrown.')
+            self.fail("No exception thrown.")

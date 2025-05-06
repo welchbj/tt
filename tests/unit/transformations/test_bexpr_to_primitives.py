@@ -8,7 +8,6 @@ from tt.transformations import to_primitives
 
 
 class TestToPrimitives(unittest.TestCase):
-
     def assert_to_primitives_tranformation(self, original, expected):
         """Helper for asserting correct to_primitives transformation."""
         self.assertEqual(expected, str(to_primitives(original)))
@@ -20,28 +19,29 @@ class TestToPrimitives(unittest.TestCase):
 
     def test_from_boolean_expression_object(self):
         """Test transformation when passing an expr object as the argument."""
-        self.assert_to_primitives_tranformation(
-            BooleanExpression('A and B'),
-            'A and B')
+        self.assert_to_primitives_tranformation(BooleanExpression("A and B"), "A and B")
 
     def test_compound_plain_english_expression(self):
         """Test a compound expression of only plain English operators."""
         self.assert_to_primitives_tranformation(
-            '((A impl B) iff (C nand D)) or not not not (E xor F)',
-            '(((not A or B) and (not C or not D)) or (not (not A or B) and '
-            'not (not C or not D))) or not not not ((E and not F) or '
-            '(not E and F))')
+            "((A impl B) iff (C nand D)) or not not not (E xor F)",
+            "(((not A or B) and (not C or not D)) or (not (not A or B) and "
+            "not (not C or not D))) or not not not ((E and not F) or "
+            "(not E and F))",
+        )
 
     def test_compound_symbolic_expression(self):
         """Test a compound expression of only symbolic operators."""
         self.assert_to_primitives_tranformation(
-            '(A <-> B) -> C -> ~~~(A && !D) <-> ~!~(((E)))',
-            r'~((A /\ B) \/ (~A /\ ~B)) \/ ~C \/ (~~~(A /\ !D) /\ ~!~E) \/ '
-            r'(~~~~(A /\ !D) /\ ~~!~E)')
+            "(A <-> B) -> C -> ~~~(A && !D) <-> ~!~(((E)))",
+            r"~((A /\ B) \/ (~A /\ ~B)) \/ ~C \/ (~~~(A /\ !D) /\ ~!~E) \/ "
+            r"(~~~~(A /\ !D) /\ ~~!~E)",
+        )
 
     def test_compound_mixed_expression(self):
         """Test an expression of mixed symbolic and plain English operators."""
         self.assert_to_primitives_tranformation(
-            r'~(A and B) -> (C or D || (E /\ F)) nor (G xor H)',
-            r'not (~~(A and B) \/ C or D \/ (E /\ F)) and not '
-            '((G and not H) or (not G and H))')
+            r"~(A and B) -> (C or D || (E /\ F)) nor (G xor H)",
+            r"not (~~(A and B) \/ C or D \/ (E /\ F)) and not "
+            "((G and not H) or (not G and H))",
+        )

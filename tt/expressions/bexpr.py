@@ -6,7 +6,8 @@ from contextlib import contextmanager
 
 from tt._assertions import (
     assert_all_valid_keys,
-    assert_iterable_contains_all_expr_symbols)
+    assert_iterable_contains_all_expr_symbols,
+)
 from tt.definitions import (
     boolean_variables_factory,
     CONSTANT_VALUES,
@@ -14,7 +15,8 @@ from tt.definitions import (
     is_valid_identifier,
     OPERATOR_MAPPING,
     SYMBOLIC_OPERATOR_MAPPING,
-    TT_NOT_OP)
+    TT_NOT_OP,
+)
 from tt.errors import (
     AlreadyConstrainedSymbolError,
     BadParenPositionError,
@@ -24,18 +26,18 @@ from tt.errors import (
     InvalidArgumentValueError,
     InvalidIdentifierError,
     NoEvaluationVariationError,
-    UnbalancedParenError)
-from tt.satisfiability import (
-    picosat)
+    UnbalancedParenError,
+)
+from tt.satisfiability import picosat
 from tt.trees import (
     BinaryOperatorExpressionTreeNode,
     ExpressionTreeNode,
     OperandExpressionTreeNode,
-    UnaryOperatorExpressionTreeNode)
+    UnaryOperatorExpressionTreeNode,
+)
 
 
 class BooleanExpression(object):
-
     """An interface for interacting with a Boolean expression.
 
     Instances of ``BooleanExpression`` are meant to be immutable and can be
@@ -105,8 +107,7 @@ class BooleanExpression(object):
 
     def __init__(self, expr):
         if not isinstance(expr, (str, ExpressionTreeNode)):
-            raise InvalidArgumentTypeError(
-                'expr must be a str or ExpressionTreeNode')
+            raise InvalidArgumentTypeError("expr must be a str or ExpressionTreeNode")
 
         self._symbols = []
         self._symbol_set = set()
@@ -125,7 +126,7 @@ class BooleanExpression(object):
 
     def _init_from_expr_node(self, expr_node):
         """Initalize this object from an expression node."""
-        self._raw_expr = ''
+        self._raw_expr = ""
 
         with self._symbol_set_includes_constant_values():
             self._init_from_expr_node_recursive_helper(expr_node)
@@ -154,10 +155,11 @@ class BooleanExpression(object):
 
             self._raw_expr += operator_str
             if operator_str not in SYMBOLIC_OPERATOR_MAPPING:
-                self._raw_expr += ' '
+                self._raw_expr += " "
 
             self._init_from_expr_node_recursive_helper(
-                expr_node.l_child, parent=expr_node)
+                expr_node.l_child, parent=expr_node
+            )
             self._postfix_tokens.append(operator_str)
         elif isinstance(expr_node, BinaryOperatorExpressionTreeNode):
             operator_str = expr_node.symbol_name
@@ -168,31 +170,36 @@ class BooleanExpression(object):
             elif isinstance(parent, BinaryOperatorExpressionTreeNode):
                 this_operator = OPERATOR_MAPPING[operator_str]
                 parent_operator = OPERATOR_MAPPING[parent.symbol_name]
-                if (expr_node is parent.r_child and
-                        this_operator == parent_operator):
+                if expr_node is parent.r_child and this_operator == parent_operator:
                     include_parens = False
-                elif (expr_node is parent.l_child and
-                        this_operator == parent_operator and
-                        (parent.r_child.is_really_unary or
-                            this_operator == parent.r_child.operator)):
+                elif (
+                    expr_node is parent.l_child
+                    and this_operator == parent_operator
+                    and (
+                        parent.r_child.is_really_unary
+                        or this_operator == parent.r_child.operator
+                    )
+                ):
                     include_parens = False
 
             if include_parens:
-                self._tokens.append('(')
-                self._raw_expr += '('
+                self._tokens.append("(")
+                self._raw_expr += "("
 
             self._init_from_expr_node_recursive_helper(
-                expr_node.l_child, parent=expr_node)
+                expr_node.l_child, parent=expr_node
+            )
 
             self._tokens.append(operator_str)
-            self._raw_expr += (' ' + operator_str + ' ')
+            self._raw_expr += " " + operator_str + " "
 
             self._init_from_expr_node_recursive_helper(
-                expr_node.r_child, parent=expr_node)
+                expr_node.r_child, parent=expr_node
+            )
 
             if include_parens:
-                self._tokens.append(')')
-                self._raw_expr += ')'
+                self._tokens.append(")")
+                self._raw_expr += ")"
 
             self._postfix_tokens.append(operator_str)
 
@@ -398,19 +405,20 @@ class BooleanExpression(object):
 
         """
         if not kwargs:
-            raise InvalidArgumentValueError(
-                'Must specify at least one constraint')
+            raise InvalidArgumentValueError("Must specify at least one constraint")
 
         assert_all_valid_keys(kwargs, self._symbol_set)
 
         kwarg_key_set = set(kwargs.keys())
         conflicts = self._constrained_symbol_set & kwarg_key_set
         if conflicts:
-            symbols_str = ', '.join('"{}"'.format(s) for s in
-                                    sorted(conflicts))
+            symbols_str = ", ".join('"{}"'.format(s) for s in sorted(conflicts))
             raise AlreadyConstrainedSymbolError(
-                'Symbol' + (' ' if len(conflicts) == 1 else 's ') +
-                symbols_str + ' cannot be constrained multiple times')
+                "Symbol"
+                + (" " if len(conflicts) == 1 else "s ")
+                + symbols_str
+                + " cannot be constrained multiple times"
+            )
 
         self._constraints.update(kwargs)
         self._constrained_symbol_set |= kwarg_key_set
@@ -462,7 +470,8 @@ class BooleanExpression(object):
         """
         if not self._symbols:
             raise NoEvaluationVariationError(
-                'Cannot attempt to satisfy an expression of only constants')
+                "Cannot attempt to satisfy an expression of only constants"
+            )
 
         if not (self._symbol_set - self._constrained_symbol_set):
             # shortcut if all symbols are constrained
@@ -471,8 +480,9 @@ class BooleanExpression(object):
             else:
                 return None
 
-        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = \
+        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = (
             self._to_picosat_clauses_assumptions_and_symbol_mappings()
+        )
         if not assumptions:
             # cannot pass empty list of assumptions to picosat
             assumptions = None
@@ -482,7 +492,8 @@ class BooleanExpression(object):
             return None
 
         result_dict = self._picosat_result_as_dict(
-            picosat_result, symbol_to_index_map, index_to_symbol_map)
+            picosat_result, symbol_to_index_map, index_to_symbol_map
+        )
         return self._symbol_vals_factory(**result_dict)
 
     def sat_all(self):
@@ -524,7 +535,8 @@ class BooleanExpression(object):
         """
         if not self._symbols:
             raise NoEvaluationVariationError(
-                'Cannot attempt to satisfy an expression of only constants')
+                "Cannot attempt to satisfy an expression of only constants"
+            )
 
         if not (self._symbol_set - self._constrained_symbol_set):
             # shortcut if all symbols are constrained
@@ -536,23 +548,27 @@ class BooleanExpression(object):
                     yield None
             return
 
-        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = \
+        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = (
             self._to_picosat_clauses_assumptions_and_symbol_mappings()
+        )
         if not assumptions:
             # cannot pass empty list of assumptions to picosat
             assumptions = None
 
         for picosat_sol in picosat.sat_all(clauses, assumptions=assumptions):
             result_dict = self._picosat_result_as_dict(
-                picosat_sol, symbol_to_index_map, index_to_symbol_map)
+                picosat_sol, symbol_to_index_map, index_to_symbol_map
+            )
             yield self._symbol_vals_factory(**result_dict)
 
-    def _picosat_result_as_dict(self, results, symbol_to_index_map,
-                                index_to_symbol_map):
+    def _picosat_result_as_dict(
+        self, results, symbol_to_index_map, index_to_symbol_map
+    ):
         """Convert a PicoSAT result into a BooleanValues tuple."""
         result_dict = {}
-        signed_symbol_indices = (index for index in results if abs(index) in
-                                 index_to_symbol_map)
+        signed_symbol_indices = (
+            index for index in results if abs(index) in index_to_symbol_map
+        )
         for index in signed_symbol_indices:
             symbol_name = index_to_symbol_map[abs(index)]
             result_dict[symbol_name] = index > 0
@@ -572,8 +588,9 @@ class BooleanExpression(object):
             clause_indices = []
             for node in clause_root.iter_dnf_clauses():
                 is_negated = isinstance(node, UnaryOperatorExpressionTreeNode)
-                symbol_str = (node.l_child.symbol_name if is_negated else
-                              node.symbol_name)
+                symbol_str = (
+                    node.l_child.symbol_name if is_negated else node.symbol_name
+                )
 
                 if symbol_str in symbol_to_index_map:
                     pos = symbol_to_index_map[symbol_str]
@@ -581,14 +598,14 @@ class BooleanExpression(object):
                         clause_indices.append(-pos)
                     else:
                         clause_indices.append(pos)
-                elif symbol_str == '0':
+                elif symbol_str == "0":
                     clause_indices.append(index)
                     if is_negated:
                         assumptions.append(index)
                     else:
                         assumptions.append(-index)
                     index += 1
-                elif symbol_str == '1':
+                elif symbol_str == "1":
                     clause_indices.append(index)
                     if is_negated:
                         assumptions.append(-index)
@@ -648,8 +665,7 @@ class BooleanExpression(object):
 
         """
         assert_all_valid_keys(kwargs, self._symbol_set)
-        assert_iterable_contains_all_expr_symbols(
-            kwargs.keys(), self._symbol_set)
+        assert_iterable_contains_all_expr_symbols(kwargs.keys(), self._symbol_set)
 
         return self.evaluate_unchecked(**kwargs)
 
@@ -773,8 +789,7 @@ class BooleanExpression(object):
         operator_strs = [k for k in OPERATOR_MAPPING.keys()]
         is_symbolic = {op: not op[0].isalpha() for op in operator_strs}
         operator_search_list = sorted(operator_strs, key=len, reverse=True)
-        delimiters = DELIMITERS | set(k[0] for k, v in is_symbolic.items()
-                                      if v)
+        delimiters = DELIMITERS | set(k[0] for k, v in is_symbolic.items() if v)
         EXPECTING_OPERAND = 1
         EXPECTING_OPERATOR = 2
         grammar_state = EXPECTING_OPERAND
@@ -789,21 +804,24 @@ class BooleanExpression(object):
             if not c:
                 # do nothing
                 idx += 1
-            elif c == '(':
+            elif c == "(":
                 if grammar_state != EXPECTING_OPERAND:
-                    raise BadParenPositionError('Unexpected parenthesis',
-                                                self._raw_expr, idx)
+                    raise BadParenPositionError(
+                        "Unexpected parenthesis", self._raw_expr, idx
+                    )
 
                 open_paren_count += 1
                 self._tokens.append(c)
                 idx += 1
-            elif c == ')':
+            elif c == ")":
                 if grammar_state != EXPECTING_OPERATOR:
-                    raise BadParenPositionError('Unexpected parenthesis',
-                                                self._raw_expr, idx)
+                    raise BadParenPositionError(
+                        "Unexpected parenthesis", self._raw_expr, idx
+                    )
                 elif not open_paren_count:
-                    raise UnbalancedParenError('Unbalanced parenthesis',
-                                               self._raw_expr, idx)
+                    raise UnbalancedParenError(
+                        "Unbalanced parenthesis", self._raw_expr, idx
+                    )
 
                 open_paren_count -= 1
                 self._tokens.append(c)
@@ -813,34 +831,45 @@ class BooleanExpression(object):
                 num_chars_remaining = num_chars - idx
 
                 matching_operators = [
-                    operator for operator in operator_search_list
-                    if len(operator) <= num_chars_remaining and
-                    self._raw_expr[idx:(idx+len(operator))] == operator]
+                    operator
+                    for operator in operator_search_list
+                    if len(operator) <= num_chars_remaining
+                    and self._raw_expr[idx : (idx + len(operator))] == operator
+                ]
 
                 if matching_operators:
                     match = matching_operators[0]
                     match_length = len(match)
                     next_c_pos = idx + match_length
-                    next_c = (None if next_c_pos >= num_chars else
-                              self._raw_expr[idx + match_length])
+                    next_c = (
+                        None
+                        if next_c_pos >= num_chars
+                        else self._raw_expr[idx + match_length]
+                    )
 
                     if next_c is None:
                         # trailing operator
                         raise ExpressionOrderError(
                             'Unexpected operator "{}"'.format(match),
-                            self._raw_expr, idx)
+                            self._raw_expr,
+                            idx,
+                        )
 
                     if next_c in delimiters or is_symbolic[match]:
                         if OPERATOR_MAPPING[match] == TT_NOT_OP:
                             if grammar_state != EXPECTING_OPERAND:
                                 raise ExpressionOrderError(
-                                    'Unexpected unary operator "{}"'.format(
-                                        match), self._raw_expr, idx)
+                                    'Unexpected unary operator "{}"'.format(match),
+                                    self._raw_expr,
+                                    idx,
+                                )
                         else:
                             if grammar_state != EXPECTING_OPERATOR:
                                 raise ExpressionOrderError(
-                                    'Unexpected binary operator "{}"'.format(
-                                        match), self._raw_expr, idx)
+                                    'Unexpected binary operator "{}"'.format(match),
+                                    self._raw_expr,
+                                    idx,
+                                )
                             grammar_state = EXPECTING_OPERAND
 
                         is_operator = True
@@ -849,20 +878,26 @@ class BooleanExpression(object):
 
                 if not is_operator:
                     if grammar_state != EXPECTING_OPERAND:
-                        raise ExpressionOrderError('Unexpected operand',
-                                                   self._raw_expr, idx)
+                        raise ExpressionOrderError(
+                            "Unexpected operand", self._raw_expr, idx
+                        )
 
                     operand_end_idx = idx + 1
-                    while (operand_end_idx < num_chars and
-                           self._raw_expr[operand_end_idx] not in delimiters):
+                    while (
+                        operand_end_idx < num_chars
+                        and self._raw_expr[operand_end_idx] not in delimiters
+                    ):
                         operand_end_idx += 1
 
                     operand = self._raw_expr[idx:operand_end_idx]
-                    if (operand not in CONSTANT_VALUES and
-                            not is_valid_identifier(operand)):
+                    if operand not in CONSTANT_VALUES and not is_valid_identifier(
+                        operand
+                    ):
                         raise InvalidIdentifierError(
                             'Invalid operand name "{}"'.format(operand),
-                            self._raw_expr, idx)
+                            self._raw_expr,
+                            idx,
+                        )
 
                     self._tokens.append(operand)
                     if operand not in self._symbol_set:
@@ -873,14 +908,17 @@ class BooleanExpression(object):
                     grammar_state = EXPECTING_OPERATOR
 
         if open_paren_count:
-            left_paren_positions = [m.start() for m in
-                                    re.finditer(r'\(', self._raw_expr)]
+            left_paren_positions = [
+                m.start() for m in re.finditer(r"\(", self._raw_expr)
+            ]
             raise UnbalancedParenError(
-                'Unbalanced left parenthesis', self._raw_expr,
-                left_paren_positions[open_paren_count-1])
+                "Unbalanced left parenthesis",
+                self._raw_expr,
+                left_paren_positions[open_paren_count - 1],
+            )
 
         if not self._tokens:
-            raise EmptyExpressionError('Empty expression is invalid')
+            raise EmptyExpressionError("Empty expression is invalid")
 
     def _to_postfix(self):
         """Populate the ``_postfix_tokens`` attribute."""
@@ -889,19 +927,22 @@ class BooleanExpression(object):
         for token in self._tokens:
             if token in self._symbol_set:
                 self._postfix_tokens.append(token)
-            elif token == '(':
+            elif token == "(":
                 stack.append(token)
             elif token in OPERATOR_MAPPING.keys():
                 if not stack:
                     stack.append(token)
                 else:
-                    while (stack and stack[-1] != '(' and
-                            OPERATOR_MAPPING[stack[-1]].precedence >
-                            OPERATOR_MAPPING[token].precedence):
+                    while (
+                        stack
+                        and stack[-1] != "("
+                        and OPERATOR_MAPPING[stack[-1]].precedence
+                        > OPERATOR_MAPPING[token].precedence
+                    ):
                         self._postfix_tokens.append(stack.pop())
                     stack.append(token)
-            elif token == ')':
-                while stack and stack[-1] != '(':
+            elif token == ")":
+                while stack and stack[-1] != "(":
                     self._postfix_tokens.append(stack.pop())
                 stack.pop()
 

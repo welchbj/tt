@@ -5,7 +5,6 @@ from tt.tables import TruthTable
 
 
 class TruthTableTestCase(unittest.TestCase):
-
     """An extended TestCase with helpers for testing truth tables."""
 
     def helper_test_truth_table(self, expr, expected_table_str=None, **kwargs):
@@ -27,8 +26,9 @@ class TruthTableTestCase(unittest.TestCase):
         t = TruthTable(expr, **kwargs)
         self.assertEqual(expected_table_str, str(t))
 
-    def helper_test_truth_table_fill(self, expr, expected_table_str=None,
-                                     init_kwargs={}, **kwargs):
+    def helper_test_truth_table_fill(
+        self, expr, expected_table_str=None, init_kwargs={}, **kwargs
+    ):
         """Helper to test filling a truth table.
 
         :param expr: The value to pass to the ``TruthTable`` constructor.
@@ -49,8 +49,7 @@ class TruthTableTestCase(unittest.TestCase):
         t.fill(**kwargs)
         self.assertEqual(expected_table_str, str(t))
 
-    def helper_test_truth_table_raises(self, expr, expected_exc_type=None,
-                                       **kwargs):
+    def helper_test_truth_table_raises(self, expr, expected_exc_type=None, **kwargs):
         """Helper for testing exception conditions for TruthTable.
 
         :param expr: The value to pass to the ``TruthTable`` constructor.
@@ -70,16 +69,21 @@ class TruthTableTestCase(unittest.TestCase):
             did_catch = True
         except Exception as e:
             traceback.print_exc()
-            self.fail('Received exception of type ' + type(e).__name__ +
-                      ' but was expecting type ' + expected_exc_type.__name__ +
-                      '.')
+            self.fail(
+                "Received exception of type "
+                + type(e).__name__
+                + " but was expecting type "
+                + expected_exc_type.__name__
+                + "."
+            )
             did_catch = True
 
         if not did_catch:
-            self.fail('No exception thrown.')
+            self.fail("No exception thrown.")
 
-    def helper_test_truth_table_fill_raises(self, expr, expected_exc_type=None,
-                                            **kwargs):
+    def helper_test_truth_table_fill_raises(
+        self, expr, expected_exc_type=None, **kwargs
+    ):
         """Helper for testing exception conditions when filling a table.
 
         :param expr: The value to pass to the ``TruthTable`` constructor.
@@ -100,10 +104,14 @@ class TruthTableTestCase(unittest.TestCase):
             did_catch = True
         except Exception as e:
             traceback.print_exc()
-            self.fail('Received exception of type ' + type(e).__name__ +
-                      ' but was expecting type ' + expected_exc_type.__name__ +
-                      '.')
+            self.fail(
+                "Received exception of type "
+                + type(e).__name__
+                + " but was expecting type "
+                + expected_exc_type.__name__
+                + "."
+            )
             did_catch = True
 
         if not did_catch:
-            self.fail('No exception thrown.')
+            self.fail("No exception thrown.")
