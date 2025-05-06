@@ -6,9 +6,12 @@ from tt.errors.arguments import (
     InvalidArgumentTypeError,
     InvalidArgumentValueError)
 
-if os.environ.get('READTHEDOCS') != 'True':
+try:
     from tt._clibs import picosat as _c_picosat
     VERSION = _c_picosat.VERSION
+except (ImportError, AttributeError):
+    # TODO: Fix this placeholder with z3 port.
+    pass
 
 
 def sat_one(clauses, assumptions=None):

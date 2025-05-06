@@ -61,58 +61,6 @@ def _print_sys_info():
     print()
 
 
-def pull_latest_win_wheels():
-    """Download the latest artifact Windows wheels from AppVeyor."""
-    import requests
-
-    token = os.environ.get('APPVEYOR_TOKEN')
-    if token is None:
-        print('You must set the APPVEYOR_TOKEN environment variable;',
-              'quitting now', file=sys.stderr)
-        raise AppVeyorApiError
-
-    headers = {
-        'Authorization': 'Bearer ' + token,
-        'Content-type': 'application/json'
-    }
-    base_url = 'https://ci.appveyor.com/api'
-    project_url = base_url + '/projects/welchbj/tt'
-    artifacts_url_template = base_url + '/buildjobs/{}/artifacts'
-    single_artifact_url_template = artifacts_url_template + '/{}'
-
-    r = requests.get(project_url, headers=headers)
-    if r.status_code != 200:
-        print('Non-200 status code received from AppVeyor API; quitting now')
-        raise AppVeyorApiError
-
-    for job_dict in r.json()['build']['jobs']:
-        job_id, job_name = job_dict['jobId'], job_dict['name']
-        print('Processing job "', job_name, '"', sep='')
-
-        r = requests.get(artifacts_url_template.format(job_id),
-                         headers=headers)
-        if r.status_code != 200:
-            print('Non-200 status code received from AppVeyor API;',
-                  'quitting now')
-            raise AppVeyorApiError
-
-        artifact_remote_path = r.json()[0]['fileName']
-        artifact_filename = artifact_remote_path.split('/')[1]
-        local_filename = os.path.join(DIST_DIR, artifact_filename)
-        artifact_url = single_artifact_url_template.format(
-            job_id, artifact_remote_path)
-
-        print('Downloading', artifact_url, 'into', local_filename)
-        r = requests.get(artifact_url, headers=headers)
-        with open(local_filename, 'wb') as f:
-            f.write(r.content)
-
-        print('Done')
-        print()
-
-    print('All done!')
-
-
 def build_docs():
     """Build the documentation from source into HTML."""
     with _cwd(DOCS_DIR):
@@ -166,12 +114,9 @@ def test():
 
     doctest_files = [
         os.path.join(USER_GUIDE_DIR, 'expression_basics.rst'),
-        os.path.join(USER_GUIDE_DIR, 'table_basics.rst')
+        os.path.join(USER_GUIDE_DIR, 'table_basics.rst'),
+        os.path.join(HERE, 'README.rst'),
     ]
-
-    if sys.version_info.major >= 3:
-        # only test the readme in Python 3
-        doctest_files.append(os.path.join(HERE, 'README.rst'))
 
     common_doctest_kwargs = dict(
         optionflags=doctest.IGNORE_EXCEPTION_DETAIL
@@ -198,7 +143,6 @@ def test():
 
 TASKS = {
     'build-docs': build_docs,
-    'pull-latest-win-wheels': pull_latest_win_wheels,
     'serve-docs': serve_docs,
     'test': test
 }
