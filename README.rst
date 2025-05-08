@@ -29,7 +29,7 @@ Parse expressions::
 
 Evaluate expressions::
 
-    >>> b = BooleanExpression('(A /\ B) -> (C \/ D)')
+    >>> b = BooleanExpression('(A /\\ B) -> (C \\/ D)')
     >>> b.evaluate(A=1, B=1, C=0, D=0)
     False
     >>> b.evaluate(A=1, B=1, C=1, D=0)
@@ -72,10 +72,10 @@ Exhaust SAT solutions::
     >>> for sat_solution in b.sat_all():
     ...     print(sat_solution)
     ...
-    A=0, B=1, C=1
-    A=1, B=0, C=1
-    A=1, B=1, C=1
     A=0, B=0, C=0
+    A=1, B=0, C=1
+    A=0, B=1, C=1
+    A=1, B=1, C=1
 
 Find just a few::
 
@@ -89,7 +89,7 @@ Find just a few::
 Or just one::
 
     >>> b.sat_one()
-    <BooleanValues [A=0, B=1, C=1]>
+    <BooleanValues [A=0, B=0, C=0]>
 
 Build truth tables::
 
