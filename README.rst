@@ -119,4 +119,4 @@ tt uses the `MIT License`_.
 .. _MIT License: https://opensource.org/licenses/MIT
 .. _project site: https://tt.brianwel.ch
 .. _bool.tools: http://www.bool.tools
-.. _much more: https://tt.brianwel.ch/en/stable/user_guide.html
+.. _much more: https://tt.brianwel.ch/en/latest/user_guide.html
