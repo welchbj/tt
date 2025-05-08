@@ -1,5 +1,5 @@
 [project]
-name = "tt"
+name = "ttable"
 version = "0.7.0"
 dependencies = [
     "z3-solver>=4.14.1.0",
