@@ -487,9 +487,6 @@ class BooleanExpression(object):
     def sat_all(self):
         """Find all combinations of inputs that satisfy this expression.
 
-        Under the hood, this method is using the functionality exposed in tt's
-        :mod:`satisfiability.picosat <tt.satisfiability.picosat>` module.
-
         Here's a simple example of iterating through a few SAT solutions::
 
             >>> from tt import BooleanExpression

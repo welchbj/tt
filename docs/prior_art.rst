@@ -21,6 +21,7 @@ Satisfiability
     * `PyEDA`_
     * `pycosat`_
     * `SATisPy`_
+    * `z3`_
 
 
 .. _boolean.py: https://github.com/bastikr/boolean.py
@@ -30,3 +31,4 @@ Satisfiability
 .. _pycosat: https://github.com/ContinuumIO/pycosat
 .. _PyEDA: https://github.com/cjdrake/pyeda
 .. _SATisPy: https://github.com/netom/satispy/
+.. _z3: https://github.com/Z3Prover/z3
