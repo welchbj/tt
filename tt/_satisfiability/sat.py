@@ -82,7 +82,7 @@ def _bexpr_to_z3_solver(bexpr: "BooleanExpression") -> tuple[Solver, dict[str, B
         # Create a z3 representation of this DNF clause.
         cnf_clauses.append(Or(*dnf_clauses))
 
-    # Stitch together the CNF clauses with Boolean ORs.
+    # Stitch together the CNF clauses with Boolean ANDs.
     z3_expr = And(*cnf_clauses)
 
     solver = Solver()
