@@ -1,16 +1,16 @@
 """Definitions for tt's expression grammar, operands, and operators."""
 
-from .grammar import (  # noqa
+from .grammar import (
     CONSTANT_VALUES,
     DELIMITERS,
 )
-from .operands import (  # noqa
+from .operands import (
     BOOLEAN_VALUES,
     boolean_variables_factory,
     DONT_CARE_VALUE,
     is_valid_identifier,
 )
-from .operators import (  # noqa
+from .operators import (
     BINARY_OPERATORS,
     MAX_OPERATOR_STR_LEN,
     NON_PRIMITIVE_OPERATORS,

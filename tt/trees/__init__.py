@@ -6,7 +6,7 @@ is presented with an easier-to-use interface in the :mod:`expressions \
 
 """
 
-from .tree_node import (  # noqa
+from .tree_node import (
     BinaryOperatorExpressionTreeNode,
     ExpressionTreeNode,
     OperandExpressionTreeNode,

@@ -1,6 +1,6 @@
 """Interfaces for transforming representations of expressions."""
 
-from .bexpr import (  # noqa
+from .bexpr import (
     apply_de_morgans,
     apply_idempotent_law,
     apply_identity_law,
@@ -12,7 +12,7 @@ from .bexpr import (  # noqa
     to_primitives,
 )
 
-from .utils import (  # noqa
+from .utils import (
     AbstractTransformationModifier,
     ComposedTransformation,
     ensure_bexpr,

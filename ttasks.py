@@ -106,7 +106,6 @@ def test():
         tt.errors.grammar,
         tt.errors.state,
         tt.errors.symbols,
-        tt.satisfiability.picosat,
         tt.tables.truth_table,
         tt.transformations.bexpr,
         tt.transformations.utils,

@@ -31,6 +31,10 @@ Testing is done with Python's `unittest`_ and `doctest`_ modules. All tests can 
 
     python ttasks.py test
 
+Specific unit tests can be run with::
+
+    python -m unittest -k test_constraints_eliminate_no_solutions
+
 Note that while doc tests are used, their main purpose is to ensure the documentation examples are valid rather than extensively test functionality. The true behavior of the library and its public contract are enforced through the unit tests.
 
 Local cross-Python version testing is achieved through `uv`_::

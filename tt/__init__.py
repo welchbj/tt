@@ -4,7 +4,6 @@ from .expressions import *
 from .tables import *
 from .transformations import *
 from .trees import *
-from .satisfiability import picosat
 
 # Expose library version and version info tuple.
 from .version import __version__ as _version, __version_info__ as _version_info

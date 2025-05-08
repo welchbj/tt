@@ -1,7 +1,9 @@
 [project]
 name = "tt"
 version = "0.7.0"
-dependencies = []
+dependencies = [
+    "z3-solver>=4.14.1.0",
+]
 license = "MIT"
 license-files = ["LICENSE.txt"]
 requires-python = ">=3.11"
@@ -88,7 +90,7 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-docstring-code-format = false
+docstring-code-format = true
 
 [dependency-groups]
 dev = [
