@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Iterator
 
 from tt.trees import UnaryOperatorExpressionTreeNode
 
-from z3 import Solver, BoolRef, Bool, Not, And, Or, sat
+from z3 import Solver, Bool, Not, And, Or, sat
 
 if TYPE_CHECKING:
     from tt.expressions import BooleanExpression
@@ -86,7 +86,7 @@ def _bexpr_to_z3_solver(bexpr: "BooleanExpression") -> tuple[Solver, dict[str, B
     z3_expr = And(*cnf_clauses)
 
     solver = Solver()
-    solver.add(z3_expr == True)
+    solver.add(z3_expr)
 
     # Add assumptions as constrained values.
     for symbol_str, assumed_val in bexpr._constraints.items():
