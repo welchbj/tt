@@ -19,15 +19,15 @@ def _z3_all_smt(solver: Solver, initial_terms):
 
     def all_smt_rec(terms):
         if sat == solver.check():
-           m = solver.model()
-           yield m
-           for i in range(len(terms)):
-               solver.push()
-               block_term(solver, m, terms[i])
-               for j in range(i):
-                   fix_term(solver, m, terms[j])
-               yield from all_smt_rec(terms[i:])
-               solver.pop()
+            m = solver.model()
+            yield m
+            for i in range(len(terms)):
+                solver.push()
+                block_term(solver, m, terms[i])
+                for j in range(i):
+                    fix_term(solver, m, terms[j])
+                yield from all_smt_rec(terms[i:])
+                solver.pop()
 
     yield from all_smt_rec(list(initial_terms))
 
@@ -56,9 +56,7 @@ def _bexpr_to_z3_solver(bexpr: "BooleanExpression") -> tuple[Solver, dict[str, B
 
         for node in clause_root.iter_dnf_clauses():
             is_negated = isinstance(node, UnaryOperatorExpressionTreeNode)
-            symbol_str = (
-                node.l_child.symbol_name if is_negated else node.symbol_name
-            )
+            symbol_str = node.l_child.symbol_name if is_negated else node.symbol_name
 
             if symbol_str == "0":
                 if is_negated:
@@ -116,4 +114,3 @@ def z3_sat_all(bexpr: "BooleanExpression") -> Iterator[dict[str, bool] | None]:
     solver, symbol_map = _bexpr_to_z3_solver(bexpr)
     for model in _z3_all_smt(solver, list(symbol_map.values())):
         yield _z3_model_to_result_dict(model, symbol_map)
-
