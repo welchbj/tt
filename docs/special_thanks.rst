@@ -15,7 +15,7 @@ Thank you to the following people who generously contributed their time and brai
 Services
 --------
 
-Thank you to the free hosting provided by these services!
+Thank you to the free hosting provided by these services! This project either currently or historically made use of these services.
 
     * `GitHub`_
     * `Travis CI`_
@@ -32,7 +32,7 @@ Thank you to Matthew Beckler, who designed the `logic gate SVGs`_ present in tt'
 Third Party Libraries Shipped with tt
 -------------------------------------
 
-Thank you to the developers of the following third party libraries that are wrapped in and shipped with tt. Your hard work drives some of the most powerful functionality of tt.
+Thank you to the developers of the following third party libraries that used to be wrapped in and shipped with tt.
 
     * `PicoSAT`_
 

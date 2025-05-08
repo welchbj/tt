@@ -28,7 +28,7 @@ from tt.errors import (
     NoEvaluationVariationError,
     UnbalancedParenError,
 )
-from tt.satisfiability import picosat
+from tt._satisfiability import sat
 from tt.trees import (
     BinaryOperatorExpressionTreeNode,
     ExpressionTreeNode,
@@ -424,13 +424,11 @@ class BooleanExpression(object):
         self._constrained_symbol_set |= kwarg_key_set
         yield self
         self._constrained_symbol_set -= kwarg_key_set
+        # TODO: Shouldn't we only pop the keys for the kwargs we added?
         self._constraints = {}
 
     def sat_one(self):
         """Find a combination of inputs that satisfies this expression.
-
-        Under the hood, this method is using the functionality exposed in tt's
-        :mod:`satisfiability.picosat <tt.satisfiability.picosat>` module.
 
         Here's a simple example of satisfying an expression::
 
@@ -480,27 +478,14 @@ class BooleanExpression(object):
             else:
                 return None
 
-        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = (
-            self._to_picosat_clauses_assumptions_and_symbol_mappings()
-        )
-        if not assumptions:
-            # cannot pass empty list of assumptions to picosat
-            assumptions = None
-
-        picosat_result = picosat.sat_one(clauses, assumptions=assumptions)
-        if picosat_result is None:
+        result_dict = sat.z3_sat_one(self)
+        if result_dict is None:
             return None
 
-        result_dict = self._picosat_result_as_dict(
-            picosat_result, symbol_to_index_map, index_to_symbol_map
-        )
         return self._symbol_vals_factory(**result_dict)
 
     def sat_all(self):
         """Find all combinations of inputs that satisfy this expression.
-
-        Under the hood, this method is using the functionality exposed in tt's
-        :mod:`satisfiability.picosat <tt.satisfiability.picosat>` module.
 
         Here's a simple example of iterating through a few SAT solutions::
 
@@ -509,10 +494,10 @@ class BooleanExpression(object):
             >>> for solution in b.sat_all():
             ...     print(solution)
             ...
-            A=1, B=0, C=1, D=0
             A=1, B=0, C=0, D=1
             A=0, B=1, C=0, D=1
             A=0, B=1, C=1, D=0
+            A=1, B=0, C=1, D=0
 
         We can also constrain away a few of those solutions::
 
@@ -548,89 +533,8 @@ class BooleanExpression(object):
                     yield None
             return
 
-        clauses, assumptions, symbol_to_index_map, index_to_symbol_map = (
-            self._to_picosat_clauses_assumptions_and_symbol_mappings()
-        )
-        if not assumptions:
-            # cannot pass empty list of assumptions to picosat
-            assumptions = None
-
-        for picosat_sol in picosat.sat_all(clauses, assumptions=assumptions):
-            result_dict = self._picosat_result_as_dict(
-                picosat_sol, symbol_to_index_map, index_to_symbol_map
-            )
+        for result_dict in sat.z3_sat_all(self):
             yield self._symbol_vals_factory(**result_dict)
-
-    def _picosat_result_as_dict(
-        self, results, symbol_to_index_map, index_to_symbol_map
-    ):
-        """Convert a PicoSAT result into a BooleanValues tuple."""
-        result_dict = {}
-        signed_symbol_indices = (
-            index for index in results if abs(index) in index_to_symbol_map
-        )
-        for index in signed_symbol_indices:
-            symbol_name = index_to_symbol_map[abs(index)]
-            result_dict[symbol_name] = index > 0
-
-        return result_dict
-
-    def _to_picosat_clauses_assumptions_and_symbol_mappings(self):
-        """Return a PicoSAT-compatible representation and helpful metadata."""
-        cnf_tree = self.tree if self.is_cnf else self.tree.to_cnf()
-        index = 1
-        symbol_to_index_map = {}
-        index_to_symbol_map = {}
-        clauses = []
-        assumptions = []
-
-        for clause_root in cnf_tree.iter_cnf_clauses():
-            clause_indices = []
-            for node in clause_root.iter_dnf_clauses():
-                is_negated = isinstance(node, UnaryOperatorExpressionTreeNode)
-                symbol_str = (
-                    node.l_child.symbol_name if is_negated else node.symbol_name
-                )
-
-                if symbol_str in symbol_to_index_map:
-                    pos = symbol_to_index_map[symbol_str]
-                    if is_negated:
-                        clause_indices.append(-pos)
-                    else:
-                        clause_indices.append(pos)
-                elif symbol_str == "0":
-                    clause_indices.append(index)
-                    if is_negated:
-                        assumptions.append(index)
-                    else:
-                        assumptions.append(-index)
-                    index += 1
-                elif symbol_str == "1":
-                    clause_indices.append(index)
-                    if is_negated:
-                        assumptions.append(-index)
-                    else:
-                        assumptions.append(index)
-                    index += 1
-                else:
-                    symbol_to_index_map[symbol_str] = index
-                    index_to_symbol_map[index] = symbol_str
-                    if is_negated:
-                        clause_indices.append(-index)
-                    else:
-                        clause_indices.append(index)
-                    index += 1
-
-            clauses.append(clause_indices)
-
-        for symbol_str, assumed_val in self._constraints.items():
-            index = symbol_to_index_map[symbol_str]
-            if assumed_val:
-                assumptions.append(index)
-            else:
-                assumptions.append(-index)
-
-        return clauses, assumptions, symbol_to_index_map, index_to_symbol_map
 
     def evaluate(self, **kwargs):
         """Evaluate the Boolean expression for the passed keyword arguments.
@@ -953,5 +857,7 @@ class BooleanExpression(object):
     def _symbol_set_includes_constant_values(self):
         """Context manager to include CONSTANT_VALUES in _symbol_set."""
         self._symbol_set |= CONSTANT_VALUES
-        yield
-        self._symbol_set -= CONSTANT_VALUES
+        try:
+            yield
+        finally:
+            self._symbol_set -= CONSTANT_VALUES

@@ -18,9 +18,9 @@ def apply_de_morgans(expr):
     to a negated AND and a negated OR::
 
         >>> from tt import apply_de_morgans
-        >>> apply_de_morgans('~(A /\\ B)')
+        >>> apply_de_morgans(r'~(A /\\ B)')
         <BooleanExpression "~A \\/ ~B">
-        >>> apply_de_morgans('~(A \\/ B)')
+        >>> apply_de_morgans(r'~(A \\/ B)')
         <BooleanExpression "~A /\\ ~B">
 
     """

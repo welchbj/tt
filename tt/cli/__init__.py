@@ -1,3 +1,3 @@
 """tt's command-line interface."""
 
-from .core import main  # noqa
+from .core import main

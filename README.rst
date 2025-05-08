@@ -1,14 +1,12 @@
-|pypi| |pyversions| |docs| |nixbuild| |winbuild|
-
 Synopsis
 --------
 
-tt (**t**\ ruth **t**\ able) is a library aiming to provide a Pythonic toolkit for working with Boolean expressions and truth tables. Please see the `project site`_ for guides and documentation, or check out `bool.tools`_ for a simple web application powered by this library.
+tt (**t**\ ruth **t**\ able) is a library aiming to provide a toolkit for working with Boolean expressions and truth tables. Please see the `project site`_ for guides and documentation.
 
 Installation
 ------------
 
-tt is tested on CPython 3.6, 3.7, and 3.8. You can get the latest release from PyPI with::
+tt is tested on the latest three major versions of CPython. You can get the latest release from PyPI with::
 
     pip install ttable
 
@@ -31,7 +29,7 @@ Parse expressions::
 
 Evaluate expressions::
 
-    >>> b = BooleanExpression('(A /\ B) -> (C \/ D)')
+    >>> b = BooleanExpression('(A /\\ B) -> (C \\/ D)')
     >>> b.evaluate(A=1, B=1, C=0, D=0)
     False
     >>> b.evaluate(A=1, B=1, C=1, D=0)
@@ -74,10 +72,10 @@ Exhaust SAT solutions::
     >>> for sat_solution in b.sat_all():
     ...     print(sat_solution)
     ...
-    A=0, B=1, C=1
-    A=1, B=0, C=1
-    A=1, B=1, C=1
     A=0, B=0, C=0
+    A=1, B=0, C=1
+    A=0, B=1, C=1
+    A=1, B=1, C=1
 
 Find just a few::
 
@@ -91,7 +89,7 @@ Find just a few::
 Or just one::
 
     >>> b.sat_one()
-    <BooleanValues [A=0, B=1, C=1]>
+    <BooleanValues [A=0, B=0, C=0]>
 
 Build truth tables::
 
@@ -122,23 +120,3 @@ tt uses the `MIT License`_.
 .. _project site: https://tt.brianwel.ch
 .. _bool.tools: http://www.bool.tools
 .. _much more: https://tt.brianwel.ch/en/stable/user_guide.html
-
-.. |pypi| image:: https://img.shields.io/pypi/v/ttable.svg?style=flat-square&label=pypi
-    :target: https://pypi.python.org/pypi/ttable
-    :alt: tt's PyPI page
-
-.. |pyversions| image:: https://img.shields.io/pypi/pyversions/ttable.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/ttable
-    :alt: tt runs on Python 3.6, 3.7, and 3.8
-
-.. |docs| image:: https://img.shields.io/badge/docs-latest-c944ff.svg?style=flat-square
-    :target: https://tt.brianwel.ch/en/latest/
-    :alt: tt documentation site
-
-.. |nixbuild| image:: https://img.shields.io/travis/welchbj/tt/develop.svg?style=flat-square&label=linux%20build
-    :target: https://travis-ci.org/welchbj/tt
-    :alt: Linux build on Travis CI
-
-.. |winbuild| image:: https://img.shields.io/appveyor/ci/welchbj/tt/develop.svg?style=flat-square&label=windows%20build
-    :target: https://ci.appveyor.com/project/welchbj/tt
-    :alt: Windows build on AppVeyor
